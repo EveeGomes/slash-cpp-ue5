@@ -24,8 +24,15 @@ void AItem::BeginPlay()
 	FVector Location = GetActorLocation();
 	FVector ForwardVec = GetActorForwardVector();
 
-	DRAW_SPHERE(Location)
-	DRAW_LINE(Location, Location + ForwardVec * 100.f)
+	DRAW_SPHERE(Location);
+	DRAW_LINE(Location, Location + ForwardVec * 100.f);
+	// It's also possible to add ; after those macros. Without it VS might suggest indentation as if the code isn't finished yet (but again it's optional!)
+
+	if (World)
+	{
+		DrawDebugPoint(World, Location + ForwardVec * 100.f, 15.f, FColor::Black, true);
+	}
+
 
 }
 
