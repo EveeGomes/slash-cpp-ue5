@@ -20,9 +20,15 @@ void AItem::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	//UWorld* World = GetWorld();
-
+	UWorld* World = GetWorld();
 	FVector Location = GetActorLocation();
+
+	if (World)
+	{
+		FVector ForwardVec = GetActorForwardVector();
+		DrawDebugLine(World, Location, Location + ForwardVec * 100.f, FColor::Red, true, -1.f, 0, 1.f);
+	}
+
 	DRAW_SPHERE(Location) // since there's a ; in the function macro definition, we can leave here without it!
 	
 
