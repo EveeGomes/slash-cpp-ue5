@@ -2,6 +2,7 @@
 
 
 #include "Items/Item.h"
+#include "DrawDebugHelpers.h"
 
 // Sets default values
 AItem::AItem()
@@ -16,12 +17,15 @@ void AItem::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	UE_LOG(LogTemp, Warning, TEXT("Begin play called"));
+	UWorld* World = GetWorld();
 
-	if (GEngine)
+	if (World)
 	{
-		GEngine->AddOnScreenDebugMessage(1, 60.f, FColor::Cyan, FString("Item OnScreen Message!"));
+		FVector Location = GetActorLocation();
+		DrawDebugSphere(World, Location, 25.f, 24, FColor::Red, false, 30.f);
 	}
+	
+
 }
 
 // Called every frame
@@ -29,16 +33,6 @@ void AItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (GEngine)
-	{
-		FString Name = GetName();
-		FString Message = FString::Printf(TEXT("DeltaTime is : % f"), DeltaTime);
-		GEngine->AddOnScreenDebugMessage(1, 60.f, FColor::Cyan, Message);
-		GEngine->AddOnScreenDebugMessage(2, 60.f, FColor::Black, Name);
-
-		FString FormattedMessage = FString::Printf(TEXT("Item name is: %s"), *Name);
-		GEngine->AddOnScreenDebugMessage(3, 60.f, FColor::Emerald, FormattedMessage);
-	}
 
 }
 
