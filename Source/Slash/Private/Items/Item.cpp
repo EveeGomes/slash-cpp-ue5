@@ -4,6 +4,8 @@
 #include "Items/Item.h"
 #include "DrawDebugHelpers.h"
 
+#define DRAW_SPHERE(Location) if (GetWorld()) DrawDebugSphere(GetWorld(), Location, 25.f, 12, FColor::Red, true);
+
 // Sets default values
 AItem::AItem()
 {
@@ -17,13 +19,10 @@ void AItem::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	UWorld* World = GetWorld();
+	//UWorld* World = GetWorld();
 
-	if (World)
-	{
-		FVector Location = GetActorLocation();
-		DrawDebugSphere(World, Location, 25.f, 24, FColor::Red, false, 30.f);
-	}
+	FVector Location = GetActorLocation();
+	DRAW_SPHERE(Location) // since there's a ; in the function macro definition, we can leave here without it!
 	
 
 }
