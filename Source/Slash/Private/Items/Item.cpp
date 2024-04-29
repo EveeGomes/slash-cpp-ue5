@@ -20,9 +20,12 @@ void AItem::BeginPlay()
 	UWorld* World = GetWorld();
 	FVector Location = GetActorLocation();
 	FVector ForwardVec = GetActorForwardVector();
+	FRotator Rotator = GetActorRotation();
+	//FRotator ConeRotator = FRotator(-90.f, 0.f, 0.f);
 
-	DRAW_SPHERE(Location);
+	DRAW_SPHERE(Location, FColor::Black);
 	DRAW_VECTOR(Location, Location + ForwardVec * 100.f);
+	DRAW_CONE(Location, Rotator);
 }
 
 // Called every frame
