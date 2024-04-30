@@ -21,12 +21,10 @@ void AItem::BeginPlay()
 
 	// Set location before using Location since it'll get the current actor location and use on the macros to draw the debug shapes
 	SetActorLocation(FVector(0.f, 0.f, 50.f));
+	SetActorRotation(FRotator(0.f, 45.f, 0.f));
 	FVector Location = GetActorLocation();
 	FVector ForwardVec = GetActorForwardVector();
 	FRotator Rotator = GetActorRotation();
-	//FRotator ConeRotator = FRotator(-90.f, 0.f, 0.f);
-
-	/*SetActorLocation(FVector(0.f, 0.f, 50.f));*/
 
 	DRAW_SPHERE(Location, FColor::Black);
 	DRAW_VECTOR(Location, Location + ForwardVec * 100.f);
