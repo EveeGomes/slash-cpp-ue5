@@ -24,8 +24,11 @@ void AItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	AddActorWorldOffset(FVector(1.f, 0.f, 0.f));
-	// Then, after changing the actor's location by adding the offset, draw a sphere using the single frame macro version:
+	// (cm/s), while DeltaTime is (s/frame)
+	float MovementRate = 50.f;
+
+	// (cm/s) * (s/frame) = cm/frame -> when multiplying two products and in one unit we have s dividing while in the other unit s is multiplying. So, in that situation we cancel out the seconds!
+	AddActorWorldOffset(FVector(MovementRate * DeltaTime, 0.f, 0.f));
 	DRAW_SPHERE_SingleFrame(GetActorLocation());
 
 }
