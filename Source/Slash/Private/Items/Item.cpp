@@ -19,7 +19,8 @@ void AItem::BeginPlay()
 	
 	UWorld* World = GetWorld();
 
-	// Set location before using Location since it'll get the current actor location and use on the macros to draw the debug shapes
+	// Adding an offset can be useful when we'd like to change the actor's location and rotation every frame to give a continuous movement 
+
 	SetActorLocation(FVector(0.f, 0.f, 50.f));
 	SetActorRotation(FRotator(0.f, 45.f, 0.f));
 	FVector Location = GetActorLocation();
