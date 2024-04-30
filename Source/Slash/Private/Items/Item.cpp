@@ -17,24 +17,16 @@ void AItem::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	UWorld* World = GetWorld();
-
-	// Adding an offset can be useful when we'd like to change the actor's location and rotation every frame to give a continuous movement 
-
-	SetActorLocation(FVector(0.f, 0.f, 50.f));
-	SetActorRotation(FRotator(0.f, 45.f, 0.f));
-	FVector Location = GetActorLocation();
-	FVector ForwardVec = GetActorForwardVector();
-	FRotator Rotator = GetActorRotation();
-
-	DRAW_SPHERE(Location, FColor::Black);
-	DRAW_VECTOR(Location, Location + ForwardVec * 100.f);
-	DRAW_CONE(Location, Rotator);
 }
 
 // Called every frame
 void AItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	AddActorWorldOffset(FVector(1.f, 0.f, 0.f));
+	// Then, after changing the actor's location by adding the offset, draw a sphere using the single frame macro version:
+	DRAW_SPHERE_SingleFrame(GetActorLocation());
+
 }
 
