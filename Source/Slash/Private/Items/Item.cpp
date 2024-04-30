@@ -24,12 +24,13 @@ void AItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// (cm/s), while DeltaTime is (s/frame)
 	float MovementRate = 50.f;
+	float RotationRate = 45.f;
 
-	// (cm/s) * (s/frame) = cm/frame -> when multiplying two products and in one unit we have s dividing while in the other unit s is multiplying. So, in that situation we cancel out the seconds!
 	AddActorWorldOffset(FVector(MovementRate * DeltaTime, 0.f, 0.f));
+	AddActorWorldRotation(FRotator(0.f, RotationRate * DeltaTime, 0.f));
 	DRAW_SPHERE_SingleFrame(GetActorLocation());
+	DRAW_VECTOR_SingleFrame(GetActorLocation(), GetActorLocation() + GetActorForwardVector() * 100.f);
 
 }
 
