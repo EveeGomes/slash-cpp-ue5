@@ -19,6 +19,11 @@ void AItem::BeginPlay()
 	
 }
 
+float AItem::TransformedSin(float Value)
+{
+	return Amplitude * FMath::Sin(Value * TimeConstant);
+}
+
 // Called every frame
 void AItem::Tick(float DeltaTime)
 {

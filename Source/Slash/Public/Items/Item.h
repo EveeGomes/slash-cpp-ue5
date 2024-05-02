@@ -24,6 +24,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sine Parameters")
 	float TimeConstant = 5.f;
 
+	UFUNCTION(BlueprintCallable)
+	float TransformedSin(float Value);
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
