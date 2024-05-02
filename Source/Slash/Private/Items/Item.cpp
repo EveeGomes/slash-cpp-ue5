@@ -19,9 +19,9 @@ void AItem::BeginPlay()
 	
 }
 
-float AItem::TransformedSin(float Value)
+float AItem::TransformedSin()
 {
-	return Amplitude * FMath::Sin(Value * TimeConstant);
+	return Amplitude * FMath::Sin(RunningTime * TimeConstant);
 }
 
 // Called every frame

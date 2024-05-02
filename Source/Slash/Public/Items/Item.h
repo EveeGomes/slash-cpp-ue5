@@ -24,8 +24,8 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sine Parameters")
 	float TimeConstant = 5.f;
 
-	UFUNCTION(BlueprintCallable)
-	float TransformedSin(float Value);
+	UFUNCTION(BlueprintPure)
+	float TransformedSin();
 
 public:	
 	// Called every frame
