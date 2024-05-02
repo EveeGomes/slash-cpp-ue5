@@ -26,5 +26,8 @@ public:
 private:
 	// Variable used to add DeltaTime to it every frame
 	float RunningTime;
+	float Amplitude = 0.25f;
+	float TimeConstant = 5.f; // In trigonometry, a period is the time required for the sin wave to go all the way up, down and go back to the initial location.
+									  //	It's defined as period = 2*pi/K where K is a constant (which we use to multiply RunningTime)
 
 };
