@@ -23,4 +23,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+private:
+	// Variable used to add DeltaTime to it every frame
+	float RunningTime;
+
 };

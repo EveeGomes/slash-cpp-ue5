@@ -24,11 +24,17 @@ void AItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	float MovementRate = 50.f;
-	float RotationRate = 45.f;
+	RunningTime += DeltaTime;
 
-	AddActorWorldOffset(FVector(MovementRate * DeltaTime, 0.f, 0.f));
-	AddActorWorldRotation(FRotator(0.f, RotationRate * DeltaTime, 0.f));
+	// Local variable that receives the result value of using sin function with RunningTime
+	// To change the curve amplitude: multiply the function by a value (in this case by 0.25f to make it shorter)
+	// To change/manipulate how fast the up and down transition should happen (speed up the sin wave), multiply the value passed to the function by another value (in this case 5.f)
+	float DeltaZ = 0.25f * FMath::Sin(RunningTime * 5.f);
+
+	// Add the change to the actor's location
+	AddActorWorldOffset(FVector(0.f, 0.f, DeltaZ));
+
+
 	DRAW_SPHERE_SingleFrame(GetActorLocation());
 	DRAW_VECTOR_SingleFrame(GetActorLocation(), GetActorLocation() + GetActorForwardVector() * 100.f);
 
