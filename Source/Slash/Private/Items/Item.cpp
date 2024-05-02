@@ -35,10 +35,14 @@ void AItem::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	RunningTime += DeltaTime;
-	float DeltaZ = Amplitude * FMath::Sin(RunningTime * TimeConstant);
+	/*float DeltaZ = Amplitude * FMath::Sin(RunningTime * TimeConstant);*/
+
+	// Depending on which Transformed each axis is using, the movement changes
+	float DeltaZ = TransformedCos();
+	float DeltaX = TransformedSin();
 
 	// Add the change to the actor's location
-	AddActorWorldOffset(FVector(0.f, 0.f, DeltaZ));
+	AddActorWorldOffset(FVector(DeltaX, 0.f, DeltaZ));
 
 	DRAW_SPHERE_SingleFrame(GetActorLocation());
 	DRAW_VECTOR_SingleFrame(GetActorLocation(), GetActorLocation() + GetActorForwardVector() * 100.f);
