@@ -39,7 +39,13 @@ void AItem::Tick(float DeltaTime)
 
 	RunningTime += DeltaTime;
 
-	float DeltaZ = TransformedSin();
-	AddActorLocalOffset(FVector(0.f, 0.f, DeltaZ));
+	float YawRotator = RunningTime * DeltaTime * 700;
+	UE_LOG(LogTemp, Log, TEXT("YawRotator: %f"), YawRotator);
+	SetActorRotation(FRotator(0.f, YawRotator, 0.f));
+	//AddActorLocalOffset(FRotator(0.f, YawRotator, 0.f));
+
+	//float DeltaZ = TransformedSin();
+	//AddActorLocalOffset(FVector(0.f, 0.f, DeltaZ));
+
 }
 
