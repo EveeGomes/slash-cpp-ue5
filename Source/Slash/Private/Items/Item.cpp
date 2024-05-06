@@ -32,18 +32,14 @@ float AItem::TransformedCos()
 	return Amplitude * FMath::Cos(RunningTime * TimeConstant);
 }
 
-// Called every frame
 void AItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 	RunningTime += DeltaTime;
 
-	float YawRotator = RunningTime * RotationRate; //* RotationRate -> don't use it with AddActorLocalRotation
-	//UE_LOG(LogTemp, Log, TEXT("YawRotator: %f"), YawRotator);
-	//AddActorLocalRotation(FRotator(0.f, YawRotator, 0.f)); // It increases the rotation velocity each frame
+	float YawRotator = RunningTime * RotationRate;
 	SetActorRotation(FRotator(0.f, YawRotator, 0.f));
-	//AddActorLocalOffset(FRotator(0.f, YawRotator, 0.f)); // can't take an FRotator!
 
 	float DeltaZ = TransformedSin();
 	AddActorLocalOffset(FVector(0.f, 0.f, DeltaZ));
