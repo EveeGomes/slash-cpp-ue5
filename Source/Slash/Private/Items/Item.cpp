@@ -39,13 +39,14 @@ void AItem::Tick(float DeltaTime)
 
 	RunningTime += DeltaTime;
 
-	float YawRotator = RunningTime * DeltaTime * 700;
-	UE_LOG(LogTemp, Log, TEXT("YawRotator: %f"), YawRotator);
+	float YawRotator = RunningTime * RotationRate; //* RotationRate -> don't use it with AddActorLocalRotation
+	//UE_LOG(LogTemp, Log, TEXT("YawRotator: %f"), YawRotator);
+	//AddActorLocalRotation(FRotator(0.f, YawRotator, 0.f)); // It increases the rotation velocity each frame
 	SetActorRotation(FRotator(0.f, YawRotator, 0.f));
-	//AddActorLocalOffset(FRotator(0.f, YawRotator, 0.f));
+	//AddActorLocalOffset(FRotator(0.f, YawRotator, 0.f)); // can't take an FRotator!
 
-	//float DeltaZ = TransformedSin();
-	//AddActorLocalOffset(FVector(0.f, 0.f, DeltaZ));
+	float DeltaZ = TransformedSin();
+	AddActorLocalOffset(FVector(0.f, 0.f, DeltaZ));
 
 }
 
