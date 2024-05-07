@@ -1,7 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "Components/CapsuleComponent.h"
 #include "Pawns/Bird.h"
+#include "Components/CapsuleComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 
 // Sets default values
 ABird::ABird()
@@ -14,6 +15,9 @@ ABird::ABird()
 	Capsule->SetCapsuleHalfHeight(20.f);
 	Capsule->SetCapsuleRadius(15.f);
 	SetRootComponent(Capsule); // Better to use the setter function than assingment because if the engine changes the RootComponent to private, this code will still work since the setter is public
+
+	BirdMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("BirdMesh"));
+	BirdMesh->SetupAttachment(GetRootComponent());
 }
 
 // Called when the game starts or when spawned

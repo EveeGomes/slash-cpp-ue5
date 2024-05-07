@@ -2,12 +2,13 @@
 
 #pragma once
 
-// Forward Class Declaration
-class UCapsuleComponent;
-
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "Bird.generated.h"
+
+// Forward Class Declaration
+class UCapsuleComponent;
+class USkeletalMeshComponent;
 
 UCLASS()
 class SLASH_API ABird : public APawn
@@ -31,4 +32,7 @@ protected:
 private:
 	UPROPERTY(VisibleAnywhere)
 	UCapsuleComponent* Capsule;
+
+	UPROPERTY(VisibleAnywhere)
+	USkeletalMeshComponent* BirdMesh;
 };
