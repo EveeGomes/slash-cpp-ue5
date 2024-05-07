@@ -27,6 +27,11 @@ void ABird::BeginPlay()
 	
 }
 
+void ABird::MoveForward(float Value)
+{
+	UE_LOG(LogTemp, Log, TEXT("Value: %f"), Value);
+}
+
 // Called every frame
 void ABird::Tick(float DeltaTime)
 {
@@ -38,6 +43,11 @@ void ABird::Tick(float DeltaTime)
 void ABird::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	if (PlayerInputComponent)
+	{
+		PlayerInputComponent->BindAxis(FName("MoveForward"), this, &ABird::MoveForward);
+	}
 
 }
 
