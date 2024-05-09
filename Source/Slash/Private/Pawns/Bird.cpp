@@ -26,14 +26,11 @@ void ABird::BeginPlay()
 {
 	Super::BeginPlay();
 
-	APlayerController* PlayerController = Cast<APlayerController>(GetController()); // Using GetController() prevents the code to break in case UE makes Controller variable private in the future
-
-	if (PlayerController)
+	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
 	{
-		UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
-		if (Subsystem)
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
-			Subsystem->AddMappingContext(BirdMappingContext, 0); // However, that BirdMappingContext need to be set in the BP editor because here it's just a pointer we've declared and pass to this function.
+			Subsystem->AddMappingContext(BirdMappingContext, 0);
 		}
 	}
 }
