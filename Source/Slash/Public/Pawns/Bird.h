@@ -9,6 +9,7 @@
 // Forward Class Declaration
 class UCapsuleComponent;
 class USkeletalMeshComponent;
+class UInputMappingContext;
 
 UCLASS()
 class SLASH_API ABird : public APawn
@@ -30,6 +31,9 @@ protected:
 	virtual void BeginPlay() override;
 
 	void MoveForward(float Value);
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	UInputMappingContext* BirdMappingContext;
 
 private:
 	UPROPERTY(VisibleAnywhere)

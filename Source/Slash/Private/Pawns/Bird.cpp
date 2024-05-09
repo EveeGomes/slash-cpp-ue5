@@ -3,6 +3,7 @@
 #include "Pawns/Bird.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "EnhancedInputSubsystems.h"
 
 // Sets default values
 ABird::ABird()
@@ -24,7 +25,17 @@ ABird::ABird()
 void ABird::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	APlayerController* PlayerController = Cast<APlayerController>(GetController()); // Using GetController() prevents the code to break in case UE makes Controller variable private in the future
+
+	if (PlayerController)
+	{
+		UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
+		if (Subsystem)
+		{
+			Subsystem->AddMappingContext(BirdMappingContext, 0); // However, that BirdMappingContext need to be set in the BP editor because here it's just a pointer we've declared and pass to this function.
+		}
+	}
 }
 
 void ABird::MoveForward(float Value)
