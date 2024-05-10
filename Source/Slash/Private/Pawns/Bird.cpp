@@ -3,9 +3,13 @@
 #include "Pawns/Bird.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+
 #include "Components/InputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+
+#include "GameFramework/SpringArmComponent.h"
+#include "Camera/CameraComponent.h"
 
 
 // Sets default values
@@ -18,10 +22,19 @@ ABird::ABird()
 	// These we can set either here or in the editor:
 	Capsule->SetCapsuleHalfHeight(20.f);
 	Capsule->SetCapsuleRadius(15.f);
-	SetRootComponent(Capsule); // Better to use the setter function than assingment because if the engine changes the RootComponent to private, this code will still work since the setter is public
+	SetRootComponent(Capsule);
 
 	BirdMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("BirdMesh"));
 	BirdMesh->SetupAttachment(GetRootComponent());
+
+	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
+	SpringArm->SetupAttachment(GetRootComponent());
+	SpringArm->TargetArmLength = 300.f;
+
+	ViewCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("ViewCamera"));
+	ViewCamera->SetupAttachment(SpringArm);
+
+	AutoPossessPlayer = EAutoReceiveInput::Player0;
 }
 
 // Called when the game starts or when spawned
