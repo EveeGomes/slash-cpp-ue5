@@ -67,6 +67,17 @@ void ABird::Move(const FInputActionValue& Value)
 	}
 }
 
+void ABird::Look(const FInputActionValue& Value)
+{
+	const FVector2D LookAxisValue = Value.Get<FVector2D>();
+
+	if (GetController()) // && (DirectionValue.Length() != 0.f)
+	{
+		AddControllerYawInput(LookAxisValue.X);
+		AddControllerPitchInput(LookAxisValue.Y); // -LookAxisValue.Y this can be passed to the function or we can add a modifier to the IA in the editor in the mappings settings of input mapping context. The negate modifier however needs to be applied only to the Y axis!
+	}
+}
+
 // Called every frame
 void ABird::Tick(float DeltaTime)
 {
@@ -82,6 +93,7 @@ void ABird::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ABird::Move);
+		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ABird::Look);
 	}
 }
 
