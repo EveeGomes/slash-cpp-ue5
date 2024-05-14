@@ -32,14 +32,22 @@ void ASlashCharacter::Move(const FInputActionValue& Value)
 {
 	const FVector2D MovementVector = Value.Get<FVector2D>();
 
-	// This implementation takes in consideration which direction the character is facing
-	// To move up or down:
-	const	FVector Forwad = GetActorForwardVector();
-	AddMovementInput(Forwad, MovementVector.Y);
+	// Using the following implementation for a directional movement
+	const FRotator Rotation = Controller->GetControlRotation();
+	const FRotator YawRotation = FRotator(0.f, Rotation.Yaw, 0.f);
 
-	// To move right or left:
-	const FVector Right = GetActorRightVector();
-	AddMovementInput(Right, MovementVector.X);
+	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+	AddMovementInput(ForwardDirection, MovementVector.Y);
+	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+	AddMovementInput(ForwardDirection, MovementVector.X);
+}
+
+void ASlashCharacter::Look(const FInputActionValue& Value)
+{
+	const FVector2D LookAxisVector = Value.Get<FVector2D>();
+
+	AddControllerPitchInput(LookAxisVector.Y);
+	AddControllerYawInput(LookAxisVector.X);
 }
 
 void ASlashCharacter::Tick(float DeltaTime)
@@ -55,6 +63,7 @@ void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		EnhancedInputComponent->BindAction(MovementAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Move);
+		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Look);
 	}
 
 }
