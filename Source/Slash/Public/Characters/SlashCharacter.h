@@ -12,6 +12,8 @@
 /** Forward declaration */
 class UInputMappingContext;
 class UInputAction;
+class UCameraComponent;
+class USpringArmComponent;
 
 
 UCLASS()
@@ -41,4 +43,13 @@ protected:
 	/** Callbacks for input */
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
+
+private:
+	UPROPERTY(VisibleAnywhere)
+	USpringArmComponent* SpringArm;
+	
+	UPROPERTY(VisibleAnywhere)
+	UCameraComponent* ViewCamera;
+
+
 };

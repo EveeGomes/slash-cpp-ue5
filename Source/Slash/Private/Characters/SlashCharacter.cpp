@@ -8,10 +8,20 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 
+/** Camera and Spring Arm */
+#include "GameFramework/SpringArmComponent.h"
+#include "Camera/CameraComponent.h"
+
 ASlashCharacter::ASlashCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
+	SpringArm->SetupAttachment(GetRootComponent());
+	SpringArm->TargetArmLength = 300.f;
+
+	ViewCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
+	ViewCamera->SetupAttachment(SpringArm);
 }
 
 void ASlashCharacter::BeginPlay()
