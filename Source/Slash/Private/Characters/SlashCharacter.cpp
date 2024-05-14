@@ -34,12 +34,12 @@ void ASlashCharacter::Move(const FInputActionValue& Value)
 
 	// Using the following implementation for a directional movement
 	const FRotator Rotation = Controller->GetControlRotation();
-	const FRotator YawRotation = FRotator(0.f, Rotation.Yaw, 0.f);
+	const FRotator YawRotation(0.f, Rotation.Yaw, 0.f);
 
 	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 	AddMovementInput(ForwardDirection, MovementVector.Y);
 	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-	AddMovementInput(ForwardDirection, MovementVector.X);
+	AddMovementInput(RightDirection, MovementVector.X);
 }
 
 void ASlashCharacter::Look(const FInputActionValue& Value)
