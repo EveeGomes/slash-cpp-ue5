@@ -6,6 +6,11 @@
 #include "GameFramework/Character.h"
 #include "SlashCharacter.generated.h"
 
+/** Forward declaration */
+class UInputMappingContext;
+class UInputAction;
+
+
 UCLASS()
 class SLASH_API ASlashCharacter : public ACharacter
 {
@@ -21,4 +26,9 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputMappingContext* SlashContext;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* MovementAction;
 };
