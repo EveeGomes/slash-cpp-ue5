@@ -30,6 +30,16 @@ void ASlashCharacter::BeginPlay()
 
 void ASlashCharacter::Move(const FInputActionValue& Value)
 {
+	const FVector2D MovementVector = Value.Get<FVector2D>();
+
+	// This implementation takes in consideration which direction the character is facing
+	// To move up or down:
+	const	FVector Forwad = GetActorForwardVector();
+	AddMovementInput(Forwad, MovementVector.Y);
+
+	// To move right or left:
+	const FVector Right = GetActorRightVector();
+	AddMovementInput(Right, MovementVector.X);
 }
 
 void ASlashCharacter::Tick(float DeltaTime)
