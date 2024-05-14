@@ -28,6 +28,10 @@ void ASlashCharacter::BeginPlay()
 	
 }
 
+void ASlashCharacter::Move(const FInputActionValue& Value)
+{
+}
+
 void ASlashCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -37,6 +41,11 @@ void ASlashCharacter::Tick(float DeltaTime)
 void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
+	{
+		EnhancedInputComponent->BindAction(MovementAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Move);
+	}
 
 }
 

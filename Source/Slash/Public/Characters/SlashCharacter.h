@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+
+#include "InputActionValue.h"
+
 #include "SlashCharacter.generated.h"
 
 /** Forward declaration */
@@ -31,4 +34,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* MovementAction;
+
+	/** Callback functions */
+	void Move(const FInputActionValue& Value);
 };
