@@ -3,6 +3,8 @@
 
 #include "Characters/SlashCharacter.h"
 
+#include "GameFramework/CharacterMovementComponent.h"
+
 /** Enhanced Input System */
 #include "Components/InputComponent.h"
 #include "EnhancedInputComponent.h"
@@ -15,6 +17,9 @@
 ASlashCharacter::ASlashCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->RotationRate = FRotator(0.f, 400.f, 0.f);
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(GetRootComponent());
@@ -43,15 +48,12 @@ void ASlashCharacter::Move(const FInputActionValue& Value)
 	const FVector2D MovementVector = Value.Get<FVector2D>();
 
 	// Using the following implementation for a directional movement
-	const FRotator Rotation = Controller->GetControlRotation(); // Once we get the Controller, we store it in a FRotator since the Controller only has a Rotator
-	const FRotator YawRotation(0.f, Rotation.Yaw, 0.f); // Then, we get the Yaw rotation and set it in a FRotator because that's the only rotation we care about for it's the rotation which will change the direction which the character will be able to move (we can't move up or down)
+	const FRotator Rotation = Controller->GetControlRotation();
+	const FRotator YawRotation(0.f, Rotation.Yaw, 0.f);
 
-	// Since we need to find the direction the controller is pointing to, in other words we need to get the direction out of an FRotator, we should use matrices and for that we use the built in type FRotatorMatrix:
-	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X); // GetUnitAxis is a function from the FRotationMatrix type that returns a unit vector (which has a length value of 1 = unit; so it's a normalized vector). Since we've specify X, that corresponds to the X axis of the yaw rotation! The FVector returned by this function, represents the direction that the controller is looking in.
-	AddMovementInput(ForwardDirection, MovementVector.Y); // Since we're using the direction where the controller is facing to, the character now moves to the same direction the controller points to
-	
-	// We've found before which way was forward and now we should find which way is right:
-	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y); // Y is the right vector corresponding to the yaw rotation, while X is the forward vector
+	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+	AddMovementInput(ForwardDirection, MovementVector.Y);	
+	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 	AddMovementInput(RightDirection, MovementVector.X);
 }
 
