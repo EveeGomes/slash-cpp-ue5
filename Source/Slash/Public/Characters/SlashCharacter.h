@@ -14,6 +14,7 @@ class UInputMappingContext;
 class UInputAction;
 class UCameraComponent;
 class USpringArmComponent;
+class UGroomComponent;
 
 
 UCLASS()
@@ -51,5 +52,9 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* ViewCamera;
 
+	UPROPERTY(VisibleAnywhere)
+	UGroomComponent* Hair;
 
+	UPROPERTY(VisibleAnywhere)
+	UGroomComponent* Eyebrows;
 };

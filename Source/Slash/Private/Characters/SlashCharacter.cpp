@@ -3,6 +3,10 @@
 
 #include "Characters/SlashCharacter.h"
 
+/** Hair and Eyebrow */
+#include "GroomComponent.h"
+
+/** Setup movement */
 #include "GameFramework/CharacterMovementComponent.h"
 
 /** Enhanced Input System */
@@ -18,6 +22,7 @@ ASlashCharacter::ASlashCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+	/** Movement */
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationYaw = false;
@@ -25,12 +30,22 @@ ASlashCharacter::ASlashCharacter()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 400.f, 0.f);
 
+	/** Spring arm and camera */
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(GetRootComponent());
 	SpringArm->TargetArmLength = 300.f;
 
 	ViewCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	ViewCamera->SetupAttachment(SpringArm);
+
+	/** Hair and Eyebrow */
+	Hair = CreateDefaultSubobject<UGroomComponent>(TEXT("Hair"));
+	Hair->SetupAttachment(GetMesh());
+	Hair->AttachmentName = FString("head"); // This is needed in order to the attachment to be done properly (using socket)
+
+	Eyebrows = CreateDefaultSubobject<UGroomComponent>(TEXT("Eyebrows"));
+	Eyebrows->SetupAttachment(GetMesh());
+	Eyebrows->AttachmentName = FString("head");
 }
 
 void ASlashCharacter::BeginPlay()
