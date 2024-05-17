@@ -6,6 +6,10 @@
 #include "Animation/AnimInstance.h"
 #include "SlashAnimInstance.generated.h"
 
+/** Forward declaration */
+class ASlashCharacter;
+class UCharacterMovementComponent;
+
 /**
  * 
  */
@@ -14,7 +18,16 @@ class SLASH_API USlashAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
 
+public:
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeUpdateAnimation(float DeltaTime) override;
+
+	UPROPERTY(BlueprintReadOnly)
+	ASlashCharacter* SlashCharacter;
 	
+	UPROPERTY(BlueprintReadOnly, Category = Movement)
+	UCharacterMovementComponent* SlashCharacterMovement;
+
+	UPROPERTY(BlueprintReadOnly, Category = Movement)
+	float GroundSpeed;
 };
