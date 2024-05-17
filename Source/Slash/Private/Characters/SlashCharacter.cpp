@@ -3,7 +3,7 @@
 
 #include "Characters/SlashCharacter.h"
 
-/** Hair and Eyebrow */
+/** Hair and Eyebrow  */
 #include "GroomComponent.h"
 
 /** Setup movement */
