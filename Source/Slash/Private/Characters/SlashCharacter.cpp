@@ -87,6 +87,12 @@ void ASlashCharacter::Look(const FInputActionValue& Value)
 void ASlashCharacter::Jump()
 {
 	Super::Jump();
+
+	//if (bCanJump)
+	//{
+	//	Super::Jump();
+	//	bCanJump = false;
+	//}
 }
 
 void ASlashCharacter::Tick(float DeltaTime)
