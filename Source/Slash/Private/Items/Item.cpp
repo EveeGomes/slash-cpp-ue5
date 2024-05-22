@@ -28,7 +28,7 @@ void AItem::BeginPlay()
 	// Bind the function to the delegate in BeginPlay since it's too early to do it in the constructor, but here everything will be fully initialized!
 
 	// Take the PrimitiveComponent that has OnComponentBeginOverlap and access the delegate. Then use the AddDynamic function and pass the object that has the function to bind and the qualified function name!
-	Sphere->OnComponentBeginOverlap.AddDynamic(this, &AItem::OnSphereOverlap)
+	Sphere->OnComponentBeginOverlap.AddDynamic(this, &AItem::OnSphereOverlap);
 }
 
 float AItem::TransformedSin()
@@ -43,6 +43,15 @@ float AItem::TransformedCos()
 
 void AItem::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	// Now with the function bound to the delegate, it's possible to do something in response to the overlap event
+	// Such as print the name of the overlapped actor:
+
+	const FString OtherActorName = OtherActor->GetName();
+	// Check GEngine whenever using it!
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(1, 30, FColor::Red, OtherActorName);
+	}
 
 }
 
