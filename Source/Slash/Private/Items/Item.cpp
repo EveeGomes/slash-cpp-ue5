@@ -24,7 +24,11 @@ AItem::AItem()
 void AItem::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	// Bind the function to the delegate in BeginPlay since it's too early to do it in the constructor, but here everything will be fully initialized!
+
+	// Take the PrimitiveComponent that has OnComponentBeginOverlap and access the delegate. Then use the AddDynamic function and pass the object that has the function to bind and the qualified function name!
+	Sphere->OnComponentBeginOverlap.AddDynamic(this, &AItem::OnSphereOverlap)
 }
 
 float AItem::TransformedSin()
