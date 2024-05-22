@@ -6,6 +6,9 @@
 #include "GameFramework/Actor.h"
 #include "Item.generated.h"
 
+/** Forward declaration */
+class USphereComponent;
+
 UCLASS()
 class SLASH_API AItem : public AActor
 {
@@ -45,4 +48,6 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* ItemMesh;
 
+	UPROPERTY(VisibleAnywhere)
+	USphereComponent* Sphere;
 };
