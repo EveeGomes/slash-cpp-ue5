@@ -29,6 +29,8 @@ void AItem::BeginPlay()
 
 	// Take the PrimitiveComponent that has OnComponentBeginOverlap and access the delegate. Then use the AddDynamic function and pass the object that has the function to bind and the qualified function name!
 	Sphere->OnComponentBeginOverlap.AddDynamic(this, &AItem::OnSphereOverlap);
+
+	Sphere->OnComponentEndOverlap.AddDynamic(this, &AItem::OnSphereEndOverlap);
 }
 
 float AItem::TransformedSin()
@@ -53,6 +55,16 @@ void AItem::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 		GEngine->AddOnScreenDebugMessage(1, 30, FColor::Red, OtherActorName);
 	}
 
+}
+
+void AItem::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	const FName OverlappedComponentName = OverlappedComponent->GetFName();
+
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(2, 15, FColor::Emerald, OverlappedComponentName.ToString());
+	}
 }
 
 void AItem::Tick(float DeltaTime)
