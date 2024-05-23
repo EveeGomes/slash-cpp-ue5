@@ -36,14 +36,8 @@ protected:
 	UFUNCTION(BlueprintPure)
 	float TransformedCos();
 
-	// Create a function that can be bound to the OnComponentBeginOverlap delegate on a Primitive Component (from which USphereComponent derives)
-	// For that we need to go to the PrimitiveComponent.h file, find that delegate and check the list of parameters to see which parameters we need in our callback function.
-	// The function can only bind to the delegate if its signature matches with the delegate!!!
-	// After the name of the delegate (OnComponentBeginOverlap), we can see what kinds of parameters our callback function needs to have.
-	// With the proper list of parameters, we're capable of binding this function to the delegate (specifically a dynamic multicaste delegate)!!
-	// As for being a dynamic multicaste delegate we need to expose the function to bind to the reflection system, since this type of delegate is capable of being exposed to blueprint	(and we can have event bound to that kind of delegate - that's why we have a OnComponentBeginOverlap event!)
-
-	UFUNCTION() // Expose to the reflection system
+	/** Callbacks to bind to multicast dynamic delegates */
+	UFUNCTION()
 	void OnSphereOverlap(
 		UPrimitiveComponent* OverlappedComponent,
 		AActor* OtherActor,
