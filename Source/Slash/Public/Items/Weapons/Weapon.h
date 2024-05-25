@@ -13,6 +13,10 @@ UCLASS()
 class SLASH_API AWeapon : public AItem
 {
 	GENERATED_BODY()
+
+public:
+	// This function will be called in the character class once the E key is pressed!
+	void Equip(USceneComponent* InParent, FName InSocketName);
 	
 protected:
 
