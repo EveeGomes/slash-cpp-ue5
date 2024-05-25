@@ -47,10 +47,14 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* JumpAction;
 
+	//UPROPERTY(EditAnywhere, Category = "Input")
+	//UInputAction* EquipAction;
+
 	/** Callbacks for input */
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	virtual void Jump() override;
+	void EKeyPressed();
 
 	/** Fix Jump animation after doing IK */
 	//UPROPERTY(BlueprintReadOnly)
