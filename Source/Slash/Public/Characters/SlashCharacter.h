@@ -15,6 +15,7 @@ class UInputAction;
 class UCameraComponent;
 class USpringArmComponent;
 class UGroomComponent;
+class AItem;
 
 
 UCLASS()
@@ -70,4 +71,13 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	UGroomComponent* Eyebrows;
+
+	// If this item is set, than we know it has been overlapped and we can try to pick it up
+	UPROPERTY(VisibleInstanceOnly)
+	AItem* OverlappingItem;
+	
+	// Public section for getters and setters
+public:
+	// Use FORCEINLINE (just inline in C++) for small functions with simple definitions!
+	FORCEINLINE void SetOverlappingItem(AItem* Item) { OverlappingItem = Item; }
 };
