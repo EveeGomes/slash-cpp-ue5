@@ -64,11 +64,11 @@ void AItem::Tick(float DeltaTime)
 
 	RunningTime += DeltaTime;
 
-	float YawRotator = RunningTime * RotationRate;
-	SetActorRotation(FRotator(0.f, YawRotator, 0.f));
+	//float YawRotator = RunningTime * RotationRate;
+	//SetActorRotation(FRotator(0.f, YawRotator, 0.f));
 
-	float DeltaZ = TransformedSin();
-	AddActorLocalOffset(FVector(0.f, 0.f, DeltaZ));
+	//float DeltaZ = TransformedSin();
+	//AddActorLocalOffset(FVector(0.f, 0.f, DeltaZ));
 
 }
 
