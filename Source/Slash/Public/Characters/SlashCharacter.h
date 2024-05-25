@@ -47,8 +47,8 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* JumpAction;
 
-	//UPROPERTY(EditAnywhere, Category = "Input")
-	//UInputAction* EquipAction;
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* EquipAction;
 
 	/** Callbacks for input */
 	void Move(const FInputActionValue& Value);
