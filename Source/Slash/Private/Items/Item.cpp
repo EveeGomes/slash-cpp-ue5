@@ -56,11 +56,16 @@ void AItem::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 
 void AItem::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	const FName OverlappedComponentName = OverlappedComponent->GetFName();
-	if (GEngine)
+	// Here, we set the item pointer back to NULL as we've already have it when it's overlapped.
+	// The character class will take care of doing whatever it wants when the item is set in the OnSphereOverlap method.
+	// If nothing is done to it, and the character moves away from the item, out of the sphere component, then the pointer will be set back to null and the item can no longer be picked up (by the character).
+	
+	ASlashCharacter* SlashCharacter = Cast<ASlashCharacter>(OtherActor);
+	if (SlashCharacter)
 	{
-		GEngine->AddOnScreenDebugMessage(2, 15, FColor::Emerald, OverlappedComponentName.ToString());
+		SlashCharacter->SetOverlappingItem(nullptr);
 	}
+
 }
 
 void AItem::Tick(float DeltaTime)
