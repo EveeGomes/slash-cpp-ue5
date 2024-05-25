@@ -29,6 +29,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Rotation")
 	float RotationRate = 100.f;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UStaticMeshComponent* ItemMesh;
+
 	UFUNCTION(BlueprintPure)
 	float TransformedSin();
 
@@ -63,9 +66,6 @@ private:
 	// Variable used to add DeltaTime to it every frame
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	float RunningTime;
-
-	UPROPERTY(VisibleAnywhere)
-	UStaticMeshComponent* ItemMesh;
 
 	UPROPERTY(VisibleAnywhere)
 	USphereComponent* Sphere;
