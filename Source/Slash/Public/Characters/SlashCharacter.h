@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 
 #include "InputActionValue.h"
+#include "CharacterTypes.h"
 
 #include "SlashCharacter.generated.h"
 
@@ -16,19 +17,6 @@ class UCameraComponent;
 class USpringArmComponent;
 class UGroomComponent;
 class AItem;
-
-// scoped enum (usage of class keyword!); another convention in UE to avoid umbiguity is to use an abbreviation of the enum name (normally using the capital letters) and prefix the constant names with it.
-// using uint8 increases the optimization for this enum because it makes the integers assigned to the constants an unsigned integer type of 8 bits.
-// Use ENUM() UE macro to expose the enum to the reflexion system. To allow the usage of this type in BP, we use the specifier BLueprintType
-// Use another macro, UMETA to display a more friendly name of each constant in BP
-
-UENUM(BlueprintType)
-enum class ECharacterState : uint8
-{
-	ECS_Unequipped UMETA(DisplayName = "Unequipped"),
-	ECS_EquippedOneHandedWeapon UMETA(DisplayName = "Equipped One-Handed Weapon"),
-	ECS_EquippedTwoHandedWeapon UMETA(DisplayName = "Equipped Two-Handed Weapon")
-};
 
 UCLASS()
 class SLASH_API ASlashCharacter : public ACharacter
