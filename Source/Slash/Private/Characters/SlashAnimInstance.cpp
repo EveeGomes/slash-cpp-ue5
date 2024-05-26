@@ -25,5 +25,7 @@ void USlashAnimInstance::NativeUpdateAnimation(float DeltaTime)
    {
       GroundSpeed = UKismetMathLibrary::VSizeXY(SlashCharacterMovement->Velocity);
       IsFalling = SlashCharacterMovement->IsFalling();
+      // Set the character's state here since this is updated every single frame and this variable will check the character state and be set accordingly
+      CharacterState = SlashCharacter->GetCharacterState();
    }
 }
