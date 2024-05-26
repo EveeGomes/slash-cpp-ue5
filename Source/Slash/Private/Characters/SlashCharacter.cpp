@@ -63,7 +63,6 @@ void ASlashCharacter::BeginPlay()
 			Subsystem->AddMappingContext(SlashContext, 0);
 		}
 	}
-	
 }
 
 void ASlashCharacter::Move(const FInputActionValue& Value)
@@ -101,14 +100,9 @@ void ASlashCharacter::Jump()
 
 void ASlashCharacter::EKeyPressed()
 {
-	// Check the overlap item first since we only want to attach if it's an item of Weapon type.
-
-	// Cast the OverlappingItem to a Weapon type
 	AWeapon* OverlappingWeapon = Cast<AWeapon>(OverlappingItem);
-	// OverlappingItem could be null and if that happens the cast will fail and return Null. Check it first:
 	if (OverlappingWeapon)
 	{
-		// Now with the pointer guaranteed to be a weapon, we can call the Equip function from that type
 		OverlappingWeapon->Equip(GetMesh(), FName("RightHandSocket"));
 	}
 }
@@ -116,7 +110,6 @@ void ASlashCharacter::EKeyPressed()
 void ASlashCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -130,6 +123,5 @@ void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Jump);
 		EnhancedInputComponent->BindAction(EquipAction, ETriggerEvent::Triggered, this, &ASlashCharacter::EKeyPressed);
 	}
-
 }
 

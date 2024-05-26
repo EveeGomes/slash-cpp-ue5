@@ -43,29 +43,20 @@ float AItem::TransformedCos()
 
 void AItem::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	// Now, instead of printing a debug message on the screen, we'll set the overlapping object(item) on the character!
-	
-	// 1st, cast OtherActor to a SlashCharacter (add the header file and do the cast)
 	ASlashCharacter* SlashCharacter = Cast<ASlashCharacter>(OtherActor);
 	if (SlashCharacter)
 	{
-		// Then, set the overlapping item on the character
 		SlashCharacter->SetOverlappingItem(this);
 	}
 }
 
 void AItem::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	// Here, we set the item pointer back to NULL as we've already have it when it's overlapped.
-	// The character class will take care of doing whatever it wants when the item is set in the OnSphereOverlap method.
-	// If nothing is done to it, and the character moves away from the item, out of the sphere component, then the pointer will be set back to null and the item can no longer be picked up (by the character).
-	
 	ASlashCharacter* SlashCharacter = Cast<ASlashCharacter>(OtherActor);
 	if (SlashCharacter)
 	{
 		SlashCharacter->SetOverlappingItem(nullptr);
 	}
-
 }
 
 void AItem::Tick(float DeltaTime)
@@ -73,12 +64,5 @@ void AItem::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	RunningTime += DeltaTime;
-
-	//float YawRotator = RunningTime * RotationRate;
-	//SetActorRotation(FRotator(0.f, YawRotator, 0.f));
-
-	//float DeltaZ = TransformedSin();
-	//AddActorLocalOffset(FVector(0.f, 0.f, DeltaZ));
-
 }
 
