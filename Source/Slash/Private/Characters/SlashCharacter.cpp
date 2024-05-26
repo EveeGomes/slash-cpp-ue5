@@ -104,8 +104,6 @@ void ASlashCharacter::EKeyPressed()
 	if (OverlappingWeapon)
 	{
 		OverlappingWeapon->Equip(GetMesh(), FName("RightHandSocket"));
-		// As soon as we equip the character with a weapon, we should change the character's state
-		// The whole point of using these states are for the animation class to know what's the state of the character and change the pose accordingly!
 		CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
 	}
 }

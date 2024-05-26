@@ -35,7 +35,6 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = Movement)
 	bool IsFalling;
 
-	// Expose this variable to BP since we need to use this state in the animation BP
 	UPROPERTY(BlueprintReadOnly, Category = "Movement | Character State")
 	ECharacterState CharacterState;
 };

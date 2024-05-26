@@ -19,7 +19,6 @@ public:
 	void Equip(USceneComponent* InParent, FName InSocketName);
 	
 protected:
-
 	virtual void OnSphereOverlap(
 		UPrimitiveComponent* OverlappedComponent,
 		AActor* OtherActor,

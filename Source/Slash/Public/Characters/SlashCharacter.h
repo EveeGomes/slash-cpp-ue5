@@ -25,9 +25,7 @@ class SLASH_API ASlashCharacter : public ACharacter
 
 public:
 	ASlashCharacter();
-
 	virtual void Tick(float DeltaTime) override;
-
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 protected:
