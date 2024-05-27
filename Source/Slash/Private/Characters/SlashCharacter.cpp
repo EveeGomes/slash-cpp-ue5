@@ -22,6 +22,9 @@
 #include "Items/Item.h"
 #include "Items/Weapons/Weapon.h"
 
+/** For using Animation Montage in Attack() */
+#include "Animation/AnimMontage.h"
+
 ASlashCharacter::ASlashCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -110,6 +113,29 @@ void ASlashCharacter::EKeyPressed()
 
 void ASlashCharacter::Attack()
 {
+	// Get an animation instance using the character mesh
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && AttackMontage)
+	{
+		AnimInstance->Montage_Play(AttackMontage); // Since we have to use another pointer variable, we should add it to the check statement
+
+		// To use another section and in a random way:
+		int32 Selection = FMath::RandRange(0, 1); // "Flip coin"
+		FName SectionName = FName(); // create this FName outside Switch to set it depending on the case
+		switch (Selection)
+		{
+		case 0:
+			SectionName = FName("Attack1");
+			break;
+		case 1:
+			SectionName = FName("Attack2");
+			break;
+		default:
+			break;
+		}
+		// With the SectionName randomly set, we can jump to  either section and play the corresponding animation
+		AnimInstance->Montage_JumpToSection(SectionName, AttackMontage);
+	}
 }
 
 void ASlashCharacter::Tick(float DeltaTime)
