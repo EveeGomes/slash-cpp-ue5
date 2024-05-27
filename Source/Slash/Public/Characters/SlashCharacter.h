@@ -17,6 +17,7 @@ class UCameraComponent;
 class USpringArmComponent;
 class UGroomComponent;
 class AItem;
+class UAnimMontage;
 
 UCLASS()
 class SLASH_API ASlashCharacter : public ACharacter
@@ -48,11 +49,15 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* EquipAction;
 
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* AttackAction;
+
 	/** Callbacks for input */
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	virtual void Jump() override;
 	void EKeyPressed();
+	void Attack();
 
 	/** Fix Jump animation after doing IK */
 	//UPROPERTY(BlueprintReadOnly)
@@ -79,6 +84,10 @@ private:
 
 	UPROPERTY(VisibleInstanceOnly)
 	AItem* OverlappingItem;
+
+	/** Animation Montages */
+	UPROPERTY(EditDefaultsOnly, Category = "Montage") // To set it we can choose an animation montage from the character BP 
+	UAnimMontage* AttackMontage;
 	
 	// Public section for getters and setters
 public:
