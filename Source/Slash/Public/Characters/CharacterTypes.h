@@ -8,6 +8,8 @@ enum class ECharacterState : uint8
 	ECS_EquippedTwoHandedWeapon UMETA(DisplayName = "Equipped Two-Handed Weapon")
 };
 
+// Make it UENUM(BlueprintType) so in the class that's being used can expose to the reflexion system because it's an UENUM and expose to blueprint because it's a BlueprintType
+UENUM(BlueprintType)
 enum class EActionState : uint8
 {
 	// The character might be occupied doing any number of things (attacking or interacting with an object etc). These are states that would prevent the character from being able to engage in other actions, like attacking.

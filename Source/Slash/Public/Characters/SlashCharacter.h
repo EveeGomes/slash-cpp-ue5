@@ -73,7 +73,8 @@ private:
 	// Set the default character state as unequipped
 	ECharacterState CharacterState = ECharacterState::ECS_Unequipped;
 
-	// Now that we have an enum type to track the character's state in regards to its action state, we create a variable here and set the default state to unoccupied:
+	// Expose it to blueprint so we can use it with the notify added in the Anim Montage in order to change the state after setting to attack
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	EActionState ActionState = EActionState::EAS_Uoccupied;
 
 	UPROPERTY(VisibleAnywhere)
