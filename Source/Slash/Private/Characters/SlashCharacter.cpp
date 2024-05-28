@@ -113,11 +113,12 @@ void ASlashCharacter::EKeyPressed()
 
 void ASlashCharacter::Attack()
 {
-	// We need to check if we can perform the attack before we actually do it. For it we need to keep track of the state our character is in.
-	// We create another enum type in the CharacterTypes class!
+	// use a local bool to pass the condition that's too long and make the code more readable (also putting each condition in their own lines)
+	const bool bCanAttack = 
+		ActionState == EActionState::EAS_Unoccupied && 
+		CharacterState != ECharacterState::ECS_Unequipped; // Must check whether the character is with with a weapon or not
 
-	// So, after creating the enum variable, we check if it's unoccupied to play the attack animation and set it to attacking
-	if (ActionState == EActionState::EAS_Uoccupied)
+	if (bCanAttack)
 	{
 		PlayAttackMontage();
 		ActionState = EActionState::EAS_Attacking;
@@ -147,6 +148,11 @@ void ASlashCharacter::PlayAttackMontage()
 
 		AnimInstance->Montage_JumpToSection(SectionName, AttackMontage);
 	}
+}
+
+void ASlashCharacter::AttackEnd()
+{
+	ActionState = EActionState::EAS_Unoccupied;
 }
 
 void ASlashCharacter::Tick(float DeltaTime)
