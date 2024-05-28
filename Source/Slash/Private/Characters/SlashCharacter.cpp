@@ -113,15 +113,20 @@ void ASlashCharacter::EKeyPressed()
 
 void ASlashCharacter::Attack()
 {
-	// Get an animation instance using the character mesh
+	// We need to check if we can perform the attack before we actually do it. For it we need to keep track of the state our character is in.
+	// We create another enum type in the CharacterTypes class!
+	PlayAttackMontage();
+}
+
+void ASlashCharacter::PlayAttackMontage()
+{
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (AnimInstance && AttackMontage)
 	{
-		AnimInstance->Montage_Play(AttackMontage); // Since we have to use another pointer variable, we should add it to the check statement
+		AnimInstance->Montage_Play(AttackMontage);
 
-		// To use another section and in a random way:
-		int32 Selection = FMath::RandRange(0, 1); // "Flip coin"
-		FName SectionName = FName(); // create this FName outside Switch to set it depending on the case
+		const int32 Selection = FMath::RandRange(0, 1); // Since we don't change this variable, we can make it const to keep the method "const correct"
+		FName SectionName = FName();
 		switch (Selection)
 		{
 		case 0:
@@ -133,7 +138,7 @@ void ASlashCharacter::Attack()
 		default:
 			break;
 		}
-		// With the SectionName randomly set, we can jump to  either section and play the corresponding animation
+
 		AnimInstance->Montage_JumpToSection(SectionName, AttackMontage);
 	}
 }

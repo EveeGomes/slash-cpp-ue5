@@ -59,6 +59,9 @@ protected:
 	void EKeyPressed();
 	void Attack();
 
+	/** Play Montage Functions */
+	void PlayAttackMontage();
+
 	/** Fix Jump animation after doing IK */
 	//UPROPERTY(BlueprintReadOnly)
 	//bool bCanJump = true;
