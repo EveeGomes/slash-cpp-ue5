@@ -48,7 +48,7 @@ ASlashCharacter::ASlashCharacter()
 	/** Hair and Eyebrow */
 	Hair = CreateDefaultSubobject<UGroomComponent>(TEXT("Hair"));
 	Hair->SetupAttachment(GetMesh());
-	Hair->AttachmentName = FString("head"); // This is needed in order to the attachment to be done properly (using socket)
+	Hair->AttachmentName = FString("head");
 
 	Eyebrows = CreateDefaultSubobject<UGroomComponent>(TEXT("Eyebrows"));
 	Eyebrows->SetupAttachment(GetMesh());
@@ -133,7 +133,7 @@ void ASlashCharacter::PlayAttackMontage()
 	{
 		AnimInstance->Montage_Play(AttackMontage);
 
-		const int32 Selection = FMath::RandRange(0, 1); // Since we don't change this variable, we can make it const to keep the method "const correct"
+		const int32 Selection = FMath::RandRange(0, 1);
 		FName SectionName = FName();
 		switch (Selection)
 		{
@@ -155,8 +155,6 @@ void ASlashCharacter::AttackEnd()
 {
 	ActionState = EActionState::EAS_Unoccupied;
 }
-
-
 
 void ASlashCharacter::Tick(float DeltaTime)
 {

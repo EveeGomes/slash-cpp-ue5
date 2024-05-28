@@ -62,7 +62,7 @@ protected:
 	/** Play Montage Functions */
 	void PlayAttackMontage();
 
-	UFUNCTION(BlueprintCallable) // Make it BlueprintCallable so it can be called from the animation BP in response to the anum notify.
+	UFUNCTION(BlueprintCallable)
 	void AttackEnd();
 	bool CanAttack();
 
@@ -74,10 +74,8 @@ protected:
 	//void SetCanJump(bool bCan) { bCanJump = bCan; }
 
 private:
-	// Set the default character state as unequipped
 	ECharacterState CharacterState = ECharacterState::ECS_Unequipped;
 
-	// Expose it to blueprint so we can use it with the notify added in the Anim Montage in order to change the state after setting to attack
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	EActionState ActionState = EActionState::EAS_Unoccupied;
 
@@ -97,7 +95,7 @@ private:
 	AItem* OverlappingItem;
 
 	/** Animation Montages */
-	UPROPERTY(EditDefaultsOnly, Category = "Montage") // To set it we can choose an animation montage from the character BP 
+	UPROPERTY(EditDefaultsOnly, Category = "Montage")
 	UAnimMontage* AttackMontage;
 	
 	// Public section for getters and setters
