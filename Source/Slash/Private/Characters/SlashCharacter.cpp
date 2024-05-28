@@ -115,7 +115,13 @@ void ASlashCharacter::Attack()
 {
 	// We need to check if we can perform the attack before we actually do it. For it we need to keep track of the state our character is in.
 	// We create another enum type in the CharacterTypes class!
-	PlayAttackMontage();
+
+	// So, after creating the enum variable, we check if it's unoccupied to play the attack animation and set it to attacking
+	if (ActionState == EActionState::EAS_Uoccupied)
+	{
+		PlayAttackMontage();
+		ActionState = EActionState::EAS_Attacking;
+	}
 }
 
 void ASlashCharacter::PlayAttackMontage()

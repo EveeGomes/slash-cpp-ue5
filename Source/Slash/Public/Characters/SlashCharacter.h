@@ -73,6 +73,9 @@ private:
 	// Set the default character state as unequipped
 	ECharacterState CharacterState = ECharacterState::ECS_Unequipped;
 
+	// Now that we have an enum type to track the character's state in regards to its action state, we create a variable here and set the default state to unoccupied:
+	EActionState ActionState = EActionState::EAS_Uoccupied;
+
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* SpringArm;
 	
