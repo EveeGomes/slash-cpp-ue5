@@ -113,16 +113,17 @@ void ASlashCharacter::EKeyPressed()
 
 void ASlashCharacter::Attack()
 {
-	// use a local bool to pass the condition that's too long and make the code more readable (also putting each condition in their own lines)
-	const bool bCanAttack = 
-		ActionState == EActionState::EAS_Unoccupied && 
-		CharacterState != ECharacterState::ECS_Unequipped; // Must check whether the character is with with a weapon or not
-
-	if (bCanAttack)
+	if (CanAttack())
 	{
 		PlayAttackMontage();
 		ActionState = EActionState::EAS_Attacking;
 	}
+}
+
+bool ASlashCharacter::CanAttack()
+{
+	return ActionState == EActionState::EAS_Unoccupied &&
+			 CharacterState != ECharacterState::ECS_Unequipped;
 }
 
 void ASlashCharacter::PlayAttackMontage()
@@ -154,6 +155,8 @@ void ASlashCharacter::AttackEnd()
 {
 	ActionState = EActionState::EAS_Unoccupied;
 }
+
+
 
 void ASlashCharacter::Tick(float DeltaTime)
 {

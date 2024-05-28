@@ -64,6 +64,7 @@ protected:
 
 	UFUNCTION(BlueprintCallable) // Make it BlueprintCallable so it can be called from the animation BP in response to the anum notify.
 	void AttackEnd();
+	bool CanAttack();
 
 	/** Fix Jump animation after doing IK */
 	//UPROPERTY(BlueprintReadOnly)
