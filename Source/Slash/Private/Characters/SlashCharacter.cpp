@@ -70,6 +70,9 @@ void ASlashCharacter::BeginPlay()
 
 void ASlashCharacter::Move(const FInputActionValue& Value)
 {
+	// Check if the character is playing the attack animation and avoid the Move() method to proceed
+	if (ActionState == EActionState::EAS_Attacking) return;
+
 	const FVector2D MovementVector = Value.Get<FVector2D>();
 
 	// Using the following implementation for a directional movement
@@ -92,6 +95,8 @@ void ASlashCharacter::Look(const FInputActionValue& Value)
 
 void ASlashCharacter::Jump()
 {
+	// Check if the character is playing the attack animation and avoid the Move() method to proceed
+	if (ActionState == EActionState::EAS_Attacking) return;
 	Super::Jump();
 
 	//if (bCanJump)
