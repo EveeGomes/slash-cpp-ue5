@@ -18,6 +18,7 @@ class USpringArmComponent;
 class UGroomComponent;
 class AItem;
 class UAnimMontage;
+class AWeapon;
 
 UCLASS()
 class SLASH_API ASlashCharacter : public ACharacter
@@ -66,6 +67,10 @@ protected:
 	void AttackEnd();
 	bool CanAttack();
 
+	void PlayEquipMontage(FName SectionName);
+	bool CanDisarm();
+	bool CanArm();
+
 	/** Fix Jump animation after doing IK */
 	//UPROPERTY(BlueprintReadOnly)
 	//bool bCanJump = true;
@@ -94,9 +99,15 @@ private:
 	UPROPERTY(VisibleInstanceOnly)
 	AItem* OverlappingItem;
 
+	// Variable for our currently equipped weapon
+	UPROPERTY(VisibleAnywhere, Category = "Weapon")
+	AWeapon* EquippedWeapon;
+
 	/** Animation Montages */
 	UPROPERTY(EditDefaultsOnly, Category = "Montage")
 	UAnimMontage* AttackMontage;
+	UPROPERTY(EditDefaultsOnly, Category = "Montage")
+	UAnimMontage* EquipMontage;
 	
 	// Public section for getters and setters
 public:

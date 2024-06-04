@@ -111,6 +111,24 @@ void ASlashCharacter::EKeyPressed()
 	{
 		OverlappingWeapon->Equip(GetMesh(), FName("RightHandSocket"));
 		CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
+		// Set OverlappingItem to null because as soon as we have the OverlappingWeapon and will store it in a AWeapon pointer, we don't want OverlappingItem to still store the address of the weapon. Otherwise we'll try to do the above lines again to the same item and we would actually want to do it for another item!
+		OverlappingItem = nullptr; // now, if we press E again we won't try to equip a weapon that has been already equipped!
+		// Set the equipped weapon
+		EquippedWeapon = OverlappingWeapon;
+	}
+	else
+	{
+		if (CanDisarm())
+		{
+			// Now we know we can play the montage
+			PlayEquipMontage(FName("Unequip"));
+			CharacterState = ECharacterState::ECS_Unequipped;
+		}
+		if (CanArm())
+		{
+			PlayEquipMontage(FName("Equip"));
+			CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
+		}
 	}
 }
 
@@ -126,7 +144,22 @@ void ASlashCharacter::Attack()
 bool ASlashCharacter::CanAttack()
 {
 	return ActionState == EActionState::EAS_Unoccupied &&
-			 CharacterState != ECharacterState::ECS_Unequipped;
+	    CharacterState != ECharacterState::ECS_Unequipped;
+}
+
+
+
+bool ASlashCharacter::CanDisarm()
+{
+	return ActionState == EActionState::EAS_Unoccupied && 
+		 CharacterState != ECharacterState::ECS_Unequipped;
+}
+
+bool ASlashCharacter::CanArm()
+{
+	return ActionState == EActionState::EAS_Unoccupied &&
+		 CharacterState == ECharacterState::ECS_Unequipped &&
+		 EquippedWeapon; // check if it's not a null pointer (meaning we had gotten a weapon already)
 }
 
 void ASlashCharacter::PlayAttackMontage()
@@ -152,6 +185,17 @@ void ASlashCharacter::PlayAttackMontage()
 
 		AnimInstance->Montage_JumpToSection(SectionName, AttackMontage);
 	}
+}
+
+void ASlashCharacter::PlayEquipMontage(FName SectionName)
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && EquipMontage)
+	{
+		AnimInstance->Montage_Play(EquipMontage);
+		AnimInstance->Montage_JumpToSection(SectionName, EquipMontage);
+	}
+
 }
 
 void ASlashCharacter::AttackEnd()
