@@ -124,7 +124,7 @@ void ASlashCharacter::EKeyPressed()
 			PlayEquipMontage(FName("Unequip"));
 			CharacterState = ECharacterState::ECS_Unequipped;
 		}
-		if (CanArm())
+		else if (CanArm())
 		{
 			PlayEquipMontage(FName("Equip"));
 			CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
@@ -160,6 +160,14 @@ bool ASlashCharacter::CanArm()
 	return ActionState == EActionState::EAS_Unoccupied &&
 		 CharacterState == ECharacterState::ECS_Unequipped &&
 		 EquippedWeapon; // check if it's not a null pointer (meaning we had gotten a weapon already)
+}
+
+void ASlashCharacter::Disarm()
+{
+	if (EquippedWeapon)
+	{
+		EquippedWeapon->AttachMeshToSocket(GetMesh(), FName("SpineSocket"));
+	}
 }
 
 void ASlashCharacter::PlayAttackMontage()

@@ -71,6 +71,10 @@ protected:
 	bool CanDisarm();
 	bool CanArm();
 
+	// Attach the weapon to the spine socket
+	UFUNCTION(BlueprintCallable) // So it can be used in th ABP_Echo which responds to the anim notify once the EquipMontage is played.
+	void Disarm();
+
 	/** Fix Jump animation after doing IK */
 	//UPROPERTY(BlueprintReadOnly)
 	//bool bCanJump = true;

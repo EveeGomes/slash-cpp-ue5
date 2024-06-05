@@ -17,6 +17,7 @@ class SLASH_API AWeapon : public AItem
 public:
 	// Attaches the Item mesh to the character's Skeletal mesh and set the Item state to equipped. Called in character class once the E key is pressed.
 	void Equip(USceneComponent* InParent, FName InSocketName);
+	void AttachMeshToSocket(USceneComponent* InParent, const FName& InSocketName);
 	
 protected:
 	virtual void OnSphereOverlap(
