@@ -75,6 +75,12 @@ protected:
 	UFUNCTION(BlueprintCallable) // So it can be used in th ABP_Echo which responds to the anim notify once the EquipMontage is played.
 	void Disarm();
 
+	UFUNCTION(BlueprintCallable)
+	void Arm();
+
+	UFUNCTION(BlueprintCallable)
+	void FinishEquipping();
+
 	/** Fix Jump animation after doing IK */
 	//UPROPERTY(BlueprintReadOnly)
 	//bool bCanJump = true;
