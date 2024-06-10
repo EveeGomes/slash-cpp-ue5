@@ -40,6 +40,9 @@ protected:
 
 	EItemState ItemState = EItemState::EIS_Hovering;
 
+	UPROPERTY(VisibleAnywhere)
+	USphereComponent* Sphere;
+
 	UFUNCTION(BlueprintPure)
 	float TransformedSin();
 
@@ -74,7 +77,4 @@ private:
 	// Variable used to add DeltaTime to it every frame
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	float RunningTime;
-
-	UPROPERTY(VisibleAnywhere)
-	USphereComponent* Sphere;
 };

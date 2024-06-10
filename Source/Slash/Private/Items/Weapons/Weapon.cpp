@@ -4,6 +4,7 @@
 #include "Items/Weapons/Weapon.h"
 #include "Characters/SlashCharacter.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/SphereComponent.h"
 
 void AWeapon::Equip(USceneComponent* InParent, FName InSocketName)
 {
@@ -20,6 +21,16 @@ void AWeapon::Equip(USceneComponent* InParent, FName InSocketName)
          EquipSound,
          GetActorLocation()
       );
+   }
+
+   /** 
+   * We have to disable the weapon's sphere collision settings because it keeps overlapping with the character's sphere collision and that makes the weapon to be set over and over again even though in EKeyPressed() (SlashCharacter class) we set it to nullptr.
+   * That belongs to Item.h. We move to protected section so it can be accessed here.
+   */
+
+   if (Sphere)
+   {
+      Sphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
    }
 }
 
