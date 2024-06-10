@@ -72,7 +72,7 @@ protected:
 	bool CanArm();
 
 	// Attach the weapon to the spine socket
-	UFUNCTION(BlueprintCallable) // So it can be used in th ABP_Echo which responds to the anim notify once the EquipMontage is played.
+	UFUNCTION(BlueprintCallable)
 	void Disarm();
 
 	UFUNCTION(BlueprintCallable)

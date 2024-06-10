@@ -111,16 +111,13 @@ void ASlashCharacter::EKeyPressed()
 	{
 		OverlappingWeapon->Equip(GetMesh(), FName("RightHandSocket"));
 		CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
-		// Set OverlappingItem to null because as soon as we have the OverlappingWeapon and will store it in a AWeapon pointer, we don't want OverlappingItem to still store the address of the weapon. Otherwise we'll try to do the above lines again to the same item and we would actually want to do it for another item!
-		OverlappingItem = nullptr; // now, if we press E again we won't try to equip a weapon that has been already equipped!
-		// Set the equipped weapon
+		OverlappingItem = nullptr;
 		EquippedWeapon = OverlappingWeapon;
 	}
 	else
 	{
 		if (CanDisarm())
 		{
-			// Now we know we can play the montage
 			PlayEquipMontage(FName("Unequip"));
 			CharacterState = ECharacterState::ECS_Unequipped;
 			ActionState = EActionState::EAS_EquippingWeapon;
@@ -180,7 +177,6 @@ void ASlashCharacter::Arm()
 
 void ASlashCharacter::FinishEquipping()
 {
-	// Move the state back to unocuppied
 	ActionState = EActionState::EAS_Unoccupied;
 }
 

@@ -46,7 +46,6 @@ protected:
 	UFUNCTION(BlueprintPure)
 	float TransformedSin();
 
-	// This function along with TransformedSin() can modify an actor's location in different axis giving a nice impression of periodic circled movement for example 
 	UFUNCTION(BlueprintPure)
 	float TransformedCos();
 

@@ -11,9 +11,7 @@ void AWeapon::Equip(USceneComponent* InParent, FName InSocketName)
    AttachMeshToSocket(InParent, InSocketName);
    ItemState = EItemState::EIS_Equipped;
 
-   // To play sounds, we need gameplay statics.
-   // If we search on the documentation for "PlaySoundAtLocation" we can find the gameplay statics
-   // Once #include "Kismet/GameplayStatics.h" is added, check if EquipSound pointer was set in BP so we can use
+   // Play sound when attaching the weapon
    if (EquipSound)
    {
       UGameplayStatics::PlaySoundAtLocation(
@@ -22,12 +20,6 @@ void AWeapon::Equip(USceneComponent* InParent, FName InSocketName)
          GetActorLocation()
       );
    }
-
-   /** 
-   * We have to disable the weapon's sphere collision settings because it keeps overlapping with the character's sphere collision and that makes the weapon to be set over and over again even though in EKeyPressed() (SlashCharacter class) we set it to nullptr.
-   * That belongs to Item.h. We move to protected section so it can be accessed here.
-   */
-
    if (Sphere)
    {
       Sphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
