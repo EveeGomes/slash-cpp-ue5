@@ -6,6 +6,8 @@
 #include "Items/Item.h"
 #include "Weapon.generated.h"
 
+class USoundBase;
+
 /**
  * 
  */
@@ -35,4 +37,9 @@ protected:
 		UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex
 	) override;
+private:
+	// Add a variable for the sound (which will be unique for each type of weapon - sword, hammer etc).
+	// Use one of the classes from which Weapon is derived. He chose USoundBase because Sound Cues also derive from it, and if we decide to use Sound Cue instead of Meta Sounds we won't have any problem using this variable
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	USoundBase* EquipSound; // It'll be set in BP
 };
