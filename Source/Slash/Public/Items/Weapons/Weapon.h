@@ -7,6 +7,7 @@
 #include "Weapon.generated.h"
 
 class USoundBase;
+class UBoxComponent;
 
 /**
  * 
@@ -17,7 +18,9 @@ class SLASH_API AWeapon : public AItem
 	GENERATED_BODY()
 
 public:
-	// Attaches the Item mesh to the character's Skeletal mesh and set the Item state to equipped. Called in character class once the E key is pressed.
+	AWeapon();
+	// Attaches the Item mesh to the character's Skeletal mesh and set the Item state to equipped.
+	// Called in character class once the E key is pressed.
 	void Equip(USceneComponent* InParent, FName InSocketName);
 	void AttachMeshToSocket(USceneComponent* InParent, const FName& InSocketName);
 	
@@ -41,4 +44,7 @@ protected:
 private:
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	USoundBase* EquipSound;
+
+	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
+	UBoxComponent* WeaponBox;
 };

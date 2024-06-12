@@ -5,6 +5,16 @@
 #include "Characters/SlashCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/SphereComponent.h"
+#include "Components/BoxComponent.h"
+
+AWeapon::AWeapon()
+{
+   // Create the WeaponBox
+   WeaponBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Weapon Box"));
+   // Make it move along with the mesh: attach it to the root component 
+   WeaponBox->SetupAttachment(GetRootComponent());
+   // Now the box needs to be positioned on the actual BP
+}
 
 void AWeapon::Equip(USceneComponent* InParent, FName InSocketName)
 {
