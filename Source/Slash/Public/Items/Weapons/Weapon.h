@@ -59,8 +59,6 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
 	UBoxComponent* WeaponBox;
 
-	// For components, we generally use 'VisibleAnywhere' while for base/individual variables (such as EquipSound) we use 'EditAnywhere' so that we can change them.
-   // These pointers below are empty, therefore we go and construct them; that's done in the AWeapon constructor!
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USceneComponent> BoxTraceStart;
 
