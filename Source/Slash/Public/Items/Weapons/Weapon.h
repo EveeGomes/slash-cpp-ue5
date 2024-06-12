@@ -43,9 +43,6 @@ protected:
 		int32 OtherBodyIndex
 	) override;
 
-	// This is going to be bound to a dynamic multicast delegate, so it needs to be a UFUNCTION()
-	// Both OnSphereOverLap and OnSphereEndOverlap are inherited from Item class and in that class
-	//  there's the UFUNCTION being used.
 	void OnBoxOverlap(
 		UPrimitiveComponent* OverlappedComponent,
 		AActor* OtherActor,
@@ -61,4 +58,13 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
 	UBoxComponent* WeaponBox;
+
+	// For components, we generally use 'VisibleAnywhere' while for base/individual variables (such as EquipSound) we use 'EditAnywhere' so that we can change them.
+   // These pointers below are empty, therefore we go and construct them; that's done in the AWeapon constructor!
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USceneComponent> BoxTraceStart;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USceneComponent> BoxTraceEnd;
+
 };

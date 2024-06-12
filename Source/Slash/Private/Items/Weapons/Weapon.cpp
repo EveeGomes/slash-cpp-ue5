@@ -13,15 +13,17 @@ AWeapon::AWeapon()
    WeaponBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Weapon Box"));
    WeaponBox->SetupAttachment(GetRootComponent());
 
-   // Set the collision presets settings
-   // If we wanted to ensure the collision enabled is set to query only (which is set by default for box components, 
-   //  but we can set it anyways to make it clear that we definitely want that collision set):
+   // Set collision
    WeaponBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-
-   // Responses can also be set to various types
    WeaponBox->SetCollisionResponseToChannels(ECollisionResponse::ECR_Overlap);
-   // Ignore only the Pawn
    WeaponBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+
+   // Construct Scene components
+   BoxTraceStart = CreateDefaultSubobject<USceneComponent>(TEXT("Box Trace Start"));
+   BoxTraceStart->SetupAttachment(GetRootComponent());
+
+   BoxTraceEnd = CreateDefaultSubobject<USceneComponent>(TEXT("Box Trace End"));
+   BoxTraceEnd->SetupAttachment(GetRootComponent());
 }
 
 void AWeapon::BeginPlay()
@@ -70,5 +72,6 @@ void AWeapon::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 
 void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+   // Do the box tracing here
 
 }
