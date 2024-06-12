@@ -60,9 +60,9 @@ private:
 	UBoxComponent* WeaponBox;
 
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<USceneComponent> BoxTraceStart;
+	TObjectPtr<USceneComponent> TraceStart;
 
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<USceneComponent> BoxTraceEnd;
+	TObjectPtr<USceneComponent> TraceEnd;
 
 };

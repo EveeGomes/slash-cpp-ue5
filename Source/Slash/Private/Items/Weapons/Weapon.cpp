@@ -19,11 +19,11 @@ AWeapon::AWeapon()
    WeaponBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 
    // Construct Scene components
-   BoxTraceStart = CreateDefaultSubobject<USceneComponent>(TEXT("Box Trace Start"));
-   BoxTraceStart->SetupAttachment(GetRootComponent());
+   TraceStart = CreateDefaultSubobject<USceneComponent>(TEXT("Box Trace Start"));
+   TraceStart->SetupAttachment(GetRootComponent());
 
-   BoxTraceEnd = CreateDefaultSubobject<USceneComponent>(TEXT("Box Trace End"));
-   BoxTraceEnd->SetupAttachment(GetRootComponent());
+   TraceEnd = CreateDefaultSubobject<USceneComponent>(TEXT("Box Trace End"));
+   TraceEnd->SetupAttachment(GetRootComponent());
 }
 
 void AWeapon::BeginPlay()
