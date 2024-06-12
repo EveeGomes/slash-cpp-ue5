@@ -11,9 +11,17 @@ AWeapon::AWeapon()
 {
    // Create the WeaponBox
    WeaponBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Weapon Box"));
-   // Make it move along with the mesh: attach it to the root component 
    WeaponBox->SetupAttachment(GetRootComponent());
-   // Now the box needs to be positioned on the actual BP
+
+   // Set the collision presets settings
+   // If we wanted to ensure the collision enabled is set to query only (which is set by default for box components, 
+   //  but we can set it anyways to make it clear that we definitely want that collision set):
+   WeaponBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+
+   // Responses can also be set to various types
+   WeaponBox->SetCollisionResponseToChannels(ECollisionResponse::ECR_Overlap);
+   // Ignore only the Pawn
+   WeaponBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 }
 
 void AWeapon::Equip(USceneComponent* InParent, FName InSocketName)
