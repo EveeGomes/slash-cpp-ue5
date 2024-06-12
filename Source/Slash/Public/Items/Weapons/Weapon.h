@@ -25,6 +25,8 @@ public:
 	void AttachMeshToSocket(USceneComponent* InParent, const FName& InSocketName);
 	
 protected:
+	virtual void BeginPlay() override;
+
 	virtual void OnSphereOverlap(
 		UPrimitiveComponent* OverlappedComponent,
 		AActor* OtherActor,
@@ -40,6 +42,18 @@ protected:
 		UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex
 	) override;
+
+	// This is going to be bound to a dynamic multicast delegate, so it needs to be a UFUNCTION()
+	// Both OnSphereOverLap and OnSphereEndOverlap are inherited from Item class and in that class
+	//  there's the UFUNCTION being used.
+	void OnBoxOverlap(
+		UPrimitiveComponent* OverlappedComponent,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex,
+		bool bFromSweep,
+		const FHitResult& SweepResult
+	);
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
