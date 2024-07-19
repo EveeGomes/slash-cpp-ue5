@@ -43,6 +43,7 @@ protected:
 		int32 OtherBodyIndex
 	) override;
 
+	UFUNCTION()
 	void OnBoxOverlap(
 		UPrimitiveComponent* OverlappedComponent,
 		AActor* OtherActor,
@@ -54,10 +55,10 @@ protected:
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
-	USoundBase* EquipSound;
+	TObjectPtr<USoundBase> EquipSound;
 
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
-	UBoxComponent* WeaponBox;
+	TObjectPtr<UBoxComponent> WeaponBox;
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USceneComponent> TraceStart;

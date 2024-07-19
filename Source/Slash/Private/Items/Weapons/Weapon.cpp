@@ -6,6 +6,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/SphereComponent.h"
 #include "Components/BoxComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 AWeapon::AWeapon()
 {
@@ -15,7 +16,7 @@ AWeapon::AWeapon()
 
    // Set collision
    WeaponBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-   WeaponBox->SetCollisionResponseToChannels(ECollisionResponse::ECR_Overlap);
+   WeaponBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
    WeaponBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 
    // Construct Scene components
@@ -72,6 +73,38 @@ void AWeapon::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 
 void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-   // Do the box tracing here
+   /** 
+   * Location of the first scene component(start) - to get its world location we call GetComponentLocation() in C++ and 
+   *  GetWorlLocation in BP.
+   * That's a global space rotation in world space (not local space, which we'd get by calling GetRelativeLocation()).
+   */
+   const FVector Start = TraceStart->GetComponentLocation();
+   const FVector End = TraceEnd->GetComponentLocation();
+   
+   TArray<AActor*> ActorsToIgnore;
+   ActorsToIgnore.Add(this);
+
+   FHitResult BoxHit;
+   /** 
+   * Trace with a box trace. We do that by using the KismetSystemLibrary static function.
+   * BoxTraceSingle is basically tracing against the visibility channel, so for ETRaceTypeQuery we can put "any value".
+   *  We could set up custom trace type queries in the engine and pass in the number corresponding to our custom type, for example.
+   * Create a TArray to pass as the ActorsToIgnore parameter.
+   * FHitResult is passed as reference. In BP that's an output variable but in C++, as soon as BoxTRaceSingle is called, it'll
+   *  populate with data a FHitResult we just create for that purpose.
+   */
+   UKismetSystemLibrary::BoxTraceSingle(
+      this,
+      Start,
+      End,
+      FVector(5.f, 5.f, 5.f),
+      TraceStart->GetComponentRotation(), // we can use this orientation
+      ETraceTypeQuery::TraceTypeQuery1,
+      false,
+      ActorsToIgnore,
+      EDrawDebugTrace::ForDuration,
+      BoxHit,
+      true // similar to what we did by adding this to the TArray of ActorsToIgnore (redundent, but required parameter)
+   );
 
 }
