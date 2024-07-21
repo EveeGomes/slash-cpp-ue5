@@ -23,6 +23,11 @@ public:
 	// Called in character class once the E key is pressed.
 	void Equip(USceneComponent* InParent, FName InSocketName);
 	void AttachMeshToSocket(USceneComponent* InParent, const FName& InSocketName);
+
+	/** 
+	* Getter and Setter
+	*/
+	FORCEINLINE UBoxComponent* GetWeaponBox() const { return WeaponBox; }
 	
 protected:
 	virtual void BeginPlay() override;
