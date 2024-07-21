@@ -31,10 +31,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UFUNCTION(BlueprintCallable)
-	void EnableWeaponCollision();
-
-	UFUNCTION(BlueprintCallable)
-	void DisableWeaponCollision();
+	void SetWeaponCollisionEnabled(ECollisionEnabled::Type ColiisionEnabled);
 
 protected:
 	virtual void BeginPlay() override;
