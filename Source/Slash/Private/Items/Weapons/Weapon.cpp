@@ -15,7 +15,7 @@ AWeapon::AWeapon()
    WeaponBox->SetupAttachment(GetRootComponent());
 
    // Set collision
-   WeaponBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+   WeaponBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
    WeaponBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
    WeaponBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 
