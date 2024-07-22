@@ -86,7 +86,18 @@ void AEnemy::GetHit(const FVector& ImpactPoint)
 	*/
 
 	const FVector Forward = GetActorForwardVector();
-	const FVector ToHit = (ImpactPoint - GetActorLocation()).GetSafeNormal();
+	/** 
+	* To have a more accurate representation of the angle, we need the green vector (ToHit) to be parallel with the ground.
+	* In other words, we want its end points Z location to be the same as the en point for our red arrow (Forward). That's
+	*  basically the Z location of our character itself.
+	* So, we could get the vector from the enemy's location to the impact point lowered down to the enemy's elevation, the Z
+	*  value of the enemy's location.
+	* For that we can make a const FVector ImpactLowered, as set to ImpactPoint X and Y and use the enemy's Z location for the Z.
+	* Then, in ToHit we use the ImpactLowered instead of ImpactPoint.
+	*/
+	// Lower Impact Point to the enemy's actor location Z
+	const FVector ImpactLowered{ ImpactPoint.X, ImpactPoint.Y, GetActorLocation().Z };
+	const FVector ToHit = (ImpactLowered - GetActorLocation()).GetSafeNormal();
 	
 	// Forward * ToHit = |Forward| * |ToHit| * cos(theta)
 	// |Forward| = 1, |ToHit| = 1, so Forward * ToHit = cos(theta)
