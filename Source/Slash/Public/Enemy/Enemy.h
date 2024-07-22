@@ -10,6 +10,9 @@
 
 #include "Enemy.generated.h"
 
+/** For animation montage logic */
+class UAnimMontage;
+
 UCLASS()
 class SLASH_API AEnemy : public ACharacter, public IHitInterface
 {
@@ -25,7 +28,17 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	virtual void GetHit(const FVector& ImpactPoint) override;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	/** Play Montage Functions */
+	void PlayHitReactMontage(const FName& SectionName);
+
+private:
+	/** Animation Montages */
+	UPROPERTY(EditDefaultsOnly, Category = "Montage") // EditDefaultsOnly: can be set in the defaults BP
+	TObjectPtr<UAnimMontage> HitReactMontage;
+
 };
