@@ -6,7 +6,10 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/SphereComponent.h"
 #include "Components/BoxComponent.h"
+
+/** Use in OnBoxOverlap */
 #include "Kismet/KismetSystemLibrary.h"
+#include "Interfaces/HitInterface.h"
 
 AWeapon::AWeapon()
 {
@@ -106,5 +109,22 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
       BoxHit,
       true // similar to what we did by adding this to the TArray of ActorsToIgnore (redundent, but required parameter)
    );
+
+   /** 
+   * We need to call GetHit() and use the ImpactPoint that is placed in BoxHit.
+   * 
+   * BoxHit after BoxTraceSingle call, is filled with data that we're going to use.
+   * We can get the actor that has been hit, by calling GetActor().
+   * Then, we can check if that actor can be cast to the HitInterface, which means it inherits from that interface.
+   */
+   if (BoxHit.GetActor()) // check if it returns a valid value or if it's a null pointer
+   {
+      // Include HitInterface header
+      IHitInterface* HitInterface = Cast<IHitInterface>(BoxHit.GetActor());
+      if (HitInterface)
+      {
+         HitInterface->GetHit(BoxHit.ImpactPoint);
+      }
+   }
 
 }

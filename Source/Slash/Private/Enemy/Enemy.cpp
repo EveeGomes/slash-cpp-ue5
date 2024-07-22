@@ -7,6 +7,8 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/CapsuleComponent.h"
 
+/** To draw debug sphere in GetHit*/
+#include "Slash/DebugMacros.h"
 
 // Sets default values
 AEnemy::AEnemy()
@@ -56,8 +58,8 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
-void AEnemy::GetHit()
+void AEnemy::GetHit(const FVector& ImpactPoint)
 {
-
+	DRAW_SPHERE(ImpactPoint);
 }
 
