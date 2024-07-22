@@ -108,6 +108,19 @@ void AEnemy::GetHit(const FVector& ImpactPoint)
 	// convert from radians to degrees
 	Theta = FMath::RadiansToDegrees(Theta);
 
+	/** 
+	* Dot Product returns a scaler and because of that the angle will always be positive.
+	* For that, we'll need to make use of Cross Product that will return a normal vector pointing up or down.
+	* If it points up, the enemy will be getting hit from the right (because ToHit vector will be to the right of Forward).
+	*  But if it's pointing downward, the enemy's getting hit from the left as ToHit is to the left of Forward.
+	*/
+	// If CrossProduct points down, Theta should be negative.
+	const FVector CrossProduct = FVector::CrossProduct(Forward, ToHit);
+	if (CrossProduct.Z < 0)
+	{
+		Theta *= -1.f;
+	}
+
 	// Debugging:
 
 	// Add a on-screen debug message
@@ -122,5 +135,7 @@ void AEnemy::GetHit(const FVector& ImpactPoint)
 	UKismetSystemLibrary::DrawDebugArrow(this, GetActorLocation(), GetActorLocation() + Forward * 60.f, 5.f, FColor::Red, 5.f);
 	// Arrow from the enemy's location to the hit location
 	UKismetSystemLibrary::DrawDebugArrow(this, GetActorLocation(), GetActorLocation() + ToHit * 60.f, 5.f, FColor::Green, 5.f);
+	// Checking CrossProduct:
+	UKismetSystemLibrary::DrawDebugArrow(this, GetActorLocation(), GetActorLocation() + CrossProduct * 300.f, 5.f, FColor::Blue, 5.f);
 }
 
