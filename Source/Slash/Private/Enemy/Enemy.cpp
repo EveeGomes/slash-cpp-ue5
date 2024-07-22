@@ -7,8 +7,9 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/CapsuleComponent.h"
 
-/** To draw debug sphere in GetHit*/
+/** To draw debug shapes in GetHit*/
 #include "Slash/DebugMacros.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values
 AEnemy::AEnemy()
@@ -73,5 +74,42 @@ void AEnemy::GetHit(const FVector& ImpactPoint)
 	DRAW_SPHERE_COLOR(ImpactPoint, FColor::Orange);
 
 	PlayHitReactMontage(FName("FromLeft"));
+
+	/** 
+	* We need the forward and ToHit vectors!
+	* GetActorForwardVector() returns a normalized vector.
+	* But ToHit won't be a normalized vector, since it's calculated from two points in space and those could be
+	*  any distance away from each other.
+	* const FVector ToHit = ImpactPoint - GetActorLocation();
+	* 
+	* As to use Dot Product, both vectors should be normalized. For that we call GetSafeNormal().
+	*/
+
+	const FVector Forward = GetActorForwardVector();
+	const FVector ToHit = (ImpactPoint - GetActorLocation()).GetSafeNormal();
+	
+	// Forward * ToHit = |Forward| * |ToHit| * cos(theta)
+	// |Forward| = 1, |ToHit| = 1, so Forward * ToHit = cos(theta)
+	const double CosTheta = FVector::DotProduct(Forward, ToHit);
+	
+	// Take the inverse cosine (arc-cosine) os cos(theta) to get theta. 
+	double Theta = FMath::Acos(CosTheta);
+	// convert from radians to degrees
+	Theta = FMath::RadiansToDegrees(Theta);
+
+	// Debugging:
+
+	// Add a on-screen debug message
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Green, FString::Printf(TEXT("Theta: %f"), Theta));
+	}
+
+	// Draw the vectors to have more visualization of what's going on. Use another static library for it, which has to be included above.
+	// Multiply Forward by 60.f because it's a normalized vector, so it's 1 and that wouldn't show.
+	// This is the arrow from the enemy's location straight out
+	UKismetSystemLibrary::DrawDebugArrow(this, GetActorLocation(), GetActorLocation() + Forward * 60.f, 5.f, FColor::Red, 5.f);
+	// Arrow from the enemy's location to the hit location
+	UKismetSystemLibrary::DrawDebugArrow(this, GetActorLocation(), GetActorLocation() + ToHit * 60.f, 5.f, FColor::Green, 5.f);
 }
 
