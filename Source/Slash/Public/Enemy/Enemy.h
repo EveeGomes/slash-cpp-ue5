@@ -3,11 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
+/** Include the headers of the classes this one is inhereting from */
 #include "GameFramework/Character.h"
+#include "Interfaces/HitInterface.h"
+
 #include "Enemy.generated.h"
 
 UCLASS()
-class SLASH_API AEnemy : public ACharacter
+class SLASH_API AEnemy : public ACharacter, public IHitInterface
 {
 	GENERATED_BODY()
 
@@ -19,6 +23,8 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	virtual void GetHit() override;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
