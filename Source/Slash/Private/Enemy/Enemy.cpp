@@ -73,8 +73,6 @@ void AEnemy::GetHit(const FVector& ImpactPoint)
 {
 	DRAW_SPHERE_COLOR(ImpactPoint, FColor::Orange);
 
-	PlayHitReactMontage(FName("FromLeft"));
-
 	/** 
 	* We need the forward and ToHit vectors!
 	* GetActorForwardVector() returns a normalized vector.
@@ -121,12 +119,36 @@ void AEnemy::GetHit(const FVector& ImpactPoint)
 		Theta *= -1.f;
 	}
 
+	/** 
+	* Set the FName variable based on the value coming from Theta.
+	* When creating the FName variable, he set to From Back because that's the case when theta is greater than 135 degrees and 
+	*  less than -135. So we could simply check for the others and only change if the other cases become true. If they all fail,
+	*  then we won't have to change the value of Section.
+	*/
+	FName Section{ "FromBack" };
+	if (Theta >= -45.f && Theta < 45.f)
+	{
+		Section = FName{ "FromFront" };
+	}
+	else if (Theta >= -135.f && Theta < -45.f)
+	{
+		Section = FName{ "FromLeft" };
+	}
+	else if (Theta >= 45.f && Theta < 135.f)
+	{
+		Section = FName{ "FromRight" };
+	}
+
+	// Then, call the function to play the montage accordingly
+	PlayHitReactMontage(Section);
+
 	// Debugging:
 
 	// Add a on-screen debug message
 	if (GEngine)
 	{
-		GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Green, FString::Printf(TEXT("Theta: %f"), Theta));
+		GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Green, FString::Printf(TEXT("Theta: %f"), Theta), false);
+		GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Green, FString::Printf(TEXT("Section: %s"), *Section.ToString()), false);
 	}
 
 	// Draw the vectors to have more visualization of what's going on. Use another static library for it, which has to be included above.
