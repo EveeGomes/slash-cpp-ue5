@@ -27,6 +27,8 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	void DirectionalHitReact(const FVector& ImpactPoint);
+
 	virtual void GetHit(const FVector& ImpactPoint) override;
 
 protected:

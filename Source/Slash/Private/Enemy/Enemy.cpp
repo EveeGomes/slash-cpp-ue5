@@ -69,22 +69,20 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
-void AEnemy::GetHit(const FVector& ImpactPoint)
+void AEnemy::DirectionalHitReact(const FVector& ImpactPoint)
 {
-	DRAW_SPHERE_COLOR(ImpactPoint, FColor::Orange);
-
-	/** 
+	/**
 	* We need the forward and ToHit vectors!
 	* GetActorForwardVector() returns a normalized vector.
 	* But ToHit won't be a normalized vector, since it's calculated from two points in space and those could be
 	*  any distance away from each other.
 	* const FVector ToHit = ImpactPoint - GetActorLocation();
-	* 
+	*
 	* As to use Dot Product, both vectors should be normalized. For that we call GetSafeNormal().
 	*/
 
 	const FVector Forward = GetActorForwardVector();
-	/** 
+	/**
 	* To have a more accurate representation of the angle, we need the green vector (ToHit) to be parallel with the ground.
 	* In other words, we want its end points Z location to be the same as the en point for our red arrow (Forward). That's
 	*  basically the Z location of our character itself.
@@ -96,17 +94,17 @@ void AEnemy::GetHit(const FVector& ImpactPoint)
 	// Lower Impact Point to the enemy's actor location Z
 	const FVector ImpactLowered{ ImpactPoint.X, ImpactPoint.Y, GetActorLocation().Z };
 	const FVector ToHit = (ImpactLowered - GetActorLocation()).GetSafeNormal();
-	
+
 	// Forward * ToHit = |Forward| * |ToHit| * cos(theta)
 	// |Forward| = 1, |ToHit| = 1, so Forward * ToHit = cos(theta)
 	const double CosTheta = FVector::DotProduct(Forward, ToHit);
-	
+
 	// Take the inverse cosine (arc-cosine) os cos(theta) to get theta. 
 	double Theta = FMath::Acos(CosTheta);
 	// convert from radians to degrees
 	Theta = FMath::RadiansToDegrees(Theta);
 
-	/** 
+	/**
 	* Dot Product returns a scaler and because of that the angle will always be positive.
 	* For that, we'll need to make use of Cross Product that will return a normal vector pointing up or down.
 	* If it points up, the enemy will be getting hit from the right (because ToHit vector will be to the right of Forward).
@@ -119,9 +117,9 @@ void AEnemy::GetHit(const FVector& ImpactPoint)
 		Theta *= -1.f;
 	}
 
-	/** 
+	/**
 	* Set the FName variable based on the value coming from Theta.
-	* When creating the FName variable, he set to From Back because that's the case when theta is greater than 135 degrees and 
+	* When creating the FName variable, he set to From Back because that's the case when theta is greater than 135 degrees and
 	*  less than -135. So we could simply check for the others and only change if the other cases become true. If they all fail,
 	*  then we won't have to change the value of Section.
 	*/
@@ -143,7 +141,6 @@ void AEnemy::GetHit(const FVector& ImpactPoint)
 	PlayHitReactMontage(Section);
 
 	// Debugging:
-
 	// Add a on-screen debug message
 	if (GEngine)
 	{
@@ -159,5 +156,12 @@ void AEnemy::GetHit(const FVector& ImpactPoint)
 	UKismetSystemLibrary::DrawDebugArrow(this, GetActorLocation(), GetActorLocation() + ToHit * 60.f, 5.f, FColor::Green, 5.f);
 	// Checking CrossProduct:
 	UKismetSystemLibrary::DrawDebugArrow(this, GetActorLocation(), GetActorLocation() + CrossProduct * 300.f, 5.f, FColor::Blue, 5.f);
+}
+
+void AEnemy::GetHit(const FVector& ImpactPoint)
+{
+	DRAW_SPHERE_COLOR(ImpactPoint, FColor::Orange);
+
+	DirectionalHitReact(ImpactPoint);
 }
 
