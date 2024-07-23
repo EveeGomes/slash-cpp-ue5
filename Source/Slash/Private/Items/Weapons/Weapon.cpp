@@ -74,6 +74,14 @@ void AWeapon::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActo
    Super::OnSphereEndOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex);
 }
 
+/** 
+* The goal now is to call GetHit once when hitting another actor.
+* In this OnBoxOverLap, we call BoxTraceSingle, and as soon as we get a hit, we check if the actor implements the interface
+*  so we can call GetHit.
+* The issue is that we keep calling GetHit as Weapon continues to overlap with the same actor and triggering overlap event.
+* To solve that, we should use the TArray and add the actor to ignore as soon as we hit it, then as we disable the collision
+*  using the notify, we also remove the actor from the list so it can hit the same actor again after the first attack is finished.
+*/
 void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
    /** 
@@ -86,6 +94,19 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
    
    TArray<AActor*> ActorsToIgnore;
    ActorsToIgnore.Add(this);
+
+   /** 
+   * Now that we have the actors the weapon has hit, we can loop through it, add to ActorsToIgnore in order to ignore them
+   *  on the next call of BoxTraceSingle.
+   * For that reason, we'll have to clear IgnoreActors later. That should be done when we're disabling collision on the box.
+   *  We do that in response to an anim notify (therefore we can't get any overlap response after that disabling!).
+   *  The overlap response will be enabled again once we attack again (also enabled by another anim notify)!
+   * ps: the notifies are implemented in the event graph of ABP_Echo!
+   */
+   for (AActor* Actor : IgnoreActors)
+   {
+      ActorsToIgnore.AddUnique(Actor);
+   }
 
    FHitResult BoxHit;
    /** 
@@ -125,6 +146,8 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
       {
          HitInterface->GetHit(BoxHit.ImpactPoint);
       }
+      // As soon as we hit the actor, add it to the TArray (it'll be removed from this TArray by the end of the attack animation)
+      IgnoreActors.AddUnique(BoxHit.GetActor());
    }
 
 }

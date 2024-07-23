@@ -24,6 +24,9 @@ public:
 	void Equip(USceneComponent* InParent, FName InSocketName);
 	void AttachMeshToSocket(USceneComponent* InParent, const FName& InSocketName);
 
+	// Get track of the actors hit
+	TArray<AActor*> IgnoreActors;
+
 	/** 
 	* Getter and Setter
 	*/

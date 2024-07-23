@@ -253,6 +253,8 @@ void ASlashCharacter::SetWeaponCollisionEnabled(ECollisionEnabled::Type Collisio
 	{
 		// Set the weapon's collision enabled
 		EquippedWeapon->GetWeaponBox()->SetCollisionEnabled(CollisionEnabled);
+		// Clear the TArray with actors to ignore!
+		EquippedWeapon->IgnoreActors.Empty();
 	}
 }
 
