@@ -53,4 +53,12 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Sounds")
 	TObjectPtr<USoundBase> HitSound;
 
+	/** 
+	* Particle system 
+	* UParticleSystem is the type for the Cascade Particle System.
+	* To spawn this particle, we need to use the GamePlayStatics System.
+	*/
+	UPROPERTY(EditAnywhere, Category = "VisualEffects")
+	TObjectPtr<UParticleSystem> HitParticles;
+
 };

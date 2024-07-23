@@ -11,7 +11,7 @@
 #include "Slash/DebugMacros.h"
 #include "Kismet/KismetSystemLibrary.h"
 
-/** Play sound */
+/** Play sound, Spawn Cascade Particles emitter */
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -176,5 +176,18 @@ void AEnemy::GetHit(const FVector& ImpactPoint)
 			ImpactPoint
 		);
 	}
+
+	/** 
+	* Spawn an Emitter at location, using our HitParticles
+	*/
+	if (HitParticles && GetWorld()) // checking GetWorld() is kinda optional
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(
+			GetWorld(),
+			HitParticles,
+			ImpactPoint
+		);
+	}
+
 }
 
