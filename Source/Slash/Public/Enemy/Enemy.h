@@ -43,4 +43,14 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Montage") // EditDefaultsOnly: can be set in the defaults BP
 	TObjectPtr<UAnimMontage> HitReactMontage;
 
+	/** 
+	* Variable to set a sound when an enemy gets hit.
+	* Having this variable allows for setting different sounds to different enemies.
+	*/
+
+	// USoundBase is the base class for both the sound cue and meta sound asset type.
+	// Set it in BP. Leave it as EditAnywhere so even instances can have their own sound set:
+	UPROPERTY(EditAnywhere, Category = "Sounds")
+	TObjectPtr<USoundBase> HitSound;
+
 };

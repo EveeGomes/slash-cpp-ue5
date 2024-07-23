@@ -11,6 +11,9 @@
 #include "Slash/DebugMacros.h"
 #include "Kismet/KismetSystemLibrary.h"
 
+/** Play sound */
+#include "Kismet/GameplayStatics.h"
+
 // Sets default values
 AEnemy::AEnemy()
 {
@@ -163,5 +166,15 @@ void AEnemy::GetHit(const FVector& ImpactPoint)
 	DRAW_SPHERE_COLOR(ImpactPoint, FColor::Orange);
 
 	DirectionalHitReact(ImpactPoint);
+
+	// Play sound as soon as the enemy gets hit
+	if (HitSound) // make sure it's not null (in case we forget to set it in BP)
+	{
+		UGameplayStatics::PlaySoundAtLocation(
+			this,
+			HitSound,
+			ImpactPoint
+		);
+	}
 }
 
