@@ -117,4 +117,6 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
       // As soon as we hit the actor, add it to the TArray (it'll be removed from this TArray by the end of the attack animation)
       IgnoreActors.AddUnique(BoxHit.GetActor());
    }
+
+   CreateFields(BoxHit.ImpactPoint);
 }

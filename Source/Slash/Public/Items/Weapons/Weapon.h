@@ -61,6 +61,15 @@ protected:
 		const FHitResult& SweepResult
 	);
 
+	/** 
+	* Create some Transient Field.
+	* @param to know where that field should be
+	* 
+	* It'll be called from C++ but handled in BP (its definition)
+	*/
+	UFUNCTION(BlueprintImplementableEvent)
+	void CreateFields(const FVector& FieldLocation);
+
 private:
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	TObjectPtr<USoundBase> EquipSound;
