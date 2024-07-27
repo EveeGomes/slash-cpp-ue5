@@ -31,6 +31,15 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UGeometryCollectionComponent> GeometryCollection;
 
+	/** 
+	* We gotta use TSubclassOf<ATreasure> to restrict which class this variable can be set in BP!
+	* TSubclassOf works as a pointer that can wrap that pointer for us.
+	* They're usually templates so that's why they start with T.
+	* 
+	* So, TSubclassOf<ATreasure> gives us a UClass variable that is wrapped in a TSubclassOf pointer
+	*  that enforces the restriction that it can only be derived from the ATreasure C++ class or below.
+	* ps: we can forward declare here too.
+	*/
 	UPROPERTY(EditAnywhere)
-	TObjectPtr<UClass> TreasureClass;
+	TSubclassOf<class ATreasure> TreasureClass;
 };
