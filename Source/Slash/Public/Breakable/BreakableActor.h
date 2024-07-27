@@ -25,6 +25,6 @@ protected:
 	virtual void BeginPlay() override;
 
 private:	
-
+	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UGeometryCollectionComponent> GeometryCollection;
 };

@@ -17,7 +17,10 @@ ABreakableActor::ABreakableActor()
 	SetRootComponent(GeometryCollection);
 	// Set Generate Overlap Events here as it becomes the default setting
 	GeometryCollection->SetGenerateOverlapEvents(true);
-
+	// In class 147 Q&A, suggestion to make the BP_Breakable work again
+	GeometryCollection->bUseSizeSpecificDamageThreshold = true;
+	// Ignore the camera channel to avoid glitching when a piece flies toward the camera
+	GeometryCollection->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 }
 
 // Called when the game starts or when spawned
