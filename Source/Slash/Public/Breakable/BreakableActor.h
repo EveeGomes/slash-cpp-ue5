@@ -4,13 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Interfaces/HitInterface.h"
 #include "BreakableActor.generated.h"
 
 /** For the geometry collection */
 class UGeometryCollectionComponent;
 
 UCLASS()
-class SLASH_API ABreakableActor : public AActor
+class SLASH_API ABreakableActor : public AActor, public IHitInterface
 {
 	GENERATED_BODY()
 	
@@ -19,6 +20,8 @@ public:
 	ABreakableActor();
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	virtual void GetHit(const FVector& ImpactPoint) override;
 
 protected:
 	// Called when the game starts or when spawned
