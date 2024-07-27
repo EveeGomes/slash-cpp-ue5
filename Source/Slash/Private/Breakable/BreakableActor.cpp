@@ -5,6 +5,9 @@
 
 #include "GeometryCollection/GeometryCollectionComponent.h"
 
+/** Used in GetHit_Implementation */
+#include "Items/Treasure.h"
+
 // Sets default values
 ABreakableActor::ABreakableActor()
 {
@@ -39,6 +42,38 @@ void ABreakableActor::Tick(float DeltaTime)
 
 void ABreakableActor::GetHit_Implementation(const FVector& ImpactPoint)
 {
-
+	/** 
+	* We can't use GetWorld()->SpawnActor<ATreasure>() because we want to spawn an actor
+	*  based on a BP class instead of a C++ class. The BP class has things set up already like the mesh
+	*  and sound, while the C++ has only the functionality of the overlap event.
+	* 
+	* We can specify not only a C++ class but a BP class to the UClass* param. It's like the type we pass
+	*  to the angle brackets in a template function/class!
+	* If we want a regular C++ class, we can satisfy a UClass input parameter by taking any class that's derived from
+	*  the UClass class, and calling it's inhereted Static function like so: ATreasure::StaticClass(). That will return
+	*  a UClass pointer that represents a type of that class. So, we can think that as a type rather than a pointer to
+	*  an object.
+	* StaticClass() gives us a raw C++ class in the form of a UClass pointer.
+	* Now for specifying a BP class we could use a UClass type variable.
+	* That'll be a pointer that we set as UPROPERTY(EditAnywhere) and in the Details panel we can set to either a C++
+	*  or BP class. That way we'll have a variable in C++ that carries all data of a BP class/obj (the variable represents
+	*  a BP we've created in the editor)!
+	* So, in the header file we declare a UClass Pointer:
+	* UPROPERTY(EditAnywhere)
+	* TObjectPtr<UClass> TreasureClass;
+	*  and then in BP we set it as the class we want to spawn (in this case BP_Treasure)
+	* 
+	* Then, we can do the spawn logic here:
+	*/
+	
+	UWorld* World = GetWorld();
+	if (World)
+	{
+		// For the location param we use the location of the breakable actor and rise it up by 75 units
+		FVector Location = GetActorLocation();
+		Location.Z += 75.f;
+		
+		World->SpawnActor<ATreasure>(TreasureClass, Location, GetActorRotation());
+	}
 }
 

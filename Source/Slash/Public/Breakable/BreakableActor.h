@@ -30,4 +30,7 @@ protected:
 private:	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UGeometryCollectionComponent> GeometryCollection;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UClass> TreasureClass;
 };
