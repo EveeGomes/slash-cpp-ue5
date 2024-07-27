@@ -99,7 +99,7 @@ void AEnemy::DirectionalHitReact(const FVector& ImpactPoint)
 	PlayHitReactMontage(Section);
 }
 
-void AEnemy::GetHit(const FVector& ImpactPoint)
+void AEnemy::GetHit_Implementation(const FVector& ImpactPoint)
 {
 	DirectionalHitReact(ImpactPoint);
 
