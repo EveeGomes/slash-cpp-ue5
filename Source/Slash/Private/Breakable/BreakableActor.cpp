@@ -33,7 +33,7 @@ void ABreakableActor::BeginPlay()
 // Called every frame
 void ABreakableActor::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
+	Super::Tick(DeltaTime); 
 
 }
 
