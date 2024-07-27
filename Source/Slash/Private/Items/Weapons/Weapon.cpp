@@ -112,7 +112,15 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
       IHitInterface* HitInterface = Cast<IHitInterface>(BoxHit.GetActor());
       if (HitInterface)
       {
-         HitInterface->GetHit(BoxHit.ImpactPoint);
+         /** 
+         * Now, we can't call this function HitInterface->GetHit(BoxHit.ImpactPoint); directly anymore. We have to allow
+         *  UE reflection system to handle this interface a little different for us.
+         * As we made this function a BlueprintNativeEvent in the Interface class, we now have different ways of calling it,
+         *  and we'll choose the Execute_GetHit()
+         * @UObject* the object to execute this event on
+         * @const FVector& the GetHit original parameter
+         */
+         HitInterface->Execute_GetHit(BoxHit.GetActor(), BoxHit.ImpactPoint);
       }
       // As soon as we hit the actor, add it to the TArray (it'll be removed from this TArray by the end of the attack animation)
       IgnoreActors.AddUnique(BoxHit.GetActor());
