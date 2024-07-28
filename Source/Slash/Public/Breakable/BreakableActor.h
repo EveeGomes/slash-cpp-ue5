@@ -42,6 +42,9 @@ private:
 	*  that enforces the restriction that it can only be derived from the ATreasure C++ class or below.
 	* ps: we can forward declare here too.
 	*/
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Breakable Properties")
 	TSubclassOf<class ATreasure> TreasureClass;
+
+	// Use this bool to toggle when we have broken our breakable objects
+	bool bBroken = false;
 };

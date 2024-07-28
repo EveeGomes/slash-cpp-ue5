@@ -56,6 +56,13 @@ void ABreakableActor::Tick(float DeltaTime)
 void ABreakableActor::GetHit_Implementation(const FVector& ImpactPoint)
 {
 	/** 
+	* this will avoid the infinite loop by preventing the GetHit function from being called many times due to our
+	*  many objects being thrown around from our Geometry Collection which triggered the infinite loop safeguard.
+	*/
+	if (bBroken) return;
+	bBroken = true;
+
+	/** 
 	* We can't use GetWorld()->SpawnActor<ATreasure>() because we want to spawn an actor
 	*  based on a BP class instead of a C++ class. The BP class has things set up already like the mesh
 	*  and sound, while the C++ has only the functionality of the overlap event.
