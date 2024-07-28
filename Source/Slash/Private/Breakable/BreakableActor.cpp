@@ -4,6 +4,7 @@
 #include "Breakable/BreakableActor.h"
 
 #include "GeometryCollection/GeometryCollectionComponent.h"
+#include "Components/CapsuleComponent.h"
 
 /** Used in GetHit_Implementation */
 #include "Items/Treasure.h"
@@ -24,6 +25,18 @@ ABreakableActor::ABreakableActor()
 	GeometryCollection->bUseSizeSpecificDamageThreshold = true;
 	// Ignore the camera channel to avoid glitching when a piece flies toward the camera
 	GeometryCollection->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+	// Ignore the pawn channel as part of solving the disabling collision for the pot pieces when they're broken
+	GeometryCollection->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+
+	// Construct the capsule
+	Capsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Capsule"));
+	// Attach to the root component
+	Capsule->SetupAttachment(GetRootComponent());
+	// Set its response to all other channels to ignore
+	Capsule->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	// Set the capsule's collision response to the pawn channel to block (so the capsule blocks the pawn!)
+	Capsule->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
+
 }
 
 // Called when the game starts or when spawned

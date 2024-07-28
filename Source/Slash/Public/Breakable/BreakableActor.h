@@ -27,10 +27,12 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-private:	
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	TObjectPtr<UGeometryCollectionComponent> GeometryCollection;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	TObjectPtr<class UCapsuleComponent> Capsule;
+private:
 	/** 
 	* We gotta use TSubclassOf<ATreasure> to restrict which class this variable can be set in BP!
 	* TSubclassOf works as a pointer that can wrap that pointer for us.
