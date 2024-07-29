@@ -41,9 +41,13 @@ private:
 	* So, TSubclassOf<ATreasure> gives us a UClass variable that is wrapped in a TSubclassOf pointer
 	*  that enforces the restriction that it can only be derived from the ATreasure C++ class or below.
 	* ps: we can forward declare here too.
+	* 
+	* Use a TArray of this variable instead as we're now creating many BP_Treasures and we want to spawn them randomly
+	*  when an object is broken.
 	*/
+
 	UPROPERTY(EditAnywhere, Category = "Breakable Properties")
-	TSubclassOf<class ATreasure> TreasureClass;
+	TArray <TSubclassOf<class ATreasure>> TreasureClasses;
 
 	// Use this bool to toggle when we have broken our breakable objects
 	bool bBroken = false;
