@@ -87,15 +87,15 @@ void ABreakableActor::GetHit_Implementation(const FVector& ImpactPoint)
 	*/
 	
 	UWorld* World = GetWorld();
-	if (World && TreasureClasses.Num() > 0) // instead of checking a ptr as TreasureClass, we now check the number of elements
+	if (World && TreasureClasses.Num() > 0)
 	{
 		// For the location param we use the location of the breakable actor and rise it up by 75 units
 		FVector Location = GetActorLocation();
 		Location.Z += 75.f;
-		
-		// Since the if statement can only be true if there's at least one elem, it's safe to use [] and try to access an elem.
-		// We'll set the elements in BP.
-		World->SpawnActor<ATreasure>(TreasureClasses[0], Location, GetActorRotation());
+
+		// Get a random number from the size of the array so it can spawn different and random treasures
+		const int32 Selection = FMath::RandRange(0, TreasureClasses.Num() - 1);
+		World->SpawnActor<ATreasure>(TreasureClasses[Selection], Location, GetActorRotation());
 	}
 }
 
