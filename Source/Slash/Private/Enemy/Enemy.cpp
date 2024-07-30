@@ -17,6 +17,9 @@
 /** Use our custom actor component */
 #include "Components/AttributeComponent.h"
 
+/** To use the HealthBarComponent */
+#include "Components/WidgetComponent.h"
+
 // Sets default values
 AEnemy::AEnemy()
 {
@@ -35,6 +38,11 @@ AEnemy::AEnemy()
 	// Construct Attributes component
 	Attributes = CreateDefaultSubobject<UAttributeComponent>(TEXT("Attributes"));
 	// it doesn't need to be attached to anything as it doesn't have a location or mesh or anything.
+
+	// Construct the health bar widget
+	HealthBarWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBar"));
+	// As it has a location in space, we can attach to the root component
+	HealthBarWidget->SetupAttachment(GetRootComponent());
 }
 
 // Called when the game starts or when spawned
