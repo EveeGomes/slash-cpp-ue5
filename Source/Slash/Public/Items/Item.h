@@ -68,6 +68,10 @@ protected:
 		int32 OtherBodyIndex
 	);
 
+	/** Niagara system component */
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<class UNiagaraComponent> EmbersEffect;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
