@@ -13,6 +13,8 @@
 /** For animation montage logic */
 class UAnimMontage;
 
+class UAttributeComponent;
+
 UCLASS()
 class SLASH_API AEnemy : public ACharacter, public IHitInterface
 {
@@ -58,4 +60,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = "VisualEffects")
 	TObjectPtr<UParticleSystem> HitParticles;
 
+	/** Add our custom Attribute Component */
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UAttributeComponent> Attributes;
 };

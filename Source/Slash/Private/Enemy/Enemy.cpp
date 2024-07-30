@@ -14,6 +14,9 @@
 /** Play sound, Spawn Cascade Particles emitter */
 #include "Kismet/GameplayStatics.h"
 
+/** Use our custom actor component */
+#include "Components/AttributeComponent.h"
+
 // Sets default values
 AEnemy::AEnemy()
 {
@@ -28,6 +31,10 @@ AEnemy::AEnemy()
 	// Ignore the camera
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+
+	// Construct Attributes component
+	Attributes = CreateDefaultSubobject<UAttributeComponent>(TEXT("Attributes"));
+	// it doesn't need to be attached to anything as it doesn't have a location or mesh or anything.
 }
 
 // Called when the game starts or when spawned
