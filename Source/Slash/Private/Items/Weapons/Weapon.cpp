@@ -11,6 +11,9 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Interfaces/HitInterface.h"
 
+/** Deactivate the niagara system upon equip */
+#include "NiagaraComponent.h"
+
 AWeapon::AWeapon()
 {
    // Create the WeaponBox
@@ -55,6 +58,10 @@ void AWeapon::Equip(USceneComponent* InParent, FName InSocketName)
    if (Sphere)
    {
       Sphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+   }
+   if (EmbersEffect)
+   {
+      EmbersEffect->Deactivate();
    }
 }
 
