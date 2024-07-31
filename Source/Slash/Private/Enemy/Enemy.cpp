@@ -58,7 +58,7 @@ void AEnemy::BeginPlay()
 	*/
 	if (HealthBarWidget) // check if the widget component is valid
 	{
-		HealthBarWidget->SetHealthPercent(.1f); // 10%
+		HealthBarWidget->SetHealthPercent(1.f);
 	}
 }
 
