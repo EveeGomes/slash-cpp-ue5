@@ -17,4 +17,8 @@ class SLASH_API UMyHealthBarComponent : public UWidgetComponent
 public:
 	/** Access the user widget used by this component and set its percentage */
 	void SetHealthPercent(float Percent);
+
+private:
+	UPROPERTY()
+	TObjectPtr<class UHealthBar> HealthBarWidget;
 };
