@@ -14,7 +14,7 @@
 class UAnimMontage;
 
 class UAttributeComponent;
-class UWidgetComponent; // to use the HealthBarComponent
+class UMyHealthBarComponent;
 
 UCLASS()
 class SLASH_API AEnemy : public ACharacter, public IHitInterface
@@ -66,5 +66,5 @@ private:
 	TObjectPtr<UAttributeComponent> Attributes;
 
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UWidgetComponent> HealthBarWidget;
+	TObjectPtr<UMyHealthBarComponent> HealthBarWidget;
 };

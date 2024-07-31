@@ -18,7 +18,7 @@
 #include "Components/AttributeComponent.h"
 
 /** To use the HealthBarComponent */
-#include "Components/WidgetComponent.h"
+#include "HUD/MyHealthBarComponent.h"
 
 // Sets default values
 AEnemy::AEnemy()
@@ -40,7 +40,7 @@ AEnemy::AEnemy()
 	// it doesn't need to be attached to anything as it doesn't have a location or mesh or anything.
 
 	// Construct the health bar widget
-	HealthBarWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBar"));
+	HealthBarWidget = CreateDefaultSubobject<UMyHealthBarComponent>(TEXT("HealthBar"));
 	// As it has a location in space, we can attach to the root component
 	HealthBarWidget->SetupAttachment(GetRootComponent());
 }
@@ -49,6 +49,17 @@ AEnemy::AEnemy()
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+
+	/**
+	* Set the health bar percentage
+	* In order to access this: HealthBarWidget->SetHealthPercent();
+	*  we have to change HealthBarWidget type in the header file to the same type as where SetHealthPercent is define:
+	*   UMyHealthBarComponent.
+	*/
+	if (HealthBarWidget) // check if the widget component is valid
+	{
+		HealthBarWidget->SetHealthPercent(.1f); // 10%
+	}
 }
 
 void AEnemy::PlayHitReactMontage(const FName& SectionName)
