@@ -83,4 +83,13 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USceneComponent> TraceEnd;
 
+	/** 
+	* Variable to store the damage a weapon might cause. This will be passed to as a param ApplyDamage() 
+	*  in OnBoxOverlap().
+	* This way we can set different damage values for different kinds of weapons as we create BP versions
+	*  that inherit from this class.
+	* We can give a default value.
+	*/
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	float Damage = 20.f;
 };

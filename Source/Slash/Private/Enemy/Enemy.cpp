@@ -152,3 +152,14 @@ void AEnemy::GetHit_Implementation(const FVector& ImpactPoint)
 	}
 }
 
+float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	/** 
+	* Once we call ApplyDamage using GamePlayStatics, the Enemy TakeDamage will be called.
+	* We can do all the necessary actions here that we want to do, like updating the health and the health bar.
+	* 
+	*/
+
+	return 0.0f;
+}
+

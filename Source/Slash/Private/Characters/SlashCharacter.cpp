@@ -113,6 +113,18 @@ void ASlashCharacter::EKeyPressed()
 	if (OverlappingWeapon)
 	{
 		OverlappingWeapon->Equip(GetMesh(), FName("RightHandSocket"));
+		/** 
+		* Associate the actor who's equipping the weapon with the weapon itself.
+		* SetOwner(this) can be used because actors have the concept of ownership and once we set it to this, 
+		*  we'll be linking up this character with the weapon. Then, any actor can use the GetOwner and this will
+		*  be returned as the designated owner.
+		* Another way is to use SetInstigator(), but in this case it's more specific than SetOwner as it asks for
+		*  a pawn as a param (pawn can be controlled by a person or AI). An actor can also be owned by any given pawn
+		*  so we can pass this.
+		*/
+		OverlappingWeapon->SetOwner(this);
+		OverlappingWeapon->SetInstigator(this);
+
 		CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
 		OverlappingItem = nullptr;
 		EquippedWeapon = OverlappingWeapon;

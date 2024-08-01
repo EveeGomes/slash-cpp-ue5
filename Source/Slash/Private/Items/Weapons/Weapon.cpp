@@ -131,7 +131,27 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
       }
       // As soon as we hit the actor, add it to the TArray (it'll be removed from this TArray by the end of the attack animation)
       IgnoreActors.AddUnique(BoxHit.GetActor());
+
+      CreateFields(BoxHit.ImpactPoint);
+
+      /** 
+      * This is where we'd like to cause damage to the actor that's been hit by the weapon.
+      * So, the actor that's received the damage, can override the TakeDamage function, which exist in the Actor class.
+      * As we want the Enemy to take the damage, we'll override that function in the Enemy class!
+      * For the EventInstigator which is a Controller pointer, there's a way to access that because as soon as we
+      *  equip this weapon, we should probably set the instigator for this actor. And the thing about actors is that we
+      *  can designate an instigator to be associated with that actor.
+      * Therefore, as soon as we equip this actor, we should also set some information on it so that we can access 
+      *  who is causing the damage here. (We go to the function that calls Equip in SlashCharacter which is EKeyPressed())
+      * 
+      */
+
+      UGameplayStatics::ApplyDamage(
+         BoxHit.GetActor(),
+         Damage,
+
+      )
    }
 
-   CreateFields(BoxHit.ImpactPoint);
+   
 }
