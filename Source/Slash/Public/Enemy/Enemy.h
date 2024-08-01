@@ -46,6 +46,9 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	/** Play the death montage */
+	void Die();
+
 	/** Play Montage Functions */
 	void PlayHitReactMontage(const FName& SectionName);
 
@@ -53,6 +56,9 @@ private:
 	/** Animation Montages */
 	UPROPERTY(EditDefaultsOnly, Category = "Montage")
 	TObjectPtr<UAnimMontage> HitReactMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Montage")
+	TObjectPtr<UAnimMontage> DeathMontage;
 
 	/** 
 	* Variable to set a sound when an enemy gets hit.

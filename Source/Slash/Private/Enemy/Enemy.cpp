@@ -52,6 +52,42 @@ void AEnemy::BeginPlay()
 
 }
 
+void AEnemy::Die()
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && DeathMontage)
+	{
+		AnimInstance->Montage_Play(DeathMontage);
+
+		/** Choose the animation to play randomly like we did in SlashCharacter.cpp */
+		const int32 Selection = FMath::RandRange(0, 5);
+		FName SectionName = FName();
+		switch (Selection)
+		{
+		case 0:
+			SectionName = FName("Death1");
+			break;
+		case 1:
+			SectionName = FName("Death2");
+			break;
+		case 2:
+			SectionName = FName("Death3");
+			break;		
+		case 3:
+			SectionName = FName("Death4");
+			break;
+		case 4:
+			SectionName = FName("Death5");
+			break;
+		case 5:
+			SectionName = FName("Death6");
+			break;
+		}
+
+		AnimInstance->Montage_JumpToSection(SectionName, DeathMontage);
+	}
+}
+
 void AEnemy::PlayHitReactMontage(const FName& SectionName)
 {
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
@@ -117,7 +153,16 @@ void AEnemy::DirectionalHitReact(const FVector& ImpactPoint)
 
 void AEnemy::GetHit_Implementation(const FVector& ImpactPoint)
 {
-	DirectionalHitReact(ImpactPoint);
+	if (Attributes && Attributes->IsAlive())
+	{
+		DirectionalHitReact(ImpactPoint);
+	}
+	else
+	{
+		// Play death montage using a function that handles the enemy death montage
+		Die();
+	}
+
 
 	// Play sound as soon as the enemy gets hit
 	if (HitSound)
