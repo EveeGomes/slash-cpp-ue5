@@ -112,7 +112,7 @@ void ASlashCharacter::EKeyPressed()
 	AWeapon* OverlappingWeapon = Cast<AWeapon>(OverlappingItem);
 	if (OverlappingWeapon)
 	{
-		OverlappingWeapon->Equip(GetMesh(), FName("RightHandSocket"));
+		OverlappingWeapon->Equip(GetMesh(), FName("RightHandSocket"), this, this);
 		/** 
 		* Associate the actor who's equipping the weapon with the weapon itself.
 		* SetOwner(this) can be used because actors have the concept of ownership and once we set it to this, 

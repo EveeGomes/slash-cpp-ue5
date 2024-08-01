@@ -50,16 +50,6 @@ void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 
-	/**
-	* Set the health bar percentage
-	* In order to access this: HealthBarWidget->SetHealthPercent();
-	*  we have to change HealthBarWidget type in the header file to the same type as where SetHealthPercent is define:
-	*   UMyHealthBarComponent.
-	*/
-	if (HealthBarWidget) // check if the widget component is valid
-	{
-		HealthBarWidget->SetHealthPercent(1.f);
-	}
 }
 
 void AEnemy::PlayHitReactMontage(const FName& SectionName)
@@ -157,8 +147,20 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 	/** 
 	* Once we call ApplyDamage using GamePlayStatics, the Enemy TakeDamage will be called.
 	* We can do all the necessary actions here that we want to do, like updating the health and the health bar.
-	* 
+	* Use the component to call the Receive Damage function passing the DamageAmount. And thanks to GameplayStatics,
+	*  it'll make sure this function gets called whenever we apply damage.
+	* We'll then set the Health percent here instead of BeginPlay. We do inside the if statement because we'll need
+	*  the information of how much health we'll have and that info is stored on Attributes.
+	* We can combine both if statements, because in this case it's ok to not get inside the if statement if either of
+	*  them is false.
+	* @return we return DamageAmount because TakeDamage technically returns the amount of damage caused
 	*/
+
+	if (Attributes && HealthBarWidget)
+	{
+		Attributes->ReceiveDamage(DamageAmount);
+		HealthBarWidget->SetHealthPercent(Attributes->GetHealthPercent());
+	}
 
 	return 0.0f;
 }
