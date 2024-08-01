@@ -121,9 +121,10 @@ void ASlashCharacter::EKeyPressed()
 		* Another way is to use SetInstigator(), but in this case it's more specific than SetOwner as it asks for
 		*  a pawn as a param (pawn can be controlled by a person or AI). An actor can also be owned by any given pawn
 		*  so we can pass this.
+		* However, as we're doing all this associated with the fact of equipping the weapon, it'd be a better idea to
+		*  pass in the ownner and instigator into the equip function for the weapon.
 		*/
-		OverlappingWeapon->SetOwner(this);
-		OverlappingWeapon->SetInstigator(this);
+
 
 		CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
 		OverlappingItem = nullptr;
