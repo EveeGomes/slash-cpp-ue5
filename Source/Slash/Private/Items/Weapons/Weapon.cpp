@@ -149,14 +149,20 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
       *  can designate an instigator to be associated with that actor.
       * Therefore, as soon as we equip this actor, we should also set some information on it so that we can access 
       *  who is causing the damage here. (We go to the function that calls Equip in SlashCharacter which is EKeyPressed())
-      * 
+      * Although the instigator is a pawn, when it comes to damage it's referring as the EventInstigator 
+      * (when it's a controller), but really it's just the controller of the instigator pawn. We can think as
+      *  "the instigator controller ".
+      * As for the DamageTypeClass param, we could create our own UDamageClass type, but we'll use the UDamageType
+      *  StaticClass() method that returns a UClass and satisfies that input.
       */
 
       UGameplayStatics::ApplyDamage(
          BoxHit.GetActor(),
          Damage,
-
-      )
+         GetInstigator()->GetController(),
+         this,
+         UDamageType::StaticClass()
+      );
    }
 
    
