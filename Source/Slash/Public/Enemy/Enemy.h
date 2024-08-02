@@ -7,6 +7,7 @@
 /** Include the headers of the classes this one is inhereting from */
 #include "GameFramework/Character.h"
 #include "Interfaces/HitInterface.h"
+#include "Characters/CharacterTypes.h"
 
 #include "Enemy.generated.h"
 
@@ -51,6 +52,10 @@ protected:
 
 	/** Play Montage Functions */
 	void PlayHitReactMontage(const FName& SectionName);
+
+	/** Start with the alive pose */
+	UPROPERTY(BlueprintReadOnly) // Only access what the variable is. No need to expose to the details panel either
+	EDeathPose DeathPose = EDeathPose::EDP_Alive;
 
 private:
 	/** Animation Montages */

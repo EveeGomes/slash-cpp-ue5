@@ -66,26 +66,37 @@ void AEnemy::Die()
 		{
 		case 0:
 			SectionName = FName("Death1");
+			DeathPose = EDeathPose::EDP_Death1;
 			break;
 		case 1:
 			SectionName = FName("Death2");
+			DeathPose = EDeathPose::EDP_Death2;
 			break;
 		case 2:
 			SectionName = FName("Death3");
+			DeathPose = EDeathPose::EDP_Death3;
 			break;		
 		case 3:
 			SectionName = FName("Death4");
+			DeathPose = EDeathPose::EDP_Death4;
 			break;
 		case 4:
 			SectionName = FName("Death5");
+			DeathPose = EDeathPose::EDP_Death5;
 			break;
 		case 5:
 			SectionName = FName("Death6");
+			DeathPose = EDeathPose::EDP_Death6;
 			break;
 		}
 
 		AnimInstance->Montage_JumpToSection(SectionName, DeathMontage);
 	}
+
+	// Disable the capsule component collision
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	// Destroy the enemy after 3s of dying
+	SetLifeSpan(3.f);
 }
 
 void AEnemy::PlayHitReactMontage(const FName& SectionName)
