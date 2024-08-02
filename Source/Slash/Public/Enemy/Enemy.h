@@ -94,4 +94,19 @@ private:
 	/** Threshold to check the DistanceToTarget */
 	UPROPERTY(EditAnywhere)
 	double CombatRadius = 500.f;
+
+	/** 
+	* Navigation
+	*/
+
+	UPROPERTY()
+	TObjectPtr<class AAIController> EnemyController;
+
+	// Current patrol target
+	UPROPERTY(EditInstanceOnly, Category = "AI Navigation")
+	TObjectPtr<AActor> PatrolTarget;
+
+	// Once it reaches the PatrolTarget, it should change to a new PatrolTarget
+	UPROPERTY(EditInstanceOnly, Category = "AI Navigation")
+	TArray<TObjectPtr<AActor>> PatrolTargets;
 };
