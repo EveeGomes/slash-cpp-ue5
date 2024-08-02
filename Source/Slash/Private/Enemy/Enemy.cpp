@@ -49,7 +49,12 @@ AEnemy::AEnemy()
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
+	// Hide the health bar at the beginning of the game
+	if (HealthBarWidget)
+	{
+		HealthBarWidget->SetVisibility(false);
+	}
 }
 
 void AEnemy::Die()
@@ -113,6 +118,29 @@ void AEnemy::PlayHitReactMontage(const FName& SectionName)
 void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	/** Calculate the distance from the enemy to the actor that's hit it, ie: the CombatTarget */
+	if (CombatTarget)
+	{
+		/** 
+		* CombatTarget location - Enemy location = the vector from the enemy to the combat target
+		* Then we can get the distance by getting the length of this vector:
+		* (CombatTarget location - Enemy location).Size() or .Length()
+		* We'll then check this DistanceToTarget against a threshold that we'll declare as a double variable
+		* If the distance is greater than the combat radius, it means the target lost interest to the enemy,
+		*  so that CombatTarget can be set to null! ie we can set the CombatTarget at any circumstances we want.
+		*  If the CombatTarget is also too far away, we'll also hide the enemy health bar
+		*/ 
+		const double DistanceToTarget = (CombatTarget->GetActorLocation() - GetActorLocation()).Size();
+		if (DistanceToTarget > CombatRadius)
+		{
+			CombatTarget = nullptr;
+			if (HealthBarWidget)
+			{
+				HealthBarWidget->SetVisibility(false);
+			}
+		}
+	}
 }
 
 // Called to bind functionality to input
@@ -164,6 +192,12 @@ void AEnemy::DirectionalHitReact(const FVector& ImpactPoint)
 
 void AEnemy::GetHit_Implementation(const FVector& ImpactPoint)
 {
+	// Show health bar widget
+	if (HealthBarWidget)
+	{
+		HealthBarWidget->SetVisibility(true);
+	}
+
 	if (Attributes && Attributes->IsAlive())
 	{
 		DirectionalHitReact(ImpactPoint);
@@ -217,7 +251,9 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 		Attributes->ReceiveDamage(DamageAmount);
 		HealthBarWidget->SetHealthPercent(Attributes->GetHealthPercent());
 	}
+	// Get the pawn that's being controlled by this controller (EventInstigator)
+	CombatTarget = EventInstigator->GetPawn();
 
-	return 0.0f;
+	return DamageAmount;
 }
 

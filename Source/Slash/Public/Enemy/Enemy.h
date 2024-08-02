@@ -86,4 +86,12 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UMyHealthBarComponent> HealthBarWidget;
+
+	/** Pointer to store what has hit the enemy */
+	UPROPERTY() // ensures the pointer is set to null
+	TObjectPtr<AActor> CombatTarget;
+
+	/** Threshold to check the DistanceToTarget */
+	UPROPERTY(EditAnywhere)
+	double CombatRadius = 500.f;
 };
