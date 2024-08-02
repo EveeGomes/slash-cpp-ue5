@@ -98,6 +98,12 @@ void AEnemy::Die()
 		AnimInstance->Montage_JumpToSection(SectionName, DeathMontage);
 	}
 
+	// Hide the widget once the enemy dies
+	if (HealthBarWidget)
+	{
+		HealthBarWidget->SetVisibility(false);
+	}
+
 	// Disable the capsule component collision
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	// Destroy the enemy after 3s of dying
