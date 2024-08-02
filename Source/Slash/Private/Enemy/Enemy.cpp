@@ -20,6 +20,9 @@
 /** To use the HealthBarComponent */
 #include "HUD/MyHealthBarComponent.h"
 
+/** Setup movement orientation bool */
+#include "GameFramework/CharacterMovementComponent.h"
+
 // Sets default values
 AEnemy::AEnemy()
 {
@@ -43,6 +46,12 @@ AEnemy::AEnemy()
 	HealthBarWidget = CreateDefaultSubobject<UMyHealthBarComponent>(TEXT("HealthBar"));
 	// As it has a location in space, we can attach to the root component
 	HealthBarWidget->SetupAttachment(GetRootComponent());
+
+	// Makes enemy face to the direction it's moving
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	bUseControllerRotationPitch = false;
+	bUseControllerRotationYaw = false;
+	bUseControllerRotationRoll = false;
 }
 
 // Called when the game starts or when spawned
