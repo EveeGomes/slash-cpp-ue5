@@ -68,11 +68,19 @@ void AEnemy::BeginPlay()
 		HealthBarWidget->SetVisibility(false);
 	}
 
-	/** 
-	* Move the enemy for the first time here (in BeginPlay)
-	*/
+	/** Move the enemy for the first time here (in BeginPlay) */
 	EnemyController = Cast<AAIController>(GetController());
 	MoveToTarget(PatrolTarget);
+
+	/** 
+	* Access the world timer manager in order to set the timer.
+	* We'll pass the PatrolTimer, this as the user object on which our callback exists, then the address
+	*  of our callback function, and finally the time.
+	* 
+	* So, first we'll call MoveToTarget and then the timer will be set to 5 seconds. When that time
+	*  has elapsed, the callback will be called.
+	*/
+	GetWorldTimerManager().SetTimer(PatrolTimer, this, &AEnemy::PatrolTimerFinished, 5.f);
 }
 
 void AEnemy::Die()
@@ -157,6 +165,12 @@ void AEnemy::MoveToTarget(AActor* Target)
 	MoveRequest.SetGoalActor(Target);
 	MoveRequest.SetAcceptanceRadius(15.f);
 	EnemyController->MoveTo(MoveRequest);
+}
+
+void AEnemy::PatrolTimerFinished()
+{
+	/** When the timer has elapsed, call the move to target */
+	MoveToTarget(PatrolTarget);
 }
 
 // Called every frame

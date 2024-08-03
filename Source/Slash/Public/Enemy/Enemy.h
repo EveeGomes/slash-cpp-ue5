@@ -118,4 +118,16 @@ private:
 	// Once it reaches the PatrolTarget, it should change to a new PatrolTarget
 	UPROPERTY(EditInstanceOnly, Category = "AI Navigation")
 	TArray<TObjectPtr<AActor>> PatrolTargets;
+
+	/**
+	* TimerHandle is a struct that the world timer manager uses to keep track of various timers that we set.
+	*/
+	FTimerHandle PatrolTimer;
+	/** 
+	* In order to have a timer do something, we'll need a callback function.
+	* When we set a timer, we specify the TimerHandle (PatrolTimer), which allows the world timer manager keep track
+	*  of that timer. (Like an alarm clock with a function attached: PatrolTimerFinished()). 
+	*/
+	/** Moves the enemy to a target after a certain time */
+	void PatrolTimerFinished();
 };
