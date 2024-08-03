@@ -231,33 +231,6 @@ void AEnemy::Tick(float DeltaTime)
 		PatrolTarget = ChoosePatrolTarget();
 		MoveToTarget(PatrolTarget);
 	}
-	
-	//if (PatrolTarget && EnemyController) // these aren't need anymore as we're already checking PatrolTarget when we call InTargetRange() and EnemyController when we call MoveToTarget()!
-	//{
-	//	if (InTargetRange(PatrolTarget, PatrolRadius))
-	//	{
-	//		/** Have an array filled with all patrol targets except the one we currently have. */
-	//		TArray<AActor*> ValidTargets;
-	//		for (AActor* Target : PatrolTargets)
-	//		{
-	//			if (Target != PatrolTarget)
-	//			{
-	//				ValidTargets.AddUnique(Target);
-	//			}
-	//		}
-
-	//		// select one of the patrol target at random, and set it as our patrol target
-	//		const int32 TargetSelection = FMath::RandRange(0, ValidTargets.Num() - 1);
-	//		PatrolTarget = ValidTargets[TargetSelection];
-
-	//		// then, move to that target:
-	//		FAIMoveRequest MoveRequest;
-	//		MoveRequest.SetGoalActor(PatrolTarget);
-	//		MoveRequest.SetAcceptanceRadius(15.f);
-	//		EnemyController->MoveTo(MoveRequest);
-	//	}
-	//} 
-
 }
 
 // Called to bind functionality to input
