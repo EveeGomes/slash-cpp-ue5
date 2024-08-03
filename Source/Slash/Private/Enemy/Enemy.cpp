@@ -71,7 +71,7 @@ void AEnemy::BeginPlay()
 	/** Move the enemy for the first time here (in BeginPlay) */
 	EnemyController = Cast<AAIController>(GetController());
 	MoveToTarget(PatrolTarget);
-
+	
 	/** 
 	* Access the world timer manager in order to set the timer.
 	* We'll pass the PatrolTimer, this as the user object on which our callback exists, then the address
@@ -80,7 +80,7 @@ void AEnemy::BeginPlay()
 	* So, first we'll call MoveToTarget and then the timer will be set to 5 seconds. When that time
 	*  has elapsed, the callback will be called.
 	*/
-	GetWorldTimerManager().SetTimer(PatrolTimer, this, &AEnemy::PatrolTimerFinished, 5.f);
+	//GetWorldTimerManager().SetTimer(PatrolTimer, this, &AEnemy::PatrolTimerFinished, 5.f);
 }
 
 void AEnemy::Die()
@@ -148,6 +148,9 @@ void AEnemy::PlayHitReactMontage(const FName& SectionName)
 
 bool AEnemy::InTargetRange(AActor* Target, double Radius)
 {
+	// Return false in case Target is invalid so in Tick we can remove some other validations
+	if (Target == nullptr) return false;
+
 	const double DistanceToTarget = (Target->GetActorLocation() - GetActorLocation()).Size();
 	// Draw some debug spheres here as it's gonna be called every frame. These spheres are to show the locations
 	//  of the enemy and its target location.
@@ -165,6 +168,28 @@ void AEnemy::MoveToTarget(AActor* Target)
 	MoveRequest.SetGoalActor(Target);
 	MoveRequest.SetAcceptanceRadius(15.f);
 	EnemyController->MoveTo(MoveRequest);
+}
+
+AActor* AEnemy::ChoosePatrolTarget()
+{
+	/** Have an array filled with all patrol targets except the one we currently have. */
+	TArray<AActor*> ValidTargets;
+	for (AActor* Target : PatrolTargets)
+	{
+		if (Target != PatrolTarget)
+		{
+			ValidTargets.AddUnique(Target);
+		}
+	}
+
+	// select one of the patrol target at random, and return our patrol target
+	if (ValidTargets.Num() > 0)
+	{
+		const int32 TargetSelection = FMath::RandRange(0, ValidTargets.Num() - 1);
+		return ValidTargets[TargetSelection];
+	}
+
+	return nullptr;
 }
 
 void AEnemy::PatrolTimerFinished()
@@ -201,40 +226,38 @@ void AEnemy::Tick(float DeltaTime)
 		}
 	}
 
-	if (PatrolTarget && EnemyController)
+	if (InTargetRange(PatrolTarget, PatrolRadius))
 	{
-		if (InTargetRange(PatrolTarget, PatrolRadius))
-		{
-			/** 
-			* Have an array filled with all patrol targets except the one we currently have.
-			* 
-			*/
-			TArray<AActor*> ValidTargets;
-			for (AActor* Target : PatrolTargets)
-			{
-				if (Target != PatrolTarget)
-				{
-					ValidTargets.AddUnique(Target);
-				}
-			}
-
-			// select one of the patrol target at random, and set it as our patrol target
-			const int32 TargetSelection = FMath::RandRange(0, ValidTargets.Num() - 1);
-			PatrolTarget = ValidTargets[TargetSelection];
-
-			// then, move to that target:
-			FAIMoveRequest MoveRequest;
-			MoveRequest.SetGoalActor(PatrolTarget);
-			MoveRequest.SetAcceptanceRadius(15.f);
-
-			/** 
-			* However, this is problematic to be calling MoveTo inside Tick function(every frame!)
-			* That's because there's a possibility (very low, but there is) of TargetSelection being the
-			*  same number every frame, therefore PatrolTarget is gonna be the same target over and over again.
-			*/
-			EnemyController->MoveTo(MoveRequest);
-		}
+		PatrolTarget = ChoosePatrolTarget();
+		MoveToTarget(PatrolTarget);
 	}
+	
+	//if (PatrolTarget && EnemyController) // these aren't need anymore as we're already checking PatrolTarget when we call InTargetRange() and EnemyController when we call MoveToTarget()!
+	//{
+	//	if (InTargetRange(PatrolTarget, PatrolRadius))
+	//	{
+	//		/** Have an array filled with all patrol targets except the one we currently have. */
+	//		TArray<AActor*> ValidTargets;
+	//		for (AActor* Target : PatrolTargets)
+	//		{
+	//			if (Target != PatrolTarget)
+	//			{
+	//				ValidTargets.AddUnique(Target);
+	//			}
+	//		}
+
+	//		// select one of the patrol target at random, and set it as our patrol target
+	//		const int32 TargetSelection = FMath::RandRange(0, ValidTargets.Num() - 1);
+	//		PatrolTarget = ValidTargets[TargetSelection];
+
+	//		// then, move to that target:
+	//		FAIMoveRequest MoveRequest;
+	//		MoveRequest.SetGoalActor(PatrolTarget);
+	//		MoveRequest.SetAcceptanceRadius(15.f);
+	//		EnemyController->MoveTo(MoveRequest);
+	//	}
+	//} 
+
 }
 
 // Called to bind functionality to input

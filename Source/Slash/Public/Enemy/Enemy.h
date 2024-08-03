@@ -63,6 +63,9 @@ protected:
 	/** It calls MoveTo */
 	void MoveToTarget(AActor* Target);
 
+	/** Pick a new patrol target at random */
+	AActor* ChoosePatrolTarget();
+
 private:
 	/** Animation Montages */
 	UPROPERTY(EditDefaultsOnly, Category = "Montage")
