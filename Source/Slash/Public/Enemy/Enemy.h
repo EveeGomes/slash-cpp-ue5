@@ -57,6 +57,9 @@ protected:
 	UPROPERTY(BlueprintReadOnly) // Only access what the variable is. No need to expose to the details panel either
 	EDeathPose DeathPose = EDeathPose::EDP_Alive;
 
+	/** Returns true if we're in range of that Target, based on a specified radius */
+	bool InTargetRange(AActor* Target, double Radius);
+
 private:
 	/** Animation Montages */
 	UPROPERTY(EditDefaultsOnly, Category = "Montage")
@@ -94,6 +97,9 @@ private:
 	/** Threshold to check the DistanceToTarget */
 	UPROPERTY(EditAnywhere)
 	double CombatRadius = 500.f;
+
+	UPROPERTY(EditAnywhere)
+	double PatrolRadius = 200.f;
 
 	/** 
 	* Navigation

@@ -164,6 +164,12 @@ void AEnemy::PlayHitReactMontage(const FName& SectionName)
 	}
 }
 
+bool AEnemy::InTargetRange(AActor* Target, double Radius)
+{
+	const double DistanceToTarget = (Target->GetActorLocation() - GetActorLocation()).Size();
+	return DistanceToTarget <= Radius;
+}
+
 // Called every frame
 void AEnemy::Tick(float DeltaTime)
 {
@@ -172,7 +178,7 @@ void AEnemy::Tick(float DeltaTime)
 	/** Calculate the distance from the enemy to the actor that's hit it, ie: the CombatTarget */
 	if (CombatTarget)
 	{
-		/** 
+		/**
 		* CombatTarget location - Enemy location = the vector from the enemy to the combat target
 		* Then we can get the distance by getting the length of this vector:
 		* (CombatTarget location - Enemy location).Size() or .Length()
@@ -180,15 +186,35 @@ void AEnemy::Tick(float DeltaTime)
 		* If the distance is greater than the combat radius, it means the target lost interest to the enemy,
 		*  so that CombatTarget can be set to null! ie we can set the CombatTarget at any circumstances we want.
 		*  If the CombatTarget is also too far away, we'll also hide the enemy health bar
-		*/ 
+		*/
 		const double DistanceToTarget = (CombatTarget->GetActorLocation() - GetActorLocation()).Size();
-		if (DistanceToTarget > CombatRadius)
+		if (!InTargetRange(CombatTarget, CombatRadius)); // InTargetRange returns false so we use ! to make it true and enter
 		{
 			CombatTarget = nullptr;
 			if (HealthBarWidget)
 			{
 				HealthBarWidget->SetVisibility(false);
 			}
+		}
+	}
+
+	if (PatrolTarget && EnemyController)
+	{
+		if (InTargetRange(PatrolTarget, PatrolRadius))
+		{
+			// select one of the patrol target at random, and set it as our patrol target
+			const int32 TargetSelection = FMath::RandRange(0, PatrolTargets.Num() - 1);
+			PatrolTarget = PatrolTargets[TargetSelection];
+
+			// then, move to that target:
+
+			// Set an FAIMoveRequest before sending as a param to MoveTo
+			FAIMoveRequest MoveRequest;
+			MoveRequest.SetGoalActor(PatrolTarget);
+			MoveRequest.SetAcceptanceRadius(15.f); // the enemy will stop 15 units short
+			// NavPath is an optional input, so we can live it out. We were using it in BeginPlay to actually
+			//  check the PathPoints using debug spheres.
+			EnemyController->MoveTo(MoveRequest);
 		}
 	}
 }
