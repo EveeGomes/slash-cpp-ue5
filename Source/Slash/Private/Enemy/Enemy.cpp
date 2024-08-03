@@ -203,33 +203,29 @@ void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	/** Calculate the distance from the enemy to the actor that's hit it, ie: the CombatTarget */
-	if (CombatTarget)
-	{
-		/**
-		* CombatTarget location - Enemy location = the vector from the enemy to the combat target
-		* Then we can get the distance by getting the length of this vector:
-		* (CombatTarget location - Enemy location).Size() or .Length()
-		* We'll then check this DistanceToTarget against a threshold that we'll declare as a double variable
-		* If the distance is greater than the combat radius, it means the target lost interest to the enemy,
-		*  so that CombatTarget can be set to null! ie we can set the CombatTarget at any circumstances we want.
-		*  If the CombatTarget is also too far away, we'll also hide the enemy health bar
-		*/
-		const double DistanceToTarget = (CombatTarget->GetActorLocation() - GetActorLocation()).Size();
-		if (!InTargetRange(CombatTarget, CombatRadius)) // InTargetRange returns false so we use ! to make it true and enter
-		{
-			CombatTarget = nullptr;
-			if (HealthBarWidget)
-			{
-				HealthBarWidget->SetVisibility(false);
-			}
-		}
-	}
+	CheckCombatTarget();
+	CheckPatrolTarget();
+}
 
+void AEnemy::CheckPatrolTarget()
+{
 	if (InTargetRange(PatrolTarget, PatrolRadius))
 	{
 		PatrolTarget = ChoosePatrolTarget();
-		MoveToTarget(PatrolTarget);
+		// Now, instead of calling MoveToTarget we should call SetTimer which will call MoveTarget but after a time
+		GetWorldTimerManager().SetTimer(PatrolTimer, this, &AEnemy::PatrolTimerFinished, 5.f);
+	}
+}
+
+void AEnemy::CheckCombatTarget()
+{
+	if (!InTargetRange(CombatTarget, CombatRadius))
+	{
+		CombatTarget = nullptr;
+		if (HealthBarWidget)
+		{
+			HealthBarWidget->SetVisibility(false);
+		}
 	}
 }
 
