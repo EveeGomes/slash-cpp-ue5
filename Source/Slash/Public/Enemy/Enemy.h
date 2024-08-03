@@ -9,6 +9,9 @@
 #include "Interfaces/HitInterface.h"
 #include "Characters/CharacterTypes.h"
 
+/** Use Action States */
+#include "Characters/CharacterTypes.h"
+
 #include "Enemy.generated.h"
 
 /** For animation montage logic */
@@ -54,8 +57,12 @@ protected:
 	/** Play the death montage */
 	void Die();
 
-	/** Play Montage Functions */
+	/** 
+	* Play Montage Functions 
+	*/
 	void PlayHitReactMontage(const FName& SectionName);
+	void PlayIdlePatrolMontage(const FName& SectionName);
+
 
 	/** Start with the alive pose */
 	UPROPERTY(BlueprintReadOnly) // Only access what the variable is. No need to expose to the details panel either
@@ -70,13 +77,26 @@ protected:
 	/** Pick a new patrol target at random */
 	AActor* ChoosePatrolTarget();
 
+	UFUNCTION(BlueprintCallable)
+	void FinishIdlePatrol();
+
 private:
-	/** Animation Montages */
+	/** 
+	* Animation Montages 
+	*/
 	UPROPERTY(EditDefaultsOnly, Category = "Montage")
 	TObjectPtr<UAnimMontage> HitReactMontage;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Montage")
 	TObjectPtr<UAnimMontage> DeathMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Montage")
+	TObjectPtr<UAnimMontage> IdlePatrolMontage;
+
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	EActionState ActionState = EActionState::EAS_Unoccupied;
+
+	//bool IsPatrolling();
 
 	/** 
 	* Variable to set a sound when an enemy gets hit.
@@ -111,10 +131,11 @@ private:
 	UPROPERTY(EditAnywhere)
 	double PatrolRadius = 200.f;
 
+	float m_AcceptanceRadius = 0.f;
+
 	/** 
 	* Navigation
 	*/
-
 	UPROPERTY()
 	TObjectPtr<class AAIController> EnemyController;
 
@@ -137,4 +158,8 @@ private:
 	*/
 	/** Moves the enemy to a target after a certain time */
 	void PatrolTimerFinished();
+
+	UPROPERTY(EditAnywhere, Category = "AI Navigation")
+	float WaitMin = 9.f;
+	float WaitMax = 10.f;
 };
