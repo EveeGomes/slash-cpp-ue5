@@ -167,6 +167,11 @@ void AEnemy::PlayHitReactMontage(const FName& SectionName)
 bool AEnemy::InTargetRange(AActor* Target, double Radius)
 {
 	const double DistanceToTarget = (Target->GetActorLocation() - GetActorLocation()).Size();
+	// Draw some debug spheres here as it's gonna be called every frame. These spheres are to show the locations
+	//  of the enemy and its target location.
+	DRAW_SPHERE_SingleFrame(GetActorLocation());
+	DRAW_SPHERE_SingleFrame(Target->GetActorLocation());
+
 	return DistanceToTarget <= Radius;
 }
 
@@ -188,7 +193,7 @@ void AEnemy::Tick(float DeltaTime)
 		*  If the CombatTarget is also too far away, we'll also hide the enemy health bar
 		*/
 		const double DistanceToTarget = (CombatTarget->GetActorLocation() - GetActorLocation()).Size();
-		if (!InTargetRange(CombatTarget, CombatRadius)); // InTargetRange returns false so we use ! to make it true and enter
+		if (!InTargetRange(CombatTarget, CombatRadius)) // InTargetRange returns false so we use ! to make it true and enter
 		{
 			CombatTarget = nullptr;
 			if (HealthBarWidget)
@@ -202,18 +207,33 @@ void AEnemy::Tick(float DeltaTime)
 	{
 		if (InTargetRange(PatrolTarget, PatrolRadius))
 		{
+			/** 
+			* Have an array filled with all patrol targets except the one we currently have.
+			* 
+			*/
+			TArray<AActor*> ValidTargets;
+			for (AActor* Target : PatrolTargets)
+			{
+				if (Target != PatrolTarget)
+				{
+					ValidTargets.AddUnique(Target);
+				}
+			}
+
 			// select one of the patrol target at random, and set it as our patrol target
-			const int32 TargetSelection = FMath::RandRange(0, PatrolTargets.Num() - 1);
-			PatrolTarget = PatrolTargets[TargetSelection];
+			const int32 TargetSelection = FMath::RandRange(0, ValidTargets.Num() - 1);
+			PatrolTarget = ValidTargets[TargetSelection];
 
 			// then, move to that target:
-
-			// Set an FAIMoveRequest before sending as a param to MoveTo
 			FAIMoveRequest MoveRequest;
 			MoveRequest.SetGoalActor(PatrolTarget);
-			MoveRequest.SetAcceptanceRadius(15.f); // the enemy will stop 15 units short
-			// NavPath is an optional input, so we can live it out. We were using it in BeginPlay to actually
-			//  check the PathPoints using debug spheres.
+			MoveRequest.SetAcceptanceRadius(15.f);
+
+			/** 
+			* However, this is problematic to be calling MoveTo inside Tick function(every frame!)
+			* That's because there's a possibility (very low, but there is) of TargetSelection being the
+			*  same number every frame, therefore PatrolTarget is gonna be the same target over and over again.
+			*/
 			EnemyController->MoveTo(MoveRequest);
 		}
 	}
