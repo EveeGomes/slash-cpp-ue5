@@ -72,33 +72,7 @@ void AEnemy::BeginPlay()
 	* Move the enemy for the first time here (in BeginPlay)
 	*/
 	EnemyController = Cast<AAIController>(GetController());
-	if (EnemyController && PatrolTarget)
-	{
-		// Set an FAIMoveRequest before sending as a param to MoveTo
-		FAIMoveRequest MoveRequest;
-		MoveRequest.SetGoalActor(PatrolTarget);
-		MoveRequest.SetAcceptanceRadius(15.f); // the enemy will stop 15 units short
-		// Local variable to pass as arg to MoveTo
-		FNavPathSharedPtr NavPath;
-
-		EnemyController->MoveTo(MoveRequest, &NavPath);
-		/**
-		* FNavPathSharedPtr type has path points. FNavPathPoint is a struct derived from FNavLocation which has
-		*  a FVector member variable, Location.
-		* Having a FNavPathSharedPtr allows us to access data on that NavPath after it's passed as arg to MoveTo.
-		* 
-		* We can use a reference to avoid making copy of it.
-		* Check: https://chatgpt.com/share/fb6b1b33-0e80-424a-8b72-455247c98782
-		*/
-		TArray<FNavPathPoint>& PathPoints = NavPath->GetPathPoints();
-		// Draw some debug spheres to see those NavPathPoints
-		for (auto& Point : PathPoints)
-		{
-			const FVector& Location = Point.Location;
-			DrawDebugSphere(GetWorld(), Location, 12.f, 12, FColor::Green, false, 10.f);
-		}
-
-	}
+	MoveToTarget(PatrolTarget);
 }
 
 void AEnemy::Die()
@@ -173,6 +147,16 @@ bool AEnemy::InTargetRange(AActor* Target, double Radius)
 	DRAW_SPHERE_SingleFrame(Target->GetActorLocation());
 
 	return DistanceToTarget <= Radius;
+}
+
+void AEnemy::MoveToTarget(AActor* Target)
+{
+	if (EnemyController == nullptr || Target == nullptr) return; // this removes the need for the next if statement
+
+	FAIMoveRequest MoveRequest;
+	MoveRequest.SetGoalActor(Target);
+	MoveRequest.SetAcceptanceRadius(15.f);
+	EnemyController->MoveTo(MoveRequest);
 }
 
 // Called every frame

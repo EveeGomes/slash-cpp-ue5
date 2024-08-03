@@ -60,6 +60,9 @@ protected:
 	/** Returns true if we're in range of that Target, based on a specified radius */
 	bool InTargetRange(AActor* Target, double Radius);
 
+	/** It calls MoveTo */
+	void MoveToTarget(AActor* Target);
+
 private:
 	/** Animation Montages */
 	UPROPERTY(EditDefaultsOnly, Category = "Montage")
