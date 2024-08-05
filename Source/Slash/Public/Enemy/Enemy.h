@@ -70,6 +70,10 @@ protected:
 	UPROPERTY(BlueprintReadOnly) // Only access what the variable is. No need to expose to the details panel either
 	EDeathPose DeathPose = EDeathPose::EDP_Alive;
 
+
+	UPROPERTY(BlueprintReadOnly)
+	EIdlePatrol IdlePatrolState = EIdlePatrol::EIP_Idle;
+
 	/** Returns true if we're in range of that Target, based on a specified radius */
 	bool InTargetRange(AActor* Target, double Radius);
 
@@ -95,8 +99,7 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Montage")
 	TObjectPtr<UAnimMontage> IdlePatrolMontage;
 
-	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	EActionState ActionState = EActionState::EAS_Unoccupied;
+
 
 	//bool IsPatrolling();
 

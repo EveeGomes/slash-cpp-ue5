@@ -70,7 +70,7 @@ void AEnemy::BeginPlay()
 
 	/** Move the enemy for the first time here (in BeginPlay) */
 	EnemyController = Cast<AAIController>(GetController());
-	if (ActionState == EActionState::EAS_Unoccupied)
+	if (IdlePatrolState == EIdlePatrol::EIP_Idle)
 	{
 		//GEngine->AddOnScreenDebugMessage(1, 2.f, FColor::Red, FString("Unoccupied Begin Play"));
 		MoveToTarget(PatrolTarget);
@@ -225,16 +225,19 @@ void AEnemy::MoveToTarget(AActor* Target)
 	//m_AcceptanceRadius = MoveRequest.GetAcceptanceRadius(); //<< NO NEED? REMOVE FROM HEADER FILE
 	EnemyController->MoveTo(MoveRequest);
 
-	if (ActionState == EActionState::EAS_Patrolling)
-	{
-		GEngine->AddOnScreenDebugMessage(2, 2.f, FColor::Yellow, FString("MoveToTarget Patrolling"));
-	}
+	//// ok... <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+	//IdlePatrolState = EIdlePatrol::EIP_Patrolling;
+	//GEngine->AddOnScreenDebugMessage(3, 2.f, FColor::Yellow, FString("MoveToTarget Patrolling"));
 }
 
 // It detects GetVelocity().IsZero() before the enemy velocity reaches zero
 AActor* AEnemy::ChoosePatrolTarget() 
 {
 	//GEngine->AddOnScreenDebugMessage(5, 2.f, FColor::Yellow, FString::Printf(TEXT("Is zero: %d"), GetVelocity().IsZero()));
+
+	//// It's set while it's still walking...
+	//ActionState = EActionState::EAS_Patrolling;
+	//GEngine->AddOnScreenDebugMessage(3, 2.f, FColor::Green, FString("ChoosePatrolTarget Patrolling"));
 
 	/** Have an array filled with all patrol targets except the one we currently have. */
 	TArray<AActor*> ValidTargets;
@@ -258,7 +261,7 @@ AActor* AEnemy::ChoosePatrolTarget()
 
 void AEnemy::FinishIdlePatrol()
 {
-	ActionState = EActionState::EAS_Patrolling;
+	IdlePatrolState = EIdlePatrol::EIP_Patrolling;
 	//GEngine->AddOnScreenDebugMessage(5, 1.f, FColor::Cyan, FString("Unoccupied"));
 }
 
@@ -266,8 +269,8 @@ void AEnemy::FinishIdlePatrol()
 void AEnemy::PatrolTimerFinished()
 {	
 	//// Finished the time, change to EAS_Patrolling and move
-	ActionState = EActionState::EAS_Patrolling;
-	GEngine->AddOnScreenDebugMessage(3, 2.f, FColor::Cyan, FString("PatrolTimerFinished Patrolling"));
+	//ActionState = EActionState::EAS_Patrolling;
+	//GEngine->AddOnScreenDebugMessage(3, 2.f, FColor::Cyan, FString("PatrolTimerFinished Patrolling"));
 	
 	MoveToTarget(PatrolTarget);
 }
@@ -294,7 +297,7 @@ void AEnemy::CheckCombatTarget()
 	if (GetVelocity().IsZero())
 	{
 		GEngine->AddOnScreenDebugMessage(5, 1.f, FColor::Orange, FString::Printf(TEXT("EAS_IdlePatrol and Is Zero: %d"), GetVelocity().IsZero()));
-		ActionState = EActionState::EAS_IdlePatrol;
+		IdlePatrolState = EIdlePatrol::EIP_IdlePatrol;
 
 		//FName SectionName = IdlePatrolSectionName();
 		//PlayIdlePatrolMontage(SectionName);
@@ -317,22 +320,25 @@ void AEnemy::CheckPatrolTarget()
 
 	//GEngine->AddOnScreenDebugMessage(4, 2.f, FColor::Orange, FString::Printf(TEXT("CheckPatrolTarget. IdlePatrol Is Zero: %d"), GetVelocity().IsZero()));
 
-	//if (GetVelocity().IsZero() && ActionState == EActionState::EAS_IdlePatrol) // FVector{ 0.f }
-	//{
-	//	GEngine->AddOnScreenDebugMessage(5, 1.f, FColor::Orange, FString::Printf(TEXT("EAS_IdlePatrol and Is zero: %d"), GetVelocity().IsZero()));
-	//	
-	//	// After it moves to target, play the animation montage:
-	//	FName SectionName = IdlePatrolSectionName();
-	//	PlayIdlePatrolMontage(SectionName);
-	//}
+	// Doesn't work
+	//IdlePatrolState = EIdlePatrol::EIP_Patrolling;
+	//GEngine->AddOnScreenDebugMessage(3, 2.f, FColor::Yellow, FString("MoveToTarget Patrolling"));
 
 	if (InTargetRange(PatrolTarget, PatrolRadius))
 	{
 		PatrolTarget = ChoosePatrolTarget();
 
+		// ok!
+		IdlePatrolState = EIdlePatrol::EIP_Patrolling;
+		GEngine->AddOnScreenDebugMessage(3, 2.f, FColor::Orange, FString("CheckPatrolTarget Patrolling"));
+
 		const float WaitTime = FMath::RandRange(WaitMin, WaitMax);
 		GetWorldTimerManager().SetTimer(PatrolTimer, this, &AEnemy::PatrolTimerFinished, WaitTime);
 	}
+
+	//// NO!!!!!!!
+	//ActionState = EActionState::EAS_Patrolling;
+	//GEngine->AddOnScreenDebugMessage(3, 2.f, FColor::Cyan, FString("CheckPatrolTarget Patrolling"));
 }
 
 // Called to bind functionality to input

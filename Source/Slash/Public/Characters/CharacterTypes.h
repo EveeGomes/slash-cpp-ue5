@@ -14,8 +14,6 @@ enum class EActionState : uint8
 	EAS_Unoccupied UMETA(DisplayName = "Unoccupied"),
 	EAS_Attacking UMETA(DisplayName = "Attacking"),
 	EAS_EquippingWeapon UMETA(DisplayName = "Equipping Weapon"),
-	EAS_Patrolling UMETA(DisplayName = "Patrolling"),
-	EAS_IdlePatrol UMETA(DisplayName = "Idle Patrol")
 };
 
 /** 
@@ -32,4 +30,12 @@ enum class EDeathPose : uint8
 	EDP_Death4 UMETA(DisplayName = "Death4"),
 	EDP_Death5 UMETA(DisplayName = "Death5"),
 	EDP_Death6 UMETA(DisplayName = "Death6")
+};
+
+UENUM(BlueprintType)
+enum class EIdlePatrol : uint8
+{
+	EIP_Idle UMETA(DisplayName = "Idle"),
+	EIP_Patrolling UMETA(DisplayName = "Patrolling"),
+	EIP_IdlePatrol UMETA(DisplayName = "Idle Patrol")
 };
