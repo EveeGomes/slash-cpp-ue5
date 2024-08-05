@@ -62,6 +62,8 @@ protected:
 	*/
 	void PlayHitReactMontage(const FName& SectionName);
 	void PlayIdlePatrolMontage(const FName& SectionName);
+	FName IdlePatrolSectionName();
+	// have a FName member variable to return a FName& instead of a copy?
 
 
 	/** Start with the alive pose */

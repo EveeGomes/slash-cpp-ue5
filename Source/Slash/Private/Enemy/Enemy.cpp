@@ -72,7 +72,7 @@ void AEnemy::BeginPlay()
 	EnemyController = Cast<AAIController>(GetController());
 	if (ActionState == EActionState::EAS_Unoccupied)
 	{
-		GEngine->AddOnScreenDebugMessage(1, 2.f, FColor::Red, FString("Unoccupied Begin Play"));
+		//GEngine->AddOnScreenDebugMessage(1, 2.f, FColor::Red, FString("Unoccupied Begin Play"));
 		MoveToTarget(PatrolTarget);
 	}
 	//MoveToTarget(PatrolTarget);
@@ -161,15 +161,8 @@ void AEnemy::PlayIdlePatrolMontage(const FName& SectionName)
 	}
 }
 
-bool AEnemy::InTargetRange(AActor* Target, double Radius)
+FName AEnemy::IdlePatrolSectionName()
 {
-	// Return false in case Target is invalid so in Tick we can remove some other validations
-	if (Target == nullptr) return false;
-
-	//GEngine->AddOnScreenDebugMessage(2, 9.f, FColor::Cyan, FString::Printf(TEXT("Enemy velocity: %lf %lf"), GetVelocity().X, GetVelocity().Y));
-	//GEngine->AddOnScreenDebugMessage(3, 9.f, FColor::Cyan, FString::Printf(TEXT("Is zero: %d"), GetVelocity().IsZero()));
-
-	// After it moves to target, play the animation montage:
 	const int32 Selection = FMath::RandRange(0, 2);
 	FName SectionName = FName();
 	switch (Selection)
@@ -184,12 +177,13 @@ bool AEnemy::InTargetRange(AActor* Target, double Radius)
 		SectionName = FName("Patrol3");
 	}
 
-	//if (GetVelocity().IsZero() && ActionState == EActionState::EAS_Unoccupied) // FVector{ 0.f }
-	//{
-	//	GEngine->AddOnScreenDebugMessage(4, 1.f, FColor::Purple, FString::Printf(TEXT("Unoccupied, Enemy velocity: %lf %lf"), GetVelocity().X, GetVelocity().Y));
-	//	/*GEngine->AddOnScreenDebugMessage(4, 1.f, FColor::Cyan, FString("Zero velocity"));*/
-	//	//PlayIdlePatrolMontage(SectionName);
-	//}
+	return SectionName;
+}
+
+bool AEnemy::InTargetRange(AActor* Target, double Radius)
+{
+	// Return false in case Target is invalid so in Tick we can remove some other validations
+	if (Target == nullptr) return false;
 
 	const double DistanceToTarget = (Target->GetActorLocation() - GetActorLocation()).Size();
 	// Draw some debug spheres here as it's gonna be called every frame. These spheres are to show the locations
@@ -197,19 +191,26 @@ bool AEnemy::InTargetRange(AActor* Target, double Radius)
 	DRAW_SPHERE_SingleFrame(GetActorLocation());
 	DRAW_SPHERE_SingleFrame(Target->GetActorLocation());
 
-	GEngine->AddOnScreenDebugMessage(6, 1.f, FColor::Cyan, FString("InTargetRange"));
+	GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString("InTargetRange"));
 
-	ActionState = EActionState::EAS_Unoccupied;
-	if (!GetVelocity().IsZero() && ActionState == EActionState::EAS_Unoccupied) // FVector{ 0.f }
-	{
-		GEngine->AddOnScreenDebugMessage(2, 1.f, FColor::Orange, FString::Printf(TEXT("Unoccupied and Is zero: %d"), GetVelocity().IsZero()));
-		/*GEngine->AddOnScreenDebugMessage(4, 1.f, FColor::Cyan, FString("Zero velocity"));*/
-		PlayIdlePatrolMontage(SectionName);
-	}
+
+	// THIS CAN'T BE HERE AS CheckCombatTarget() CHECKS THIS AS WELL AS CheckPatrolTarget() SO IT KEEPS SETTING THE STATE!
+	
+	//ActionState = EActionState::EAS_IdlePatrol;
+	//
+	//if (!GetVelocity().IsZero() && ActionState == EActionState::EAS_IdlePatrol) // FVector{ 0.f }
+	//{
+	//	GEngine->AddOnScreenDebugMessage(3, 1.f, FColor::Orange, FString::Printf(TEXT("EAS_IdlePatrol and Is zero: %d"), GetVelocity().IsZero()));
+	//	
+	//	// After it moves to target, play the animation montage:
+	//	FName SectionName = IdlePatrolSectionName();
+	//	PlayIdlePatrolMontage(SectionName);
+	//}
 
 	return DistanceToTarget <= Radius;
 }
 
+// enemy velocity always returns zero in this function
 void AEnemy::MoveToTarget(AActor* Target)
 {
 	if (EnemyController == nullptr || Target == nullptr) return; // this removes the need for the next if statement
@@ -221,21 +222,18 @@ void AEnemy::MoveToTarget(AActor* Target)
 	MoveRequest.SetGoalActor(Target);
 	MoveRequest.SetAcceptanceRadius(15.f);
 
-	m_AcceptanceRadius = MoveRequest.GetAcceptanceRadius();
+	//m_AcceptanceRadius = MoveRequest.GetAcceptanceRadius(); //<< NO NEED? REMOVE FROM HEADER FILE
+	EnemyController->MoveTo(MoveRequest);
 
-	if (ActionState == EActionState::EAS_Unoccupied)
+	if (ActionState == EActionState::EAS_Patrolling)
 	{
-		EnemyController->MoveTo(MoveRequest);
+		GEngine->AddOnScreenDebugMessage(2, 2.f, FColor::Yellow, FString("MoveToTarget Patrolling"));
 	}
-	
-	//ActionState = EActionState::EAS_Unoccupied;
-
-	// enemy velocity always returns zero in this function
 }
 
-AActor* AEnemy::ChoosePatrolTarget()
+// It detects GetVelocity().IsZero() before the enemy velocity reaches zero
+AActor* AEnemy::ChoosePatrolTarget() 
 {
-	// It detects before the enemy velocity reaches zero
 	//GEngine->AddOnScreenDebugMessage(5, 2.f, FColor::Yellow, FString::Printf(TEXT("Is zero: %d"), GetVelocity().IsZero()));
 
 	/** Have an array filled with all patrol targets except the one we currently have. */
@@ -260,14 +258,17 @@ AActor* AEnemy::ChoosePatrolTarget()
 
 void AEnemy::FinishIdlePatrol()
 {
-	ActionState = EActionState::EAS_Unoccupied;
+	ActionState = EActionState::EAS_Patrolling;
 	//GEngine->AddOnScreenDebugMessage(5, 1.f, FColor::Cyan, FString("Unoccupied"));
 }
 
+/** When the timer has elapsed, call MoveToTarget */
 void AEnemy::PatrolTimerFinished()
-{
-
-	/** When the timer has elapsed, call the move to target */
+{	
+	//// Finished the time, change to EAS_Patrolling and move
+	ActionState = EActionState::EAS_Patrolling;
+	GEngine->AddOnScreenDebugMessage(3, 2.f, FColor::Cyan, FString("PatrolTimerFinished Patrolling"));
+	
 	MoveToTarget(PatrolTarget);
 }
 
@@ -276,72 +277,28 @@ void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	CheckCombatTarget(); // patrolling
-	CheckPatrolTarget(); //
+	CheckCombatTarget(); // EAS_IdlePatrol
+	CheckPatrolTarget(); // in PatrolTimerFinished, set EAS_Patrolling
 
 	// didn't work here
 }
 
-void AEnemy::CheckPatrolTarget()
-{
-	ActionState = EActionState::EAS_Unoccupied;
-	GEngine->AddOnScreenDebugMessage(5, 1.f, FColor::Cyan, FString("Check Patrol Target Unoccupied"));
-
-	//GEngine->AddOnScreenDebugMessage(2, 9.f, FColor::Cyan, FString::Printf(TEXT("Enemy velocity: %lf %lf"), GetVelocity().X, GetVelocity().Y));
-	//GEngine->AddOnScreenDebugMessage(3, 9.f, FColor::Cyan, FString::Printf(TEXT("Is zero: %d"), GetVelocity().IsZero()));
-
-	//// After it moves to target, play the animation montage:
-	//const int32 Selection = FMath::RandRange(0, 2);
-	//FName SectionName = FName();
-	//switch (Selection)
-	//{
-	//case 0:
-	//	SectionName = FName("Patrol1");
-	//	break;
-	//case 1:
-	//	SectionName = FName("Patrol2");
-	//	break;
-	//case 2:
-	//	SectionName = FName("Patrol3");
-	//}
-
-	if (InTargetRange(PatrolTarget, PatrolRadius))
-	{
-		//GEngine->AddOnScreenDebugMessage(1, 2.f, FColor::Cyan, FString::Printf(TEXT("Is zero: %d"), GetVelocity().IsZero()));
-		//ActionState = EActionState::EAS_Unoccupied;
-		//GEngine->AddOnScreenDebugMessage(5, 1.f, FColor::Cyan, FString("Unoccupied"));
-
-		//if (GetVelocity().IsZero() && ActionState == EActionState::EAS_Unoccupied) // FVector{ 0.f }
-		//{
-		//	GEngine->AddOnScreenDebugMessage(2, 1.f, FColor::Orange, FString::Printf(TEXT("Unoccupied and Is zero: %d"), GetVelocity().IsZero()));
-		//	/*GEngine->AddOnScreenDebugMessage(4, 1.f, FColor::Cyan, FString("Zero velocity"));*/
-		//	PlayIdlePatrolMontage(SectionName);
-		//}
-
-		PatrolTarget = ChoosePatrolTarget();
-
-		const float WaitTime = FMath::RandRange(WaitMin, WaitMax);
-		GetWorldTimerManager().SetTimer(PatrolTimer, this, &AEnemy::PatrolTimerFinished, WaitTime);
-
-		//GEngine->AddOnScreenDebugMessage(6, 1.f, FColor::Cyan, FString("After set time"));
-		//GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Cyan, FString::Printf(TEXT("Is zero: %d"), GetVelocity().IsZero()));
-
-		//ActionState = EActionState::EAS_Unoccupied;
-		//if (GetVelocity().IsZero() && ActionState == EActionState::EAS_Unoccupied) // FVector{ 0.f }
-		//{
-		//	GEngine->AddOnScreenDebugMessage(2, 1.f, FColor::Orange, FString::Printf(TEXT("Unoccupied and Is zero: %d"), GetVelocity().IsZero()));
-		//	/*GEngine->AddOnScreenDebugMessage(4, 1.f, FColor::Cyan, FString("Zero velocity"));*/
-		//	PlayIdlePatrolMontage(SectionName);
-		//}
-	}
-}
-
 void AEnemy::CheckCombatTarget()
 {
-	// Set the state to patrolling
-	ActionState = EActionState::EAS_Patrolling;
-	GEngine->AddOnScreenDebugMessage(4, 1.f, FColor::Blue, FString("Patrolling CheckCombatTarget"));
+	//// Set the state to patrolling
+	//ActionState = EActionState::EAS_IdlePatrol;
+	//GEngine->AddOnScreenDebugMessage(4, 1.f, FColor::Blue, FString("IdlePatrol CheckCombatTarget"));
 
+	//GEngine->AddOnScreenDebugMessage(3, 1.f, FColor::Orange, FString::Printf(TEXT("CheckCombatTarget and Is zero: %d"), GetVelocity().IsZero())); // TRUE!!!!
+
+	if (GetVelocity().IsZero())
+	{
+		GEngine->AddOnScreenDebugMessage(5, 1.f, FColor::Orange, FString::Printf(TEXT("EAS_IdlePatrol and Is Zero: %d"), GetVelocity().IsZero()));
+		ActionState = EActionState::EAS_IdlePatrol;
+
+		//FName SectionName = IdlePatrolSectionName();
+		//PlayIdlePatrolMontage(SectionName);
+	}
 
 	if (!InTargetRange(CombatTarget, CombatRadius))
 	{
@@ -350,6 +307,31 @@ void AEnemy::CheckCombatTarget()
 		{
 			HealthBarWidget->SetVisibility(false);
 		}
+	}
+}
+
+void AEnemy::CheckPatrolTarget()
+{
+	//ActionState = EActionState::EAS_Patrolling;
+	/*GEngine->AddOnScreenDebugMessage(3, 1.f, FColor::Cyan, FString("Patrolling CheckPatrolTarget"));*/
+
+	//GEngine->AddOnScreenDebugMessage(4, 2.f, FColor::Orange, FString::Printf(TEXT("CheckPatrolTarget. IdlePatrol Is Zero: %d"), GetVelocity().IsZero()));
+
+	//if (GetVelocity().IsZero() && ActionState == EActionState::EAS_IdlePatrol) // FVector{ 0.f }
+	//{
+	//	GEngine->AddOnScreenDebugMessage(5, 1.f, FColor::Orange, FString::Printf(TEXT("EAS_IdlePatrol and Is zero: %d"), GetVelocity().IsZero()));
+	//	
+	//	// After it moves to target, play the animation montage:
+	//	FName SectionName = IdlePatrolSectionName();
+	//	PlayIdlePatrolMontage(SectionName);
+	//}
+
+	if (InTargetRange(PatrolTarget, PatrolRadius))
+	{
+		PatrolTarget = ChoosePatrolTarget();
+
+		const float WaitTime = FMath::RandRange(WaitMin, WaitMax);
+		GetWorldTimerManager().SetTimer(PatrolTimer, this, &AEnemy::PatrolTimerFinished, WaitTime);
 	}
 }
 
