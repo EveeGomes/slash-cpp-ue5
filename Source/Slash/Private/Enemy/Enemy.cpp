@@ -260,7 +260,11 @@ void AEnemy::PawnSeen(APawn* SeenPawn)
 	{
 		EnemyState = EEnemyState::EES_Chasing;
 		// It should also stop the IdlePatrol animation! x_x <<<<<<<<<
-
+		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+		if (AnimInstance)
+		{
+			AnimInstance->Montage_Stop(0.f, IdlePatrolMontage);
+		}
 
 		// If the enemy is in the Chasing state, we should disable the timer (which would call MoveToTarget)
 		// By clearing the timer, the callback won't be called again until we turn the timer back on
@@ -309,11 +313,15 @@ void AEnemy::CheckCombatTarget()
 {
 	if (!InTargetRange(CombatTarget, CombatRadius))
 	{
+		// Outside CombatRadius, lose interest
 		CombatTarget = nullptr;
 		if (HealthBarWidget)
 		{
 			HealthBarWidget->SetVisibility(false);
 		}
+		EnemyState = EEnemyState::EES_Patrolling;
+		GetCharacterMovement()->MaxWalkSpeed = 125.f;
+		MoveToTarget(PatrolTarget);
 	}
 }
 

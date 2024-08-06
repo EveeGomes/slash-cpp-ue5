@@ -145,6 +145,10 @@ private:
 	UPROPERTY(EditAnywhere)
 	double CombatRadius = 500.f;
 
+	/** Threshold to start attacking the player */
+	UPROPERTY(EditAnywhere)
+	double AttackRadius = 150.f;
+
 	UPROPERTY(EditAnywhere)
 	double PatrolRadius = 200.f;
 
