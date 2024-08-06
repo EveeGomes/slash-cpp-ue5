@@ -33,9 +33,11 @@ enum class EDeathPose : uint8
 };
 
 UENUM(BlueprintType)
-enum class EIdlePatrol : uint8
+enum class EEnemyState : uint8
 {
-	EIP_Idle UMETA(DisplayName = "Idle"),
-	EIP_Patrolling UMETA(DisplayName = "Patrolling"),
-	EIP_IdlePatrol UMETA(DisplayName = "Idle Patrol")
+	EES_Idle UMETA(DisplayName = "Idle"),
+	EES_IdlePatrol UMETA(DisplayName = "Idle Patrol"),
+	EES_Patrolling UMETA(DisplayName = "Patrolling"),
+	EES_Chasing UMETA(DisplayName = "Chasing"),
+	EES_Attacking UMETA(DisplayName = "Attacking")
 };

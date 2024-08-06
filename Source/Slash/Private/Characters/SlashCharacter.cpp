@@ -69,6 +69,11 @@ void ASlashCharacter::BeginPlay()
 			Subsystem->AddMappingContext(SlashContext, 0);
 		}
 	}
+
+	/** 
+	* Use the Tags variable from the Character and Add method to add a tag which can get any name we want.
+	*/
+	Tags.Add(FName("SlashCharacter"));
 }
 
 void ASlashCharacter::Move(const FInputActionValue& Value)

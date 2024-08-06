@@ -74,7 +74,7 @@ protected:
 	EDeathPose DeathPose = EDeathPose::EDP_Alive;
 
 	UPROPERTY(BlueprintReadOnly)
-	EIdlePatrol IdlePatrolState = EIdlePatrol::EIP_Patrolling;
+	EEnemyState EnemyState = EEnemyState::EES_Patrolling; // MOVE TO PRIVATE AS IN THE COURSE?
 
 	/** Returns true if we're in range of that Target, based on a specified radius */
 	bool InTargetRange(AActor* Target, double Radius);

@@ -231,16 +231,53 @@ AActor* AEnemy::ChoosePatrolTarget()
 
 void AEnemy::FinishIdlePatrol()
 {
-	if (IdlePatrolState == EIdlePatrol::EIP_IdlePatrol)
+	if (EnemyState == EEnemyState::EES_IdlePatrol)
 	{
-		IdlePatrolState = EIdlePatrol::EIP_Patrolling;
+		EnemyState = EEnemyState::EES_Patrolling;
 	}
 }
 
 void AEnemy::PawnSeen(APawn* SeenPawn)
 {
-	// Do something when seeing a pawn
-	UE_LOG(LogTemp, Warning, TEXT("Pawn Seen!"));
+	/** 
+	* Instead of using cast (to cast the SeenPawn to a SlashCharacter), which would be too expensive as
+	*  this function is called almost every second (whenever OnSeePawn delagate is broadcasted), we should use
+	*  tags. Actor tags. Tags are given to actors in the actor level. We can check those tags and see if any other
+	*  actor has the tag.
+	* We can access the tags and give this SeePawn the SlashCharacter tag for exemple.
+	* We add the tag in the Begin Play as in the constructor it's too early.
+	* 
+	* Since this function is called too frequently, it's better to add an aditional condition to the if check 
+	*  preventing the code to go through all these lines of codes every second.
+	* Since in the beginning of the code it sets the state to Chasing, outside the if we can check if the state is
+	*  already Chasing and return from that, because the enemy will be chasing the character already. This way
+	*  the MoveToTarget will be called only once.
+	*/
+
+	if (EnemyState == EEnemyState::EES_Chasing) return;
+
+	if (SeenPawn->ActorHasTag(FName("SlashCharacter")))
+	{
+		EnemyState = EEnemyState::EES_Chasing;
+		// It should also stop the IdlePatrol animation! x_x <<<<<<<<<
+
+
+		// If the enemy is in the Chasing state, we should disable the timer (which would call MoveToTarget)
+		// By clearing the timer, the callback won't be called again until we turn the timer back on
+		// ie the enemy won't move to its next patrol point, but chasing the character now
+		GetWorldTimerManager().ClearTimer(PatrolTimer);
+
+		// If it's chasing the character, than we can reset the speed to a running speed!
+		GetCharacterMovement()->MaxWalkSpeed = 300.f; // this value can also come from a variable
+		
+		// Set the combat target
+		CombatTarget = SeenPawn;
+		MoveToTarget(CombatTarget);
+
+		// Prove that MoveToTarget will be called only once
+		UE_LOG(LogTemp, Warning, TEXT("Seen Pawn, now Chasing"));
+	}
+
 }
 
 /** When the timer has elapsed, call MoveToTarget */
@@ -254,13 +291,17 @@ void AEnemy::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	// Starts as Patrolling by default
-	if (EnemyVelocity == 0.f && IdlePatrolState == EIdlePatrol::EIP_IdlePatrol)
+	if (EnemyVelocity == 0.f && EnemyState == EEnemyState::EES_IdlePatrol)
 	{
 		FName SectionName = IdlePatrolSectionName();
 		PlayIdlePatrolMontage(SectionName);
 	}
 
-	CheckCombatTarget();
+	if (EnemyState > EEnemyState::EES_Patrolling) // if the state is "more serious" than Patrolling
+	{
+		CheckCombatTarget();
+	}
+
 	CheckPatrolTarget(); // Set to EAS_IdlePatrol
 }
 
@@ -284,9 +325,9 @@ void AEnemy::CheckPatrolTarget()
 	{
 		PatrolTarget = ChoosePatrolTarget();
 
-		if (IdlePatrolState == EIdlePatrol::EIP_Patrolling)
+		if (EnemyState == EEnemyState::EES_Patrolling)
 		{
-			IdlePatrolState = EIdlePatrol::EIP_IdlePatrol;
+			EnemyState = EEnemyState::EES_IdlePatrol;
 		}
 
 		const float WaitTime = FMath::RandRange(WaitMin, WaitMax);
