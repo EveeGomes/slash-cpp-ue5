@@ -239,49 +239,44 @@ void AEnemy::FinishIdlePatrol()
 
 void AEnemy::PawnSeen(APawn* SeenPawn)
 {
+
+
+
 	/** 
-	* Instead of using cast (to cast the SeenPawn to a SlashCharacter), which would be too expensive as
-	*  this function is called almost every second (whenever OnSeePawn delagate is broadcasted), we should use
-	*  tags. Actor tags. Tags are given to actors in the actor level. We can check those tags and see if any other
-	*  actor has the tag.
-	* We can access the tags and give this SeePawn the SlashCharacter tag for exemple.
-	* We add the tag in the Begin Play as in the constructor it's too early.
-	* 
-	* Since this function is called too frequently, it's better to add an aditional condition to the if check 
-	*  preventing the code to go through all these lines of codes every second.
-	* Since in the beginning of the code it sets the state to Chasing, outside the if we can check if the state is
-	*  already Chasing and return from that, because the enemy will be chasing the character already. This way
-	*  the MoveToTarget will be called only once.
+	* We're transitioning to Attack state many times and that's why it's being called again and again.
+	* As we change the state here to Chasing, in Tick it goes back to Attacking.So we're changing to Attacking
+	*  every time this PawnSeen function is called and we need a way to prevent that from happening.
+	* If we're in Attacking state, PawnSeen doesn't need to do anything, same thing if we're already in Chasing
+	*  state.
+	* So, if it's NOT in Attacking, we'll set the state to Chasing. Move to the target. Also, stop the
+	*  IdlePatrol animation!
+	* These have to be done after we set our combat target.
 	*/
 
 	if (EnemyState == EEnemyState::EES_Chasing) return;
 
 	if (SeenPawn->ActorHasTag(FName("SlashCharacter")))
 	{
-		EnemyState = EEnemyState::EES_Chasing;
-		// It should also stop the IdlePatrol animation! x_x <<<<<<<<<
-		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-		if (AnimInstance)
-		{
-			AnimInstance->Montage_Stop(0.f, IdlePatrolMontage);
-		}
-
-		// If the enemy is in the Chasing state, we should disable the timer (which would call MoveToTarget)
-		// By clearing the timer, the callback won't be called again until we turn the timer back on
-		// ie the enemy won't move to its next patrol point, but chasing the character now
 		GetWorldTimerManager().ClearTimer(PatrolTimer);
-
-		// If it's chasing the character, than we can reset the speed to a running speed!
-		GetCharacterMovement()->MaxWalkSpeed = 300.f; // this value can also come from a variable
-		
+		GetCharacterMovement()->MaxWalkSpeed = 300.f; // this value can also come from a variable		
 		// Set the combat target
 		CombatTarget = SeenPawn;
-		MoveToTarget(CombatTarget);
 
-		// Prove that MoveToTarget will be called only once
-		UE_LOG(LogTemp, Warning, TEXT("Seen Pawn, now Chasing"));
+		if (EnemyState != EEnemyState::EES_Attacking)
+		{
+			EnemyState = EEnemyState::EES_Chasing;		
+			MoveToTarget(CombatTarget);
+
+			// It should also stop the IdlePatrol animation! x_x <<<<<<<<<
+			UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+			if (AnimInstance)
+			{
+				AnimInstance->Montage_Stop(0.f, IdlePatrolMontage);
+			}
+
+			UE_LOG(LogTemp, Warning, TEXT("Pawn Seen, Chase Player"));
+		}
 	}
-
 }
 
 /** When the timer has elapsed, call MoveToTarget */
@@ -322,6 +317,29 @@ void AEnemy::CheckCombatTarget()
 		EnemyState = EEnemyState::EES_Patrolling;
 		GetCharacterMovement()->MaxWalkSpeed = 125.f;
 		MoveToTarget(PatrolTarget);
+
+		// Place logs to see how often and when these functions are called
+		UE_LOG(LogTemp, Warning, TEXT("Lose interest"));
+	}
+	// check if it's in the AttackRadius AND if it's not already in Chasing state to avoid setting it again
+	else if (!InTargetRange(CombatTarget, AttackRadius) && EnemyState != EEnemyState::EES_Chasing) 
+	{
+		// Outside Attack range, chase character
+		EnemyState = EEnemyState::EES_Chasing;
+		// Move toward the target, chasing it
+		GetCharacterMovement()->MaxWalkSpeed = 300.f;
+		MoveToTarget(CombatTarget);
+
+		UE_LOG(LogTemp, Warning, TEXT("Chase player"));
+	}
+	// Check if we are in attack range and if we're already in Attacking state
+	else if (InTargetRange(CombatTarget, AttackRadius) && EnemyState != EEnemyState::EES_Attacking)
+	{
+		// Inside Attack range, attack character
+		EnemyState = EEnemyState::EES_Attacking;
+		// TODO: Attack Montage 
+
+		UE_LOG(LogTemp, Warning, TEXT("Attack"));
 	}
 }
 
@@ -333,7 +351,8 @@ void AEnemy::CheckPatrolTarget()
 	{
 		PatrolTarget = ChoosePatrolTarget();
 
-		if (EnemyState == EEnemyState::EES_Patrolling)
+		// Also check if it's not in IdlePatrol state already? This prevents bugs for spamming setting the same state
+		if (EnemyState == EEnemyState::EES_Patrolling) 
 		{
 			EnemyState = EEnemyState::EES_IdlePatrol;
 		}
