@@ -464,15 +464,13 @@ void AEnemy::GetHit_Implementation(const FVector& ImpactPoint)
 float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	/** 
-	* Once we call ApplyDamage using GamePlayStatics, the Enemy TakeDamage will be called.
-	* We can do all the necessary actions here that we want to do, like updating the health and the health bar.
-	* Use the component to call the Receive Damage function passing the DamageAmount. And thanks to GameplayStatics,
-	*  it'll make sure this function gets called whenever we apply damage.
-	* We'll then set the Health percent here instead of BeginPlay. We do inside the if statement because we'll need
-	*  the information of how much health we'll have and that info is stored on Attributes.
-	* We can combine both if statements, because in this case it's ok to not get inside the if statement if either of
-	*  them is false.
-	* @return we return DamageAmount because TakeDamage technically returns the amount of damage caused
+	* This is where we have access to the actor that has hit the enemy, so this is a good place to implement
+	*  the action of responding when getting attacked from the back.
+	* So here along with the setting of CombatTarget to the pawn that's hit the enemy, we can also set the state
+	*  to Chasing, increase the velocity to run, and than make it move to the target.
+	* We have to go to CheckCombatTarget and see what will happen when we call MoveToTarget() here while being so
+	*  close. We'll reach the third if check which passes the InTargetRange() and the state not being Attacking.
+	*  Once we get in the state changes to Attacking where we'll play the Attack montage!
 	*/
 
 	if (Attributes && HealthBarWidget)
@@ -480,8 +478,11 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 		Attributes->ReceiveDamage(DamageAmount);
 		HealthBarWidget->SetHealthPercent(Attributes->GetHealthPercent());
 	}
-	// Get the pawn that's being controlled by this controller (EventInstigator)
+	// Get the pawn that's being controlled by this controller (EventInstigator) and set as the CombatTarget
 	CombatTarget = EventInstigator->GetPawn();
+	EnemyState = EEnemyState::EES_Chasing;
+	GetCharacterMovement()->MaxWalkSpeed = 300.f;
+	MoveToTarget(CombatTarget); // check what will 
 
 	return DamageAmount;
 }
