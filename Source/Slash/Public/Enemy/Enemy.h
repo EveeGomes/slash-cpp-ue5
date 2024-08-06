@@ -50,6 +50,10 @@ public:
 		AActor* DamageCauser
 	) override;
 
+
+
+	float EnemyVelocity = 0.0f;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -72,7 +76,7 @@ protected:
 
 
 	UPROPERTY(BlueprintReadOnly)
-	EIdlePatrol IdlePatrolState = EIdlePatrol::EIP_Idle;
+	EIdlePatrol IdlePatrolState = EIdlePatrol::EIP_Patrolling;
 
 	/** Returns true if we're in range of that Target, based on a specified radius */
 	bool InTargetRange(AActor* Target, double Radius);
@@ -167,4 +171,6 @@ private:
 	UPROPERTY(EditAnywhere, Category = "AI Navigation")
 	float WaitMin = 9.f;
 	float WaitMax = 10.f;
+
+	//FTimerHandle IdlePatrolTimer;
 };
