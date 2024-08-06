@@ -88,6 +88,10 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void FinishIdlePatrol();
 
+	/** Make a callback function to use with On See Pawn delegate */
+	UFUNCTION() // to be bound to a delegate
+	void PawnSeen(APawn* SeenPawn);
+
 private:
 	/** 
 	* Animation Montages 

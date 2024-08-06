@@ -62,7 +62,8 @@ AEnemy::AEnemy()
 
 	// Construct Pawn Sensing component (give a native text name of PawnSensing)
 	PawnSensing = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensing"));
-	// No need to attach to root component as it doesn't have anything with a meaningful location or transform
+	PawnSensing->SightRadius = 4000.f;
+	PawnSensing->SetPeripheralVisionAngle(45.f);
 
 }
 
@@ -80,6 +81,14 @@ void AEnemy::BeginPlay()
 	/** Move the enemy for the first time here (in BeginPlay) */
 	EnemyController = Cast<AAIController>(GetController());
 	MoveToTarget(PatrolTarget);
+
+	/** 
+	* Bind the callback function to the delegate
+	*/
+	if (PawnSensing)
+	{
+		PawnSensing->OnSeePawn.AddDynamic(this, &AEnemy::PawnSeen);
+	}
 }
 
 void AEnemy::Die()
@@ -226,6 +235,12 @@ void AEnemy::FinishIdlePatrol()
 	{
 		IdlePatrolState = EIdlePatrol::EIP_Patrolling;
 	}
+}
+
+void AEnemy::PawnSeen(APawn* SeenPawn)
+{
+	// Do something when seeing a pawn
+	UE_LOG(LogTemp, Warning, TEXT("Pawn Seen!"));
 }
 
 /** When the timer has elapsed, call MoveToTarget */
