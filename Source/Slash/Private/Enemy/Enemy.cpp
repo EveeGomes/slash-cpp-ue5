@@ -76,8 +76,6 @@ void AEnemy::BeginPlay()
 	EnemyController = Cast<AAIController>(GetController());
 	MoveToTarget(PatrolTarget);
 
-
-
 	/** 
 	* Access the world timer manager in order to set the timer.
 	* We'll pass the PatrolTimer, this as the user object on which our callback exists, then the address
@@ -212,14 +210,15 @@ void AEnemy::MoveToTarget(AActor* Target)
 	//m_AcceptanceRadius = MoveRequest.GetAcceptanceRadius(); //<< NO NEED? REMOVE FROM HEADER FILE
 	EnemyController->MoveTo(MoveRequest);
 
-	if (EnemyVelocity == 0.f && IdlePatrolState == EIdlePatrol::EIP_IdlePatrol)
-	{
-		GEngine->AddOnScreenDebugMessage(4, 3.f, FColor::Yellow, FString::Printf(TEXT("Velocity: %f"), EnemyVelocity));
+	//if (EnemyVelocity == 0.f && IdlePatrolState == EIdlePatrol::EIP_IdlePatrol)
+	//{
+	//	GEngine->AddOnScreenDebugMessage(4, 3.f, FColor::Yellow, FString::Printf(TEXT("Velocity: %f"), EnemyVelocity));
 
-		//IdlePatrolState = EIdlePatrol::EIP_IdlePatrol;
-		FName SectionName = IdlePatrolSectionName();
-		PlayIdlePatrolMontage(SectionName);
-	}
+	//	//IdlePatrolState = EIdlePatrol::EIP_IdlePatrol;
+	//	FName SectionName = IdlePatrolSectionName();
+	//	PlayIdlePatrolMontage(SectionName);
+	//}
+	
 	//// ok... <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 	//IdlePatrolState = EIdlePatrol::EIP_Patrolling;
 	//GEngine->AddOnScreenDebugMessage(3, 2.f, FColor::Yellow, FString("MoveToTarget Patrolling"));
@@ -282,7 +281,14 @@ void AEnemy::Tick(float DeltaTime)
 	CheckCombatTarget(); // EAS_IdlePatrol
 	CheckPatrolTarget(); // in PatrolTimerFinished, set EAS_Patrolling
 
+	if (EnemyVelocity == 0.f && IdlePatrolState == EIdlePatrol::EIP_IdlePatrol)
+	{
+		GEngine->AddOnScreenDebugMessage(4, 3.f, FColor::Yellow, FString::Printf(TEXT("Tick. Velocity: %f"), EnemyVelocity));
 
+		//IdlePatrolState = EIdlePatrol::EIP_IdlePatrol;
+		FName SectionName = IdlePatrolSectionName();
+		PlayIdlePatrolMontage(SectionName);
+	}
 
 	// didn't work here
 }
@@ -331,7 +337,7 @@ void AEnemy::CheckPatrolTarget()
 
 			// It calls only once per frame and in that frame it is 125
 			EnemyVelocity = UKismetMathLibrary::VSizeXY(GetCharacterMovement()->Velocity);
-			GEngine->AddOnScreenDebugMessage(1, 3.f, FColor::Orange, FString::Printf(TEXT("Velocity: %f"), EnemyVelocity)); // 125
+			GEngine->AddOnScreenDebugMessage(1, 3.f, FColor::Orange, FString::Printf(TEXT("CheckPatrolTarget. Velocity: %f"), EnemyVelocity)); // 125
 
 			//// never reached
 			//if (EnemyVelocity == 0.f)
@@ -359,7 +365,6 @@ void AEnemy::CheckPatrolTarget()
 		//// add a delay?
 		////FTimerDelegate TimerDElegate = FTimerDelegate::CreateUObject(this, &AEnemy::PlayIdlePatrolMontage(SectionName), 10);
 		////GetWorldTimerManager().SetTimer(IdlePatrolTimer, this, &AEnemy::PlayIdlePatrolMontage, 0.2f, false);
-
 		//PlayIdlePatrolMontage(SectionName);
 	}
 
