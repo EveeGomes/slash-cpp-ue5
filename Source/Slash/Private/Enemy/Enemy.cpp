@@ -149,23 +149,23 @@ void AEnemy::PlayIdlePatrolMontage(const FName& SectionName)
 	}
 }
 
-FName AEnemy::IdlePatrolSectionName()
+FName& AEnemy::IdlePatrolSectionName()
 {
 	const int32 Selection = FMath::RandRange(0, 2);
-	FName SectionName = FName();
+	//FName SectionName = FName();
 	switch (Selection)
 	{
 	case 0:
-		SectionName = FName("Patrol1");
+		IdleSectionName = FName("Patrol1");
 		break;
 	case 1:
-		SectionName = FName("Patrol2");
+		IdleSectionName = FName("Patrol2");
 		break;
 	case 2:
-		SectionName = FName("Patrol3");
+		IdleSectionName = FName("Patrol3");
 	}
 
-	return SectionName;
+	return IdleSectionName;
 }
 
 bool AEnemy::InTargetRange(AActor* Target, double Radius)

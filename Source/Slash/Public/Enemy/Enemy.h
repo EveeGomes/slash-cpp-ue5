@@ -66,9 +66,9 @@ protected:
 	*/
 	void PlayHitReactMontage(const FName& SectionName);
 	void PlayIdlePatrolMontage(const FName& SectionName);
-	FName IdlePatrolSectionName();
+	FName& IdlePatrolSectionName();
 	// have a FName member variable to return a FName& instead of a copy?
-	//FName IdleSectionName = FName();
+	FName IdleSectionName = FName();
 
 	/** Start with the alive pose */
 	UPROPERTY(BlueprintReadOnly) // Only access what the variable is. No need to expose to the details panel either
