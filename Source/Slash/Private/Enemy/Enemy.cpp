@@ -58,7 +58,6 @@ AEnemy::AEnemy()
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
-
 }
 
 // Called when the game starts or when spawned
@@ -75,16 +74,6 @@ void AEnemy::BeginPlay()
 	/** Move the enemy for the first time here (in BeginPlay) */
 	EnemyController = Cast<AAIController>(GetController());
 	MoveToTarget(PatrolTarget);
-
-	/** 
-	* Access the world timer manager in order to set the timer.
-	* We'll pass the PatrolTimer, this as the user object on which our callback exists, then the address
-	*  of our callback function, and finally the time.
-	* 
-	* So, first we'll call MoveToTarget and then the timer will be set to 5 seconds. When that time
-	*  has elapsed, the callback will be called.
-	*/
-	//GetWorldTimerManager().SetTimer(PatrolTimer, this, &AEnemy::PatrolTimerFinished, 5.f);
 }
 
 void AEnemy::Die()
@@ -179,7 +168,6 @@ FName AEnemy::IdlePatrolSectionName()
 	return SectionName;
 }
 
-// THIS CAN'T BE HERE AS CheckCombatTarget() CHECKS THIS AS WELL AS CheckPatrolTarget() SO IT KEEPS SETTING THE STATE!
 bool AEnemy::InTargetRange(AActor* Target, double Radius)
 {
 	// Return false in case Target is invalid so in Tick we can remove some other validations
@@ -191,12 +179,9 @@ bool AEnemy::InTargetRange(AActor* Target, double Radius)
 	DRAW_SPHERE_SingleFrame(GetActorLocation());
 	DRAW_SPHERE_SingleFrame(Target->GetActorLocation());
 
-	//GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString("InTargetRange"));
-
 	return DistanceToTarget <= Radius;
 }
 
-// THIS CAN'T BE HERE AS PatrolTimerFinished() CALLS THIS AFTER THE TIMER ELAPSES enemy velocity always returns 0 HERE
 void AEnemy::MoveToTarget(AActor* Target)
 {
 	if (EnemyController == nullptr || Target == nullptr) return; // this removes the need for the next if statement
@@ -204,33 +189,11 @@ void AEnemy::MoveToTarget(AActor* Target)
 	FAIMoveRequest MoveRequest;
 	MoveRequest.SetGoalActor(Target);
 	MoveRequest.SetAcceptanceRadius(15.f);
-
-	//GEngine->AddOnScreenDebugMessage(3, 3.f, FColor::Yellow, FString::Printf(TEXT("Velocity: %f"), EnemyVelocity));
-	
-	//m_AcceptanceRadius = MoveRequest.GetAcceptanceRadius(); //<< NO NEED? REMOVE FROM HEADER FILE
 	EnemyController->MoveTo(MoveRequest);
-
-	//if (EnemyVelocity == 0.f && IdlePatrolState == EIdlePatrol::EIP_IdlePatrol)
-	//{
-	//	GEngine->AddOnScreenDebugMessage(4, 3.f, FColor::Yellow, FString::Printf(TEXT("Velocity: %f"), EnemyVelocity));
-
-	//	//IdlePatrolState = EIdlePatrol::EIP_IdlePatrol;
-	//	FName SectionName = IdlePatrolSectionName();
-	//	PlayIdlePatrolMontage(SectionName);
-	//}
-	
-	//// ok... <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-	//IdlePatrolState = EIdlePatrol::EIP_Patrolling;
-	//GEngine->AddOnScreenDebugMessage(3, 2.f, FColor::Yellow, FString("MoveToTarget Patrolling"));
 }
 
-// // THIS CAN'T BE HERE AS It detects GetVelocity().IsZero() before the enemy velocity reaches zero
 AActor* AEnemy::ChoosePatrolTarget() 
 {
-	//// It's set while it's still walking...
-	//ActionState = EActionState::EAS_Patrolling;
-	//GEngine->AddOnScreenDebugMessage(3, 2.f, FColor::Green, FString("ChoosePatrolTarget Patrolling"));
-
 	/** Have an array filled with all patrol targets except the one we currently have. */
 	TArray<AActor*> ValidTargets;
 	for (AActor* Target : PatrolTargets)
@@ -257,55 +220,31 @@ void AEnemy::FinishIdlePatrol()
 	{
 		IdlePatrolState = EIdlePatrol::EIP_Patrolling;
 	}
-
-	//GEngine->AddOnScreenDebugMessage(5, 1.f, FColor::Cyan, FString("Unoccupied"));
 }
 
-// THIS CAN'T BE HERE AS it'll wait the timer to elapsed until it calls MoveToTarget
 /** When the timer has elapsed, call MoveToTarget */
 void AEnemy::PatrolTimerFinished()
 {	
-	//// Finished the time, change to EAS_Patrolling and move
-	// No! This will only be called after the timer has elapsed. So it'll take longer to change the state!
-	//ActionState = EActionState::EAS_Patrolling;
-	//GEngine->AddOnScreenDebugMessage(3, 2.f, FColor::Cyan, FString("PatrolTimerFinished Patrolling"));
-
 	MoveToTarget(PatrolTarget);
 }
 
-// THIS CAN'T BE HERE
 void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	CheckCombatTarget(); // EAS_IdlePatrol
-	CheckPatrolTarget(); // in PatrolTimerFinished, set EAS_Patrolling
-
+	// Starts as Patrolling by default
 	if (EnemyVelocity == 0.f && IdlePatrolState == EIdlePatrol::EIP_IdlePatrol)
 	{
-		GEngine->AddOnScreenDebugMessage(4, 3.f, FColor::Yellow, FString::Printf(TEXT("Tick. Velocity: %f"), EnemyVelocity));
-
-		//IdlePatrolState = EIdlePatrol::EIP_IdlePatrol;
 		FName SectionName = IdlePatrolSectionName();
 		PlayIdlePatrolMontage(SectionName);
 	}
 
-	// didn't work here
+	CheckCombatTarget();
+	CheckPatrolTarget(); // Set to EAS_IdlePatrol
 }
 
 void AEnemy::CheckCombatTarget()
 {
-	//GEngine->AddOnScreenDebugMessage(3, 1.f, FColor::Orange, FString::Printf(TEXT("CheckCombatTarget and Is zero: %d"), GetVelocity().IsZero())); // TRUE!!!!
-
-	//if (IdlePatrolState == EIdlePatrol::EIP_Patrolling) // GetVelocity().IsZero() && // this is working along with the anim montage and ABP
-	//{
-	//	GEngine->AddOnScreenDebugMessage(5, 1.f, FColor::Orange, FString::Printf(TEXT("Set to EAS_IdlePatrol and Is Zero: %d"), GetVelocity().IsZero()));
-	//	IdlePatrolState = EIdlePatrol::EIP_IdlePatrol;
-
-	//	//FName SectionName = IdlePatrolSectionName();
-	//	//PlayIdlePatrolMontage(SectionName);
-	//}
-
 	if (!InTargetRange(CombatTarget, CombatRadius))
 	{
 		CombatTarget = nullptr;
@@ -318,59 +257,20 @@ void AEnemy::CheckCombatTarget()
 
 void AEnemy::CheckPatrolTarget()
 {
-	//GEngine->AddOnScreenDebugMessage(4, 2.f, FColor::Orange, FString::Printf(TEXT("CheckPatrolTarget. IdlePatrol Is Zero: %d"), GetVelocity().IsZero()));
-
-	// Doesn't work
-	//IdlePatrolState = EIdlePatrol::EIP_Patrolling;
-	//GEngine->AddOnScreenDebugMessage(3, 2.f, FColor::Yellow, FString("MoveToTarget Patrolling"));
-
 	EnemyVelocity = UKismetMathLibrary::VSizeXY(GetCharacterMovement()->Velocity);
 
 	if (InTargetRange(PatrolTarget, PatrolRadius))
 	{
 		PatrolTarget = ChoosePatrolTarget();
 
-		// Closer to when it's about to stop. But it's not detecting the velocity...
-		if (IdlePatrolState == EIdlePatrol::EIP_Patrolling) // GetVelocity().IsZero() && // this is working along with the anim montage and ABP
+		if (IdlePatrolState == EIdlePatrol::EIP_Patrolling)
 		{
-			//GEngine->AddOnScreenDebugMessage(5, 1.f, FColor::Orange, FString::Printf(TEXT("Set to EAS_IdlePatrol and Is Zero: %d"), GetVelocity().IsZero()));
-
-			// It calls only once per frame and in that frame it is 125
-			EnemyVelocity = UKismetMathLibrary::VSizeXY(GetCharacterMovement()->Velocity);
-			GEngine->AddOnScreenDebugMessage(1, 3.f, FColor::Orange, FString::Printf(TEXT("CheckPatrolTarget. Velocity: %f"), EnemyVelocity)); // 125
-
-			//// never reached
-			//if (EnemyVelocity == 0.f)
-			//{
-			//	GEngine->AddOnScreenDebugMessage(2, 3.f, FColor::Yellow, FString::Printf(TEXT("Velocity: %f"), EnemyVelocity));
-			//}
-
 			IdlePatrolState = EIdlePatrol::EIP_IdlePatrol;
-
-
-
 		}
-
-		//GEngine->AddOnScreenDebugMessage(3, 3.f, FColor::Yellow, FString::Printf(TEXT("Velocity: %f"), EnemyVelocity)); // 125
-		//// never reached
-		//if (EnemyVelocity == 0.0f)
-		//{
-		//	GEngine->AddOnScreenDebugMessage(2, 3.f, FColor::Yellow, FString::Printf(TEXT("Velocity: %f"), EnemyVelocity));
-		//}
 
 		const float WaitTime = FMath::RandRange(WaitMin, WaitMax);
 		GetWorldTimerManager().SetTimer(PatrolTimer, this, &AEnemy::PatrolTimerFinished, WaitTime);
-		
-		//FName SectionName = IdlePatrolSectionName();
-		//// add a delay?
-		////FTimerDelegate TimerDElegate = FTimerDelegate::CreateUObject(this, &AEnemy::PlayIdlePatrolMontage(SectionName), 10);
-		////GetWorldTimerManager().SetTimer(IdlePatrolTimer, this, &AEnemy::PlayIdlePatrolMontage, 0.2f, false);
-		//PlayIdlePatrolMontage(SectionName);
 	}
-
-	//// NO!!!!!!!
-	//ActionState = EActionState::EAS_Patrolling;
-	//GEngine->AddOnScreenDebugMessage(3, 2.f, FColor::Cyan, FString("CheckPatrolTarget Patrolling"));
 }
 
 // Called to bind functionality to input

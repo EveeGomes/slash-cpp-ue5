@@ -68,12 +68,11 @@ protected:
 	void PlayIdlePatrolMontage(const FName& SectionName);
 	FName IdlePatrolSectionName();
 	// have a FName member variable to return a FName& instead of a copy?
-
+	//FName IdleSectionName = FName();
 
 	/** Start with the alive pose */
 	UPROPERTY(BlueprintReadOnly) // Only access what the variable is. No need to expose to the details panel either
 	EDeathPose DeathPose = EDeathPose::EDP_Alive;
-
 
 	UPROPERTY(BlueprintReadOnly)
 	EIdlePatrol IdlePatrolState = EIdlePatrol::EIP_Patrolling;
@@ -169,8 +168,6 @@ private:
 	void PatrolTimerFinished();
 
 	UPROPERTY(EditAnywhere, Category = "AI Navigation")
-	float WaitMin = 9.f;
-	float WaitMax = 10.f;
-
-	//FTimerHandle IdlePatrolTimer;
+	float WaitMin = 9.5f;
+	float WaitMax = 10.5f;
 };
