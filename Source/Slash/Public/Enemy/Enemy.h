@@ -19,6 +19,7 @@ class UAnimMontage;
 
 class UAttributeComponent;
 class UMyHealthBarComponent;
+class UPawnSensingComponent;
 
 UCLASS()
 class SLASH_API AEnemy : public ACharacter, public IHitInterface
@@ -49,8 +50,6 @@ public:
 		class AController* EventInstigator, 
 		AActor* DamageCauser
 	) override;
-
-
 
 	float EnemyVelocity = 0.0f;
 
@@ -102,10 +101,6 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Montage")
 	TObjectPtr<UAnimMontage> IdlePatrolMontage;
 
-
-
-	//bool IsPatrolling();
-
 	/** 
 	* Variable to set a sound when an enemy gets hit.
 	* Having this variable allows for setting different sounds to different enemies.
@@ -121,6 +116,10 @@ private:
 	UPROPERTY(EditAnywhere, Category = "VisualEffects")
 	TObjectPtr<UParticleSystem> HitParticles;
 
+
+	/** 
+	* Components
+	*/
 	/** Add our custom Attribute Component */
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UAttributeComponent> Attributes;
@@ -128,6 +127,12 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UMyHealthBarComponent> HealthBarWidget;
 
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UPawnSensingComponent> PawnSensing;
+
+	/** 
+	* 
+	*/
 	/** Pointer to store what has hit the enemy */
 	UPROPERTY() // ensures the pointer is set to null
 	TObjectPtr<AActor> CombatTarget;
@@ -140,6 +145,7 @@ private:
 	double PatrolRadius = 200.f;
 
 	float m_AcceptanceRadius = 0.f;
+
 
 	/** 
 	* Navigation

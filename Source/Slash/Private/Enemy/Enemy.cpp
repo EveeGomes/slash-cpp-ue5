@@ -25,6 +25,7 @@
 
 /** Add AI movement */
 #include "AIController.h"
+#include "Perception/PawnSensingComponent.h"
 
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -58,6 +59,11 @@ AEnemy::AEnemy()
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
+
+	// Construct Pawn Sensing component (give a native text name of PawnSensing)
+	PawnSensing = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensing"));
+	// No need to attach to root component as it doesn't have anything with a meaningful location or transform
+
 }
 
 // Called when the game starts or when spawned
@@ -358,6 +364,16 @@ void AEnemy::GetHit_Implementation(const FVector& ImpactPoint)
 			GetWorld(),
 			HitParticles,
 			ImpactPoint
+			/** 
+			* UnrealEditor_Slash_patch_3!AEnemy::~AEnemy() [C:\Users\evepg\Documents\Udemy\UE5-Cpp-Game-Developer\Slash\Intermediate\Build\Win64\UnrealEditor\Inc\Slash\UHT\Enemy.gen.cpp:366]
+			* UnrealEditor_Slash_patch_3!AEnemy::`vector deleting destructor'()
+			* Unhandled Exception: EXCEPTION_ACCESS_VIOLATION reading address 0x0000000400000070
+			*/
+
+			/** 
+			* ImpactPoint comes from BoxHit variable of type FHitResult which we get data in Weapon class after
+			*  calling BoxTraceSingle. Then we call Execute_GetHit and pass that variable.
+			*/
 		);
 	}
 }
