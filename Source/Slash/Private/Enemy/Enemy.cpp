@@ -189,10 +189,6 @@ bool AEnemy::InTargetRange(AActor* Target, double Radius)
 	if (Target == nullptr) return false;
 
 	const double DistanceToTarget = (Target->GetActorLocation() - GetActorLocation()).Size();
-	// Draw some debug spheres here as it's gonna be called every frame. These spheres are to show the locations
-	//  of the enemy and its target location.
-	DRAW_SPHERE_SingleFrame(GetActorLocation());
-	DRAW_SPHERE_SingleFrame(Target->GetActorLocation());
 
 	return DistanceToTarget <= Radius;
 }
@@ -239,27 +235,14 @@ void AEnemy::FinishIdlePatrol()
 
 void AEnemy::PawnSeen(APawn* SeenPawn)
 {
-
-
-
-	/** 
-	* We're transitioning to Attack state many times and that's why it's being called again and again.
-	* As we change the state here to Chasing, in Tick it goes back to Attacking.So we're changing to Attacking
-	*  every time this PawnSeen function is called and we need a way to prevent that from happening.
-	* If we're in Attacking state, PawnSeen doesn't need to do anything, same thing if we're already in Chasing
-	*  state.
-	* So, if it's NOT in Attacking, we'll set the state to Chasing. Move to the target. Also, stop the
-	*  IdlePatrol animation!
-	* These have to be done after we set our combat target.
-	*/
-
 	if (EnemyState == EEnemyState::EES_Chasing) return;
 
 	if (SeenPawn->ActorHasTag(FName("SlashCharacter")))
 	{
 		GetWorldTimerManager().ClearTimer(PatrolTimer);
 		GetCharacterMovement()->MaxWalkSpeed = 300.f; // this value can also come from a variable		
-		// Set the combat target
+		
+		/** Set the combat target */
 		CombatTarget = SeenPawn;
 
 		if (EnemyState != EEnemyState::EES_Attacking)
@@ -267,14 +250,12 @@ void AEnemy::PawnSeen(APawn* SeenPawn)
 			EnemyState = EEnemyState::EES_Chasing;		
 			MoveToTarget(CombatTarget);
 
-			// It should also stop the IdlePatrol animation! x_x <<<<<<<<<
+			/** Stop the IdlePatrol animation montage */
 			UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 			if (AnimInstance)
 			{
 				AnimInstance->Montage_Stop(0.f, IdlePatrolMontage);
 			}
-
-			UE_LOG(LogTemp, Warning, TEXT("Pawn Seen, Chase Player"));
 		}
 	}
 }
@@ -314,32 +295,28 @@ void AEnemy::CheckCombatTarget()
 		{
 			HealthBarWidget->SetVisibility(false);
 		}
+		/** Return to Patrolling state, velocity and target (PatrolTarget) */
 		EnemyState = EEnemyState::EES_Patrolling;
 		GetCharacterMovement()->MaxWalkSpeed = 125.f;
 		MoveToTarget(PatrolTarget);
-
-		// Place logs to see how often and when these functions are called
-		UE_LOG(LogTemp, Warning, TEXT("Lose interest"));
 	}
 	// check if it's in the AttackRadius AND if it's not already in Chasing state to avoid setting it again
 	else if (!InTargetRange(CombatTarget, AttackRadius) && EnemyState != EEnemyState::EES_Chasing) 
 	{
 		// Outside Attack range, chase character
 		EnemyState = EEnemyState::EES_Chasing;
-		// Move toward the target, chasing it
+
+		/** Move toward the target, chasing it */
 		GetCharacterMovement()->MaxWalkSpeed = 300.f;
 		MoveToTarget(CombatTarget);
-
-		UE_LOG(LogTemp, Warning, TEXT("Chase player"));
 	}
 	// Check if we are in attack range and if we're already in Attacking state
 	else if (InTargetRange(CombatTarget, AttackRadius) && EnemyState != EEnemyState::EES_Attacking)
 	{
 		// Inside Attack range, attack character
 		EnemyState = EEnemyState::EES_Attacking;
-		// TODO: Attack Montage 
 
-		UE_LOG(LogTemp, Warning, TEXT("Attack"));
+		// TODO: Attack Montage
 	}
 }
 
@@ -427,7 +404,6 @@ void AEnemy::GetHit_Implementation(const FVector& ImpactPoint)
 		Die();
 	}
 
-
 	// Play sound as soon as the enemy gets hit
 	if (HitSound)
 	{
@@ -463,16 +439,6 @@ void AEnemy::GetHit_Implementation(const FVector& ImpactPoint)
 
 float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	/** 
-	* This is where we have access to the actor that has hit the enemy, so this is a good place to implement
-	*  the action of responding when getting attacked from the back.
-	* So here along with the setting of CombatTarget to the pawn that's hit the enemy, we can also set the state
-	*  to Chasing, increase the velocity to run, and than make it move to the target.
-	* We have to go to CheckCombatTarget and see what will happen when we call MoveToTarget() here while being so
-	*  close. We'll reach the third if check which passes the InTargetRange() and the state not being Attacking.
-	*  Once we get in the state changes to Attacking where we'll play the Attack montage!
-	*/
-
 	if (Attributes && HealthBarWidget)
 	{
 		Attributes->ReceiveDamage(DamageAmount);
@@ -480,9 +446,11 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 	}
 	// Get the pawn that's being controlled by this controller (EventInstigator) and set as the CombatTarget
 	CombatTarget = EventInstigator->GetPawn();
+	
+	// Make the enemy chase and attack (from CheckCombatTarget()) the instigator
 	EnemyState = EEnemyState::EES_Chasing;
 	GetCharacterMovement()->MaxWalkSpeed = 300.f;
-	MoveToTarget(CombatTarget); // check what will 
+	MoveToTarget(CombatTarget);
 
 	return DamageAmount;
 }
