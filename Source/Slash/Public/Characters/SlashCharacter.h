@@ -33,54 +33,63 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
 
+	/** 
+	* Getters and Setters
+	*/
+	FORCEINLINE void SetOverlappingItem(AItem* Item) { OverlappingItem = Item; }
+	FORCEINLINE ECharacterState GetCharacterState() const { return CharacterState; }
+
 protected:
 	virtual void BeginPlay() override;
 
 	/** Input Mapping Context */
 	UPROPERTY(EditAnywhere, Category = "Input")
-	UInputMappingContext* SlashContext;
+	TObjectPtr<UInputMappingContext> SlashContext;
 
 	/** Input Actions */
 	UPROPERTY(EditAnywhere, Category = "Input")
-	UInputAction* MovementAction;
+	TObjectPtr<UInputAction> MovementAction;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
-	UInputAction* LookAction;
+	TObjectPtr<UInputAction> LookAction;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
-	UInputAction* JumpAction;
+	TObjectPtr<UInputAction> JumpAction;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
-	UInputAction* EquipAction;
+	TObjectPtr<UInputAction> EquipAction;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
-	UInputAction* AttackAction;
+	TObjectPtr<UInputAction> AttackAction;
 
-	/** Callbacks for input */
+	/** 
+	* Callbacks for input 
+	*/
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	virtual void Jump() override;
 	void EKeyPressed();
 	void Attack();
 
-	/** Play Montage Functions */
+	/** 
+	* Play Montage Functions 
+	*/
+	/** Attack */
 	void PlayAttackMontage();
-
 	UFUNCTION(BlueprintCallable)
 	void AttackEnd();
 	bool CanAttack();
 
+	/** Equip / Unequip */
 	void PlayEquipMontage(FName SectionName);
 	bool CanDisarm();
 	bool CanArm();
-
 	// Attach the weapon to the spine socket
 	UFUNCTION(BlueprintCallable)
 	void Disarm();
-
+	// Attach the weapon to the right hand socket
 	UFUNCTION(BlueprintCallable)
 	void Arm();
-
 	UFUNCTION(BlueprintCallable)
 	void FinishEquipping();
 
@@ -92,38 +101,44 @@ protected:
 	//void SetCanJump(bool bCan) { bCanJump = bCan; }
 
 private:
+	/** 
+	* States
+	*/
 	ECharacterState CharacterState = ECharacterState::ECS_Unequipped;
 
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	EActionState ActionState = EActionState::EAS_Unoccupied;
 
+	/** 
+	* Components
+	*/
 	UPROPERTY(VisibleAnywhere)
-	USpringArmComponent* SpringArm;
+	TObjectPtr<USpringArmComponent> SpringArm;
 	
 	UPROPERTY(VisibleAnywhere)
-	UCameraComponent* ViewCamera;
+	TObjectPtr<UCameraComponent> ViewCamera;
 
 	UPROPERTY(VisibleAnywhere)
-	UGroomComponent* Hair;
+	TObjectPtr<UGroomComponent> Hair;
 
 	UPROPERTY(VisibleAnywhere)
-	UGroomComponent* Eyebrows;
+	TObjectPtr<UGroomComponent> Eyebrows;
 
+	/** 
+	* Items
+	*/
 	UPROPERTY(VisibleInstanceOnly)
-	AItem* OverlappingItem;
+	TObjectPtr<AItem> OverlappingItem;
 
 	// Variable for our currently equipped weapon
 	UPROPERTY(VisibleAnywhere, Category = "Weapon")
-	AWeapon* EquippedWeapon;
+	TObjectPtr<AWeapon> EquippedWeapon;
 
-	/** Animation Montages */
+	/** 
+	* Animation Montages 
+	*/
 	UPROPERTY(EditDefaultsOnly, Category = "Montage")
-	UAnimMontage* AttackMontage;
+	TObjectPtr<UAnimMontage> AttackMontage;
 	UPROPERTY(EditDefaultsOnly, Category = "Montage")
-	UAnimMontage* EquipMontage;
-	
-	// Public section for getters and setters
-public:
-	FORCEINLINE void SetOverlappingItem(AItem* Item) { OverlappingItem = Item; }
-	FORCEINLINE ECharacterState GetCharacterState() const { return CharacterState; }
+	TObjectPtr<UAnimMontage> EquipMontage;
 };
