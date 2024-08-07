@@ -25,9 +25,6 @@
 /** For using Animation Montage in Attack() */
 #include "Animation/AnimMontage.h"
 
-/** To set the weapon's collision enabled */
-#include "Components/BoxComponent.h"
-
 ASlashCharacter::ASlashCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -74,18 +71,6 @@ void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Jump);
 		EnhancedInputComponent->BindAction(EquipAction, ETriggerEvent::Triggered, this, &ASlashCharacter::EKeyPressed);
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Attack);
-	}
-}
-
-void ASlashCharacter::SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled)
-{
-	// Check if the character has a weapon equipped to it
-	if (EquippedWeapon && EquippedWeapon->GetWeaponBox()) // Also check if WeaponBox isn't null
-	{
-		// Set the weapon's collision enabled
-		EquippedWeapon->GetWeaponBox()->SetCollisionEnabled(CollisionEnabled);
-		// Clear the TArray with actors to ignore!
-		EquippedWeapon->IgnoreActors.Empty();
 	}
 }
 

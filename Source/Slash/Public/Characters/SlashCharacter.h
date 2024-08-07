@@ -31,10 +31,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	/** Called in response to an Anim notify. The ABP calls this function to enable/disable collision on our weapon */
-	UFUNCTION(BlueprintCallable)
-	void SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
-
 	/** 
 	* Getters and Setters
 	*/
@@ -132,9 +128,7 @@ private:
 	UPROPERTY(VisibleInstanceOnly)
 	TObjectPtr<AItem> OverlappingItem;
 
-	// Variable for our currently equipped weapon
-	UPROPERTY(VisibleAnywhere, Category = "Weapon")
-	TObjectPtr<AWeapon> EquippedWeapon;
+
 
 	/** 
 	* Animation Montages 
