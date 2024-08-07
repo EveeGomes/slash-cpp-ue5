@@ -3,7 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
+
+#include "BaseCharacter.h"
 
 #include "InputActionValue.h"
 #include "CharacterTypes.h"
@@ -21,7 +22,7 @@ class UAnimMontage;
 class AWeapon;
 
 UCLASS()
-class SLASH_API ASlashCharacter : public ACharacter
+class SLASH_API ASlashCharacter : public ABaseCharacter
 {
 	GENERATED_BODY()
 
