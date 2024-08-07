@@ -14,9 +14,10 @@
 
 #include "Enemy.generated.h"
 
-/** For animation montage logic */
+/** 
+* Class forward declaration 
+*/
 class UAnimMontage;
-
 class UAttributeComponent;
 class UMyHealthBarComponent;
 class UPawnSensingComponent;
@@ -29,18 +30,17 @@ class SLASH_API AEnemy : public ACharacter, public IHitInterface
 public:
 	// Sets default values for this character's properties
 	AEnemy();
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	/** 
+	* Enemy Patrolling, Chasing and Attacking behavior
+	*/
 	void CheckPatrolTarget();
-
 	void CheckCombatTarget();
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
+	/** Set the animation section name according to the hit direction and call PlayHitReactMontage() */
 	void DirectionalHitReact(const FVector& ImpactPoint);
-
+	/** Show health bar, play hit sound, spawn emmitter at location. If dead call Die() */
 	virtual void GetHit_Implementation(const FVector& ImpactPoint) override;
 
 	/** Public virtual function from AActor */
@@ -51,24 +51,35 @@ public:
 		AActor* DamageCauser
 	) override;
 
+	/** Used in Tick() to check if IdlePatrol animation can be played */
 	float EnemyVelocity = 0.0f;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	/** Play the death montage */
+	/** 
+	* Plays death montage 
+	*/
 	void Die();
 
 	/** 
-	* Play Montage Functions 
+	* Play Montage Functions
 	*/
 	void PlayHitReactMontage(const FName& SectionName);
 	void PlayIdlePatrolMontage(const FName& SectionName);
+
 	FName& IdlePatrolSectionName();
 	// have a FName member variable to return a FName& instead of a copy?
 	FName IdleSectionName = FName();
+	
+	/** Called once IdlePatrolEnd section name is reached in Anim Montage */
+	UFUNCTION(BlueprintCallable)
+	void FinishIdlePatrol();
 
+	/** 
+	* States
+	*/
 	/** Start with the alive pose */
 	UPROPERTY(BlueprintReadOnly) // Only access what the variable is. No need to expose to the details panel either
 	EDeathPose DeathPose = EDeathPose::EDP_Alive;
@@ -76,19 +87,19 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	EEnemyState EnemyState = EEnemyState::EES_Patrolling; // MOVE TO PRIVATE AS IN THE COURSE?
 
+	/** 
+	* Enemy Patrolling, Chasing and Attacking behavior
+	*/
 	/** Returns true if we're in range of that Target, based on a specified radius */
 	bool InTargetRange(AActor* Target, double Radius);
 
-	/** It calls MoveTo */
+	/** Calls MoveTo */
 	void MoveToTarget(AActor* Target);
 
-	/** Pick a new patrol target at random */
+	/** Picks a new patrol target at random */
 	AActor* ChoosePatrolTarget();
 
-	UFUNCTION(BlueprintCallable)
-	void FinishIdlePatrol();
-
-	/** Make a callback function to use with On See Pawn delegate */
+	/** Callback function to use with OnSeePawn delegate. Bound in BeginPlay() */
 	UFUNCTION() // to be bound to a delegate
 	void PawnSeen(APawn* SeenPawn);
 
@@ -105,6 +116,7 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Montage")
 	TObjectPtr<UAnimMontage> IdlePatrolMontage;
 
+
 	/** 
 	* Variable to set a sound when an enemy gets hit.
 	* Having this variable allows for setting different sounds to different enemies.
@@ -120,7 +132,6 @@ private:
 	UPROPERTY(EditAnywhere, Category = "VisualEffects")
 	TObjectPtr<UParticleSystem> HitParticles;
 
-
 	/** 
 	* Components
 	*/
@@ -135,13 +146,13 @@ private:
 	TObjectPtr<UPawnSensingComponent> PawnSensing;
 
 	/** 
-	* 
+	* Patrolling and Attacking
 	*/
 	/** Pointer to store what has hit the enemy */
 	UPROPERTY() // ensures the pointer is set to null
 	TObjectPtr<AActor> CombatTarget;
 
-	/** Threshold to check the DistanceToTarget */
+	/** Threshold to check Distance To Target */
 	UPROPERTY(EditAnywhere)
 	double CombatRadius = 500.f;
 
@@ -149,11 +160,9 @@ private:
 	UPROPERTY(EditAnywhere)
 	double AttackRadius = 150.f;
 
+	/** Threshold to patrol */
 	UPROPERTY(EditAnywhere)
 	double PatrolRadius = 200.f;
-
-	float m_AcceptanceRadius = 0.f;
-
 
 	/** 
 	* Navigation
@@ -169,6 +178,9 @@ private:
 	UPROPERTY(EditInstanceOnly, Category = "AI Navigation")
 	TArray<TObjectPtr<AActor>> PatrolTargets;
 
+	UPROPERTY(EditAnywhere, Category = "AI Navigation")
+	float WaitMin = 9.5f;
+	float WaitMax = 10.5f;
 	/**
 	* TimerHandle is a struct that the world timer manager uses to keep track of various timers that we set.
 	*/
@@ -180,8 +192,4 @@ private:
 	*/
 	/** Moves the enemy to a target after a certain time */
 	void PatrolTimerFinished();
-
-	UPROPERTY(EditAnywhere, Category = "AI Navigation")
-	float WaitMin = 9.5f;
-	float WaitMax = 10.5f;
 };
