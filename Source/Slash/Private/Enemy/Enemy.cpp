@@ -20,6 +20,16 @@
 /** To use the HealthBarComponent */
 #include "HUD/MyHealthBarComponent.h"
 
+/** Setup movement orientation bool */
+#include "GameFramework/CharacterMovementComponent.h"
+
+/** Add AI movement */
+#include "AIController.h"
+#include "Perception/PawnSensingComponent.h"
+
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/KismetMathLibrary.h"
+
 // Sets default values
 AEnemy::AEnemy()
 {
@@ -43,6 +53,18 @@ AEnemy::AEnemy()
 	HealthBarWidget = CreateDefaultSubobject<UMyHealthBarComponent>(TEXT("HealthBar"));
 	// As it has a location in space, we can attach to the root component
 	HealthBarWidget->SetupAttachment(GetRootComponent());
+
+	// Makes enemy face to the direction it's moving
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	bUseControllerRotationPitch = false;
+	bUseControllerRotationYaw = false;
+	bUseControllerRotationRoll = false;
+
+	// Construct Pawn Sensing component (give a native text name of PawnSensing)
+	PawnSensing = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensing"));
+	PawnSensing->SightRadius = 4000.f;
+	PawnSensing->SetPeripheralVisionAngle(45.f);
+
 }
 
 // Called when the game starts or when spawned
@@ -54,6 +76,18 @@ void AEnemy::BeginPlay()
 	if (HealthBarWidget)
 	{
 		HealthBarWidget->SetVisibility(false);
+	}
+
+	/** Move the enemy for the first time here (in BeginPlay) */
+	EnemyController = Cast<AAIController>(GetController());
+	MoveToTarget(PatrolTarget);
+
+	/** 
+	* Bind the callback function to the delegate
+	*/
+	if (PawnSensing)
+	{
+		PawnSensing->OnSeePawn.AddDynamic(this, &AEnemy::PawnSeen);
 	}
 }
 
@@ -120,32 +154,188 @@ void AEnemy::PlayHitReactMontage(const FName& SectionName)
 	}
 }
 
-// Called every frame
+void AEnemy::PlayIdlePatrolMontage(const FName& SectionName)
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && IdlePatrolMontage)
+	{
+		AnimInstance->Montage_Play(IdlePatrolMontage);
+		AnimInstance->Montage_JumpToSection(SectionName, IdlePatrolMontage);
+	}
+}
+
+FName& AEnemy::IdlePatrolSectionName()
+{
+	const int32 Selection = FMath::RandRange(0, 2);
+	//FName SectionName = FName();
+	switch (Selection)
+	{
+	case 0:
+		IdleSectionName = FName("Patrol1");
+		break;
+	case 1:
+		IdleSectionName = FName("Patrol2");
+		break;
+	case 2:
+		IdleSectionName = FName("Patrol3");
+	}
+
+	return IdleSectionName;
+}
+
+bool AEnemy::InTargetRange(AActor* Target, double Radius)
+{
+	// Return false in case Target is invalid so in Tick we can remove some other validations
+	if (Target == nullptr) return false;
+
+	const double DistanceToTarget = (Target->GetActorLocation() - GetActorLocation()).Size();
+
+	return DistanceToTarget <= Radius;
+}
+
+void AEnemy::MoveToTarget(AActor* Target)
+{
+	if (EnemyController == nullptr || Target == nullptr) return; // this removes the need for the next if statement
+
+	FAIMoveRequest MoveRequest;
+	MoveRequest.SetGoalActor(Target);
+	MoveRequest.SetAcceptanceRadius(15.f);
+	EnemyController->MoveTo(MoveRequest);
+}
+
+AActor* AEnemy::ChoosePatrolTarget() 
+{
+	/** Have an array filled with all patrol targets except the one we currently have. */
+	TArray<AActor*> ValidTargets;
+	for (AActor* Target : PatrolTargets)
+	{
+		if (Target != PatrolTarget)
+		{
+			ValidTargets.AddUnique(Target);
+		}
+	}
+
+	// select one of the patrol target at random, and return our patrol target
+	if (ValidTargets.Num() > 0)
+	{
+		const int32 TargetSelection = FMath::RandRange(0, ValidTargets.Num() - 1);
+		return ValidTargets[TargetSelection];
+	}
+
+	return nullptr;
+}
+
+void AEnemy::FinishIdlePatrol()
+{
+	if (EnemyState == EEnemyState::EES_IdlePatrol)
+	{
+		EnemyState = EEnemyState::EES_Patrolling;
+	}
+}
+
+void AEnemy::PawnSeen(APawn* SeenPawn)
+{
+	if (EnemyState == EEnemyState::EES_Chasing) return;
+
+	if (SeenPawn->ActorHasTag(FName("SlashCharacter")))
+	{
+		GetWorldTimerManager().ClearTimer(PatrolTimer);
+		GetCharacterMovement()->MaxWalkSpeed = 300.f; // this value can also come from a variable		
+		
+		/** Set the combat target */
+		CombatTarget = SeenPawn;
+
+		if (EnemyState != EEnemyState::EES_Attacking)
+		{
+			EnemyState = EEnemyState::EES_Chasing;		
+			MoveToTarget(CombatTarget);
+
+			/** Stop the IdlePatrol animation montage */
+			UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+			if (AnimInstance)
+			{
+				AnimInstance->Montage_Stop(0.f, IdlePatrolMontage);
+			}
+		}
+	}
+}
+
+/** When the timer has elapsed, call MoveToTarget */
+void AEnemy::PatrolTimerFinished()
+{	
+	MoveToTarget(PatrolTarget);
+}
+
 void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	/** Calculate the distance from the enemy to the actor that's hit it, ie: the CombatTarget */
-	if (CombatTarget)
+	// Starts as Patrolling by default
+	if (EnemyVelocity == 0.f && EnemyState == EEnemyState::EES_IdlePatrol)
 	{
-		/** 
-		* CombatTarget location - Enemy location = the vector from the enemy to the combat target
-		* Then we can get the distance by getting the length of this vector:
-		* (CombatTarget location - Enemy location).Size() or .Length()
-		* We'll then check this DistanceToTarget against a threshold that we'll declare as a double variable
-		* If the distance is greater than the combat radius, it means the target lost interest to the enemy,
-		*  so that CombatTarget can be set to null! ie we can set the CombatTarget at any circumstances we want.
-		*  If the CombatTarget is also too far away, we'll also hide the enemy health bar
-		*/ 
-		const double DistanceToTarget = (CombatTarget->GetActorLocation() - GetActorLocation()).Size();
-		if (DistanceToTarget > CombatRadius)
+		FName SectionName = IdlePatrolSectionName();
+		PlayIdlePatrolMontage(SectionName);
+	}
+
+	if (EnemyState > EEnemyState::EES_Patrolling) // if the state is "more serious" than Patrolling
+	{
+		CheckCombatTarget();
+	}
+
+	CheckPatrolTarget(); // Set to EAS_IdlePatrol
+}
+
+void AEnemy::CheckCombatTarget()
+{
+	if (!InTargetRange(CombatTarget, CombatRadius))
+	{
+		// Outside CombatRadius, lose interest
+		CombatTarget = nullptr;
+		if (HealthBarWidget)
 		{
-			CombatTarget = nullptr;
-			if (HealthBarWidget)
-			{
-				HealthBarWidget->SetVisibility(false);
-			}
+			HealthBarWidget->SetVisibility(false);
 		}
+		/** Return to Patrolling state, velocity and target (PatrolTarget) */
+		EnemyState = EEnemyState::EES_Patrolling;
+		GetCharacterMovement()->MaxWalkSpeed = 125.f;
+		MoveToTarget(PatrolTarget);
+	}
+	// check if it's in the AttackRadius AND if it's not already in Chasing state to avoid setting it again
+	else if (!InTargetRange(CombatTarget, AttackRadius) && EnemyState != EEnemyState::EES_Chasing) 
+	{
+		// Outside Attack range, chase character
+		EnemyState = EEnemyState::EES_Chasing;
+
+		/** Move toward the target, chasing it */
+		GetCharacterMovement()->MaxWalkSpeed = 300.f;
+		MoveToTarget(CombatTarget);
+	}
+	// Check if we are in attack range and if we're already in Attacking state
+	else if (InTargetRange(CombatTarget, AttackRadius) && EnemyState != EEnemyState::EES_Attacking)
+	{
+		// Inside Attack range, attack character
+		EnemyState = EEnemyState::EES_Attacking;
+
+		// TODO: Attack Montage
+	}
+}
+
+void AEnemy::CheckPatrolTarget()
+{
+	EnemyVelocity = UKismetMathLibrary::VSizeXY(GetCharacterMovement()->Velocity);
+
+	if (InTargetRange(PatrolTarget, PatrolRadius))
+	{
+		PatrolTarget = ChoosePatrolTarget();
+
+		// Also check if it's not in IdlePatrol state already? This prevents bugs for spamming setting the same state
+		if (EnemyState == EEnemyState::EES_Patrolling) 
+		{
+			EnemyState = EEnemyState::EES_IdlePatrol;
+		}
+
+		const float WaitTime = FMath::RandRange(WaitMin, WaitMax);
+		GetWorldTimerManager().SetTimer(PatrolTimer, this, &AEnemy::PatrolTimerFinished, WaitTime);
 	}
 }
 
@@ -214,7 +404,6 @@ void AEnemy::GetHit_Implementation(const FVector& ImpactPoint)
 		Die();
 	}
 
-
 	// Play sound as soon as the enemy gets hit
 	if (HitSound)
 	{
@@ -234,31 +423,34 @@ void AEnemy::GetHit_Implementation(const FVector& ImpactPoint)
 			GetWorld(),
 			HitParticles,
 			ImpactPoint
+			/** 
+			* UnrealEditor_Slash_patch_3!AEnemy::~AEnemy() [C:\Users\evepg\Documents\Udemy\UE5-Cpp-Game-Developer\Slash\Intermediate\Build\Win64\UnrealEditor\Inc\Slash\UHT\Enemy.gen.cpp:366]
+			* UnrealEditor_Slash_patch_3!AEnemy::`vector deleting destructor'()
+			* Unhandled Exception: EXCEPTION_ACCESS_VIOLATION reading address 0x0000000400000070
+			*/
+
+			/** 
+			* ImpactPoint comes from BoxHit variable of type FHitResult which we get data in Weapon class after
+			*  calling BoxTraceSingle. Then we call Execute_GetHit and pass that variable.
+			*/
 		);
 	}
 }
 
 float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	/** 
-	* Once we call ApplyDamage using GamePlayStatics, the Enemy TakeDamage will be called.
-	* We can do all the necessary actions here that we want to do, like updating the health and the health bar.
-	* Use the component to call the Receive Damage function passing the DamageAmount. And thanks to GameplayStatics,
-	*  it'll make sure this function gets called whenever we apply damage.
-	* We'll then set the Health percent here instead of BeginPlay. We do inside the if statement because we'll need
-	*  the information of how much health we'll have and that info is stored on Attributes.
-	* We can combine both if statements, because in this case it's ok to not get inside the if statement if either of
-	*  them is false.
-	* @return we return DamageAmount because TakeDamage technically returns the amount of damage caused
-	*/
-
 	if (Attributes && HealthBarWidget)
 	{
 		Attributes->ReceiveDamage(DamageAmount);
 		HealthBarWidget->SetHealthPercent(Attributes->GetHealthPercent());
 	}
-	// Get the pawn that's being controlled by this controller (EventInstigator)
+	// Get the pawn that's being controlled by this controller (EventInstigator) and set as the CombatTarget
 	CombatTarget = EventInstigator->GetPawn();
+	
+	// Make the enemy chase and attack (from CheckCombatTarget()) the instigator
+	EnemyState = EEnemyState::EES_Chasing;
+	GetCharacterMovement()->MaxWalkSpeed = 300.f;
+	MoveToTarget(CombatTarget);
 
 	return DamageAmount;
 }
