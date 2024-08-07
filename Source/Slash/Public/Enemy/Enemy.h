@@ -6,6 +6,8 @@
 
 /** Include the headers of the classes this one is inhereting from */
 #include "GameFramework/Character.h"
+#include "Characters/BaseCharacter.h"
+
 #include "Interfaces/HitInterface.h"
 #include "Characters/CharacterTypes.h"
 
@@ -23,7 +25,7 @@ class UMyHealthBarComponent;
 class UPawnSensingComponent;
 
 UCLASS()
-class SLASH_API AEnemy : public ACharacter, public IHitInterface
+class SLASH_API AEnemy : public ABaseCharacter, public IHitInterface
 {
 	GENERATED_BODY()
 
