@@ -67,7 +67,7 @@ protected:
 	void Look(const FInputActionValue& Value);
 	virtual void Jump() override;
 	void EKeyPressed();
-	void Attack();
+	virtual void Attack() override;
 
 	/** 
 	* Play Montage Functions 
