@@ -45,6 +45,52 @@ void ABaseCharacter::PlayHitReactMontage(const FName& SectionName)
 	}
 }
 
+void ABaseCharacter::DirectionalHitReact(const FVector& ImpactPoint)
+{
+	/** 
+	* Find Theta
+	*/
+
+	const FVector Forward = GetActorForwardVector();
+	// Lower Impact Point to the enemy's actor location Z
+	const FVector ImpactLowered{ ImpactPoint.X, ImpactPoint.Y, GetActorLocation().Z };
+	const FVector ToHit = (ImpactLowered - GetActorLocation()).GetSafeNormal();
+
+	// Forward * ToHit = |Forward| * |ToHit| * cos(theta)
+	// |Forward| = 1, |ToHit| = 1, so Forward * ToHit = cos(theta)
+	const double CosTheta = FVector::DotProduct(Forward, ToHit);
+
+	// Take the inverse cosine (arc-cosine) os cos(theta) to get theta. Then convert from radians to degrees
+	double Theta = FMath::Acos(CosTheta);
+	Theta = FMath::RadiansToDegrees(Theta);
+
+	// If CrossProduct points down, Theta should be negative.
+	const FVector CrossProduct = FVector::CrossProduct(Forward, ToHit);
+	if (CrossProduct.Z < 0)
+	{
+		Theta *= -1.f;
+	}
+
+	/** 
+	* Set Section name according to Theta, then call to play the montage
+	*/
+	FName Section{ "FromBack" };
+	if (Theta >= -45.f && Theta < 45.f)
+	{
+		Section = FName{ "FromFront" };
+	}
+	else if (Theta >= -135.f && Theta < -45.f)
+	{
+		Section = FName{ "FromLeft" };
+	}
+	else if (Theta >= 45.f && Theta < 135.f)
+	{
+		Section = FName{ "FromRight" };
+	}
+
+	PlayHitReactMontage(Section);
+}
+
 void ABaseCharacter::Attack()
 {
 }

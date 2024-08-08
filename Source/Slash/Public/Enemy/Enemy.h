@@ -36,8 +36,6 @@ public:
 	void CheckPatrolTarget();
 	void CheckCombatTarget();
 
-	/** Set the animation section name according to the hit direction and call PlayHitReactMontage() */
-	void DirectionalHitReact(const FVector& ImpactPoint);
 	/** Show health bar, play hit sound, spawn emmitter at location. If dead call Die() */
 	virtual void GetHit_Implementation(const FVector& ImpactPoint) override;
 

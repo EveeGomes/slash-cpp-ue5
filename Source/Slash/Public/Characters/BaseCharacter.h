@@ -57,8 +57,14 @@ protected:
 	* Play Montage Functions
 	*/
 	virtual void PlayAttackMontage();
-	// The implementation can be used for both children, Enemy and SlashCharacter!
 	void PlayHitReactMontage(const FName& SectionName);
+	/** 
+	* Set the animation section name according to the hit direction angle and call PlayHitReactMontage()
+	* 
+	* As long as children classes have the same Section names for their own anim montage, we can use the implementation
+	*  we already had in Enemy.cpp
+	*/
+	void DirectionalHitReact(const FVector& ImpactPoint);
 
 	/** Attack */
 	virtual void Attack();
