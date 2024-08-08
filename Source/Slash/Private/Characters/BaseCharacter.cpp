@@ -39,6 +39,11 @@ void ABaseCharacter::Attack()
 {
 }
 
+bool ABaseCharacter::CanAttack()
+{
+	return false;
+}
+
 void ABaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
