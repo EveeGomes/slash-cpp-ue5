@@ -63,7 +63,7 @@ protected:
 	/** 
 	* Plays death montage 
 	*/
-	void Die();
+	virtual void Die() override;
 
 	/** 
 	* Play Montage Functions
