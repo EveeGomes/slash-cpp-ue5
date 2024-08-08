@@ -39,16 +39,25 @@ protected:
 	TObjectPtr<AWeapon> EquippedWeapon;
 
 	/**
+	* Animation Montages
+	*/
+	UPROPERTY(EditDefaultsOnly, Category = "Montage")
+	TObjectPtr<UAnimMontage> AttackMontage;
+
+	/**
 	* Play Montage Functions
 	*/
-	/** Attack */
 	virtual void PlayAttackMontage();
-	/** 
-	* Now in this case we'll have it as virtual function since each child will implement it as they need by overriding it.
-	*/
+
+	/** Attack */
 	virtual void Attack();
 	UFUNCTION(BlueprintCallable)
 	virtual void AttackEnd();
 	virtual bool CanAttack();
+
+	/** 
+	* Plays Death Montage 
+	*/
+	virtual void Die();
 
 };

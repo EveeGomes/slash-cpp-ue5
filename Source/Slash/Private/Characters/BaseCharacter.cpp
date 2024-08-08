@@ -48,6 +48,10 @@ bool ABaseCharacter::CanAttack()
 	return false;
 }
 
+void ABaseCharacter::Die()
+{
+}
+
 void ABaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
