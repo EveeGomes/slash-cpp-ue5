@@ -38,6 +38,11 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Weapon")
 	TObjectPtr<AWeapon> EquippedWeapon;
 
+	/**
+	* Play Montage Functions
+	*/
+	/** Attack */
+	virtual void PlayAttackMontage();
 	/** 
 	* Now in this case we'll have it as virtual function since each child will implement it as they need by overriding it.
 	*/

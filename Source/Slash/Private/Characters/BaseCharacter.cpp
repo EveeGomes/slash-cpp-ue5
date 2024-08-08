@@ -31,6 +31,10 @@ void ABaseCharacter::BeginPlay()
 	
 }
 
+void ABaseCharacter::PlayAttackMontage()
+{
+}
+
 void ABaseCharacter::Attack()
 {
 }

@@ -73,7 +73,7 @@ protected:
 	* Play Montage Functions 
 	*/
 	/** Attack */
-	void PlayAttackMontage();
+	virtual void PlayAttackMontage() override;
 	UFUNCTION(BlueprintCallable)
 	void AttackEnd();
 	bool CanAttack();
