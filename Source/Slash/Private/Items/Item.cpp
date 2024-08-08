@@ -15,6 +15,13 @@ AItem::AItem()
 
 	// Construct the mesh component and assign it to the root component
 	ItemMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ItemMeshComponent"));
+	/**
+	* Disable collision of the mesh so all items won't conflict when attached to a character (enemy or slashcharacter)
+	* We first looked for it in the Enemy class, but noticed that it's been inherented from this Item class through
+	*  AttachMeshSocket().
+	*/
+	ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	RootComponent = ItemMesh;
 
 	// Construct the sphere component
