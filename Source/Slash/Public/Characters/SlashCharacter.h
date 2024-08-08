@@ -76,7 +76,7 @@ protected:
 	virtual void PlayAttackMontage() override;
 	UFUNCTION(BlueprintCallable)
 	void AttackEnd();
-	virtual bool CanAttack();
+	virtual bool CanAttack() override;
 
 	/** Equip / Unequip */
 	void PlayEquipMontage(FName SectionName);
