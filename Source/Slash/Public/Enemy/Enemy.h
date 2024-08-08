@@ -39,6 +39,14 @@ public:
 	/** Show health bar, play hit sound, spawn emmitter at location. If dead call Die() */
 	virtual void GetHit_Implementation(const FVector& ImpactPoint) override;
 
+	/** 
+	* This function is already inherented from Actor class.
+	* We don't really need to implement it in the BaseCharacter, unless there's something here we want to do
+	*  in both classes.
+	* Something that would not be unique (probably) is taking the Attributes component and call ReceiveDamage on it.
+	* But since SlashCharacter might take damage in a slighly different way, we'll leave as is and override it
+	*  separately in SlashCharacter!
+	*/
 	/** Public virtual function from AActor */
 	virtual float TakeDamage(
 		float DamageAmount, 
