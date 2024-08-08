@@ -39,6 +39,10 @@ void ABaseCharacter::Attack()
 {
 }
 
+void ABaseCharacter::AttackEnd()
+{
+}
+
 bool ABaseCharacter::CanAttack()
 {
 	return false;

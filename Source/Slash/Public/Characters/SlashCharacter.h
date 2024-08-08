@@ -74,8 +74,7 @@ protected:
 	*/
 	/** Attack */
 	virtual void PlayAttackMontage() override;
-	UFUNCTION(BlueprintCallable)
-	void AttackEnd();
+	virtual void AttackEnd() override;
 	virtual bool CanAttack() override;
 
 	/** Equip / Unequip */
