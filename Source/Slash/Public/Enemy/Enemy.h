@@ -18,6 +18,7 @@
 class UAnimMontage;
 class UMyHealthBarComponent;
 class UPawnSensingComponent;
+class AWeapon;
 
 UCLASS()
 class SLASH_API AEnemy : public ABaseCharacter
@@ -111,6 +112,12 @@ private:
 	*/
 	UPROPERTY(EditDefaultsOnly, Category = "Montage")
 	TObjectPtr<UAnimMontage> IdlePatrolMontage;
+
+	/** 
+	* Spawn a weapon
+	*/
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AWeapon> WeaponClass;
 
 	/** 
 	* Components

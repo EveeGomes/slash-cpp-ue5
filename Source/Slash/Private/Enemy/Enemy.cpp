@@ -30,6 +30,9 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 
+/** Attach the weapon in BeginPlay() */
+#include "Items/Weapons/Weapon.h"
+
 // Sets default values
 AEnemy::AEnemy()
 {
@@ -60,7 +63,6 @@ AEnemy::AEnemy()
 	PawnSensing = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensing"));
 	PawnSensing->SightRadius = 4000.f;
 	PawnSensing->SetPeripheralVisionAngle(45.f);
-
 }
 
 void AEnemy::Tick(float DeltaTime)
@@ -232,6 +234,26 @@ void AEnemy::BeginPlay()
 	if (PawnSensing)
 	{
 		PawnSensing->OnSeePawn.AddDynamic(this, &AEnemy::PawnSeen);
+	}
+
+	/**
+	* Spawn an actor.
+	* We use UWorld because SpawnActor exists in that class.
+	* We'll do similar to what we did in BreakableActor class in GetHit_Implementation.
+	* There's no need to pass a location or rotation because we'll attach it.
+	*
+	* Then, we'll check the EKeyPressed() and Equip() functions from SlashCharacter.
+	* SpawnActor returns a AWeapon so we create a local AWeapon pointer and set to it.
+	* After that we use OverlappingWeapon->Equip(GetMesh(), FName("RightHandSocket"), this, this); changing
+	*  OverlappingWeapon to DefaultWeapon.
+	* So after we spwan the DefaultWeapon, we can set our EquippedWeapon
+	*/
+	UWorld* World = GetWorld();
+	if (World && WeaponClass)
+	{
+		AWeapon* DefaultWeapon = World->SpawnActor<AWeapon>(WeaponClass);
+		DefaultWeapon->Equip(GetMesh(), FName("RightHandSocket"), this, this);
+		EquippedWeapon = DefaultWeapon;
 	}
 }
 
