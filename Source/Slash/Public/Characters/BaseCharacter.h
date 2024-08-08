@@ -8,7 +8,11 @@
 */
 
 #include "CoreMinimal.h"
+
+/** Inheritance that also goes to children classes */
 #include "GameFramework/Character.h"
+#include "Interfaces/HitInterface.h"
+
 #include "BaseCharacter.generated.h"
 
 /** Forward declaration */
@@ -16,7 +20,7 @@ class AWeapon;
 class UAnimMontage;
 
 UCLASS()
-class SLASH_API ABaseCharacter : public ACharacter
+class SLASH_API ABaseCharacter : public ACharacter, public IHitInterface
 {
 	GENERATED_BODY()
 

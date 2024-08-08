@@ -4,12 +4,8 @@
 
 #include "CoreMinimal.h"
 
-/** Include the headers of the classes this one is inhereting from */
-#include "GameFramework/Character.h"
+/** Inheritance */
 #include "Characters/BaseCharacter.h"
-
-#include "Interfaces/HitInterface.h"
-#include "Characters/CharacterTypes.h"
 
 /** Use Action States */
 #include "Characters/CharacterTypes.h"
@@ -25,7 +21,7 @@ class UMyHealthBarComponent;
 class UPawnSensingComponent;
 
 UCLASS()
-class SLASH_API AEnemy : public ABaseCharacter, public IHitInterface
+class SLASH_API AEnemy : public ABaseCharacter
 {
 	GENERATED_BODY()
 
@@ -108,9 +104,6 @@ private:
 	/** 
 	* Animation Montages 
 	*/
-	UPROPERTY(EditDefaultsOnly, Category = "Montage")
-	TObjectPtr<UAnimMontage> HitReactMontage;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Montage")
 	TObjectPtr<UAnimMontage> DeathMontage;
 
