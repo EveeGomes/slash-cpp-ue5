@@ -16,7 +16,6 @@
 * Class forward declaration 
 */
 class UAnimMontage;
-class UAttributeComponent;
 class UMyHealthBarComponent;
 class UPawnSensingComponent;
 
@@ -111,31 +110,11 @@ private:
 	* Animation Montages 
 	*/
 	UPROPERTY(EditDefaultsOnly, Category = "Montage")
-	TObjectPtr<UAnimMontage> DeathMontage;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Montage")
 	TObjectPtr<UAnimMontage> IdlePatrolMontage;
-
-
-	/** 
-	* Variable to set a sound when an enemy gets hit.
-	* Having this variable allows for setting different sounds to different enemies.
-	*/
-	UPROPERTY(EditAnywhere, Category = "Sounds")
-	TObjectPtr<USoundBase> HitSound;
-
-	/** 
-	* Particle system 
-	* UParticleSystem is the type for the Cascade Particle System.
-	* To spawn this particle, we need to use the GamePlayStatics System.
-	*/
-	UPROPERTY(EditAnywhere, Category = "VisualEffects")
-	TObjectPtr<UParticleSystem> HitParticles;
 
 	/** 
 	* Components
 	*/
-
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UMyHealthBarComponent> HealthBarWidget;
 

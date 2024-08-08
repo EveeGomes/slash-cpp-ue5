@@ -51,6 +51,24 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Montage")
 	TObjectPtr<UAnimMontage> HitReactMontage;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Montage")
+	TObjectPtr<UAnimMontage> DeathMontage;
+
+	/**
+	* Variable to set a sound when a character gets hit.
+	* Having this variable allows for setting different sounds to different characters.
+	*/
+	UPROPERTY(EditAnywhere, Category = "Sounds")
+	TObjectPtr<USoundBase> HitSound;
+
+	/**
+	* Particle system
+	* UParticleSystem is the type for the Cascade Particle System.
+	* To spawn this particle, we need to use the GamePlayStatics System.
+	*/
+	UPROPERTY(EditAnywhere, Category = "VisualEffects")
+	TObjectPtr<UParticleSystem> HitParticles;
+
 	/**
 	* Components
 	*/
