@@ -55,6 +55,9 @@ public:
 		AActor* DamageCauser
 	) override;
 
+	/** Destroy the weapon as soon as the enemy instance is also destroyed */
+	virtual void Destroyed() override;
+
 	/** Used in Tick() to check if IdlePatrol animation can be played */
 	float EnemyVelocity = 0.0f;
 
