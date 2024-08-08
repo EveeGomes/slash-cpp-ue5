@@ -68,7 +68,6 @@ protected:
 	/** 
 	* Play Montage Functions
 	*/
-	void PlayHitReactMontage(const FName& SectionName);
 	void PlayIdlePatrolMontage(const FName& SectionName);
 
 	FName& IdlePatrolSectionName();

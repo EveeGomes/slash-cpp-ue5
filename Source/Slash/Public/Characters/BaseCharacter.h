@@ -13,6 +13,7 @@
 
 /** Forward declaration */
 class AWeapon;
+class UAnimMontage;
 
 UCLASS()
 class SLASH_API ABaseCharacter : public ACharacter
@@ -32,8 +33,6 @@ public:
 	void SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
 
 protected:
-	virtual void BeginPlay() override;
-
 	// Variable for our currently equipped weapon
 	UPROPERTY(VisibleAnywhere, Category = "Weapon")
 	TObjectPtr<AWeapon> EquippedWeapon;
@@ -44,10 +43,18 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Montage")
 	TObjectPtr<UAnimMontage> AttackMontage;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Montage")
+	TObjectPtr<UAnimMontage> HitReactMontage;
+
+
+	virtual void BeginPlay() override;
+
 	/**
 	* Play Montage Functions
 	*/
 	virtual void PlayAttackMontage();
+	// The implementation can be used for both children, Enemy and SlashCharacter!
+	void PlayHitReactMontage(const FName& SectionName);
 
 	/** Attack */
 	virtual void Attack();
