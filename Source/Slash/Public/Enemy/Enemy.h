@@ -135,9 +135,6 @@ private:
 	/** 
 	* Components
 	*/
-	/** Add our custom Attribute Component */
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UAttributeComponent> Attributes;
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UMyHealthBarComponent> HealthBarWidget;

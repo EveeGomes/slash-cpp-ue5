@@ -7,9 +7,15 @@
 #include "Components/BoxComponent.h"
 #include "Items/Weapons/Weapon.h"
 
+/** Use our custom actor component */
+#include "Components/AttributeComponent.h"
+
 ABaseCharacter::ABaseCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	// Construct Attributes component
+	Attributes = CreateDefaultSubobject<UAttributeComponent>(TEXT("Attributes"));
 
 }
 

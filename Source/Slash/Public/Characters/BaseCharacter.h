@@ -18,6 +18,7 @@
 /** Forward declaration */
 class AWeapon;
 class UAnimMontage;
+class UAttributeComponent;
 
 UCLASS()
 class SLASH_API ABaseCharacter : public ACharacter, public IHitInterface
@@ -49,6 +50,13 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Montage")
 	TObjectPtr<UAnimMontage> HitReactMontage;
+
+	/**
+	* Components
+	*/
+	/** Add our custom Attribute Component */
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UAttributeComponent> Attributes;
 
 
 	virtual void BeginPlay() override;

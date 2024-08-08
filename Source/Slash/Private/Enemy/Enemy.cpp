@@ -45,10 +45,6 @@ AEnemy::AEnemy()
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 
-	// Construct Attributes component
-	Attributes = CreateDefaultSubobject<UAttributeComponent>(TEXT("Attributes"));
-	// it doesn't need to be attached to anything as it doesn't have a location or mesh or anything.
-
 	// Construct the health bar widget
 	HealthBarWidget = CreateDefaultSubobject<UMyHealthBarComponent>(TEXT("HealthBar"));
 	// As it has a location in space, we can attach to the root component
