@@ -418,27 +418,34 @@ AActor* AEnemy::ChoosePatrolTarget()
 
 void AEnemy::PawnSeen(APawn* SeenPawn) 
 {
-	if (EnemyState == EEnemyState::EES_Chasing) return;
-
-	if (SeenPawn->ActorHasTag(FName("SlashCharacter")))
+	/**
+	* Create a local bool in order to refactor a code where we can join if statements,
+	*  like in this case where we don't want to continue unless SeenPawn->ActorHasTag(FName("SlashCharacter")) returns true
+	*  and then EnemyState != EEnemyState::EES_Attacking returns true.
+	* The bool name should describe what's gonna happen if both conditions are true. In the bottom line, we want to chase
+	*  the target should the conditions return true!
+	* EnemyState < EEnemyState::EES_Attacking we'll be checking if it's less than Attacking or Engaged, since we shouldn't
+	*  be in either state.
+	* Now we just check a single condition using bShouldChaseTarget.
+	*/
+	const bool bShouldChaseTarget =
+		EnemyState != EEnemyState::EES_Dead &&
+		EnemyState != EEnemyState::EES_Chasing &&
+		EnemyState < EEnemyState::EES_Attacking &&
+		SeenPawn->ActorHasTag(FName("SlashCharacter"));
+	
+	if (bShouldChaseTarget)
 	{
-		GetWorldTimerManager().ClearTimer(PatrolTimer);
-		GetCharacterMovement()->MaxWalkSpeed = 300.f; // this value can also come from a variable		
-		
 		/** Set the combat target */
 		CombatTarget = SeenPawn;
+		ClearPatrolTimer();
+		ChaseTarget();
 
-		if (EnemyState != EEnemyState::EES_Attacking)
+		/** Stop the IdlePatrol animation montage */
+		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+		if (AnimInstance)
 		{
-			EnemyState = EEnemyState::EES_Chasing;		
-			MoveToTarget(CombatTarget);
-
-			/** Stop the IdlePatrol animation montage */
-			UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-			if (AnimInstance)
-			{
-				AnimInstance->Montage_Stop(0.f, IdlePatrolMontage);
-			}
+			AnimInstance->Montage_Stop(0.f, IdlePatrolMontage);
 		}
 	}
 }
@@ -491,6 +498,11 @@ void AEnemy::ChaseTarget()
 	MoveToTarget(CombatTarget);
 }
 
+void AEnemy::ClearPatrolTimer()
+{
+	GetWorldTimerManager().ClearTimer(PatrolTimer);
+}
+
 bool AEnemy::IsOutsideAttackRadius()
 {
 	return !InTargetRange(CombatTarget, AttackRadius);
@@ -503,7 +515,7 @@ bool AEnemy::IsChasing()
 
 bool AEnemy::IsAttacking()
 {
-	EnemyState == EEnemyState::EES_Attacking;
+	return EnemyState == EEnemyState::EES_Attacking;
 }
 
 void AEnemy::StartAttackTimer()

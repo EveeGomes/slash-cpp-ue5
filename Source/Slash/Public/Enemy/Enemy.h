@@ -199,8 +199,8 @@ private:
 	void ShowHealthBar();
 	void LoseInterest();
 	void StartPatrolling();
-	/** Outside Attack range, chase SlashCharacter */
 	void ChaseTarget();
+	void ClearPatrolTimer();
 
 	bool IsOutsideCombatRadius();
 	bool IsOutsideAttackRadius();
