@@ -69,14 +69,18 @@ void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// Starts as Patrolling by default
-	if (EnemyVelocity == 0.f && EnemyState == EEnemyState::EES_IdlePatrol)
+	/** 
+	* We need to make sure to not going into the checks if the enemy is in the Dead state.
+	*/
+	if (IsDead()) return;
+
+	// Idle Patrol
+	if (IsIdlePatrolling())
 	{
-		FName SectionName = IdlePatrolSectionName();
-		PlayIdlePatrolMontage(SectionName);
+		PlayIdlePatrolMontage(IdlePatrolSectionName());
 	}
 
-	if (EnemyState > EEnemyState::EES_Patrolling) // if the state is "more serious" than Patrolling
+	if (EnemyState > EEnemyState::EES_Patrolling)
 	{
 		CheckCombatTarget();
 	}
@@ -114,17 +118,52 @@ void AEnemy::CheckPatrolTarget()
 
 void AEnemy::CheckCombatTarget()
 {
+	/** 
+	* IMPORTANT:
+	* Although ClearAttackTimer() is called in every if statement below, it shouldn't be placed outside them.
+	* That's because CheckCombatTarget() is called every frame and we don't want ClearAttackTimer() to be called
+	*  that frequent since it would cause spamming.
+	* These if statements don't handle all cases, they all might failed in some frames therefore ClearAttackTimer()
+	*  won't be called.
+	*/
+
 	if (IsOutsideCombatRadius())
 	{
+		/** 
+		* Although the enemy loses interest, we might start the attack timer and it might still be going.
+		* If that's true and the enemy is here (Outside the combat radius), as the SlashCharacter moves further away
+		*  as soon as that timer is up, the enemy will attack.
+		* Therefore, we have to clear that attack timer before the enemy starts patrolling.
+		* 
+		* Another thing to check before star patrolling is if the enemy is Engaged to combat, because that means
+		*  the enemy is swinging the sword currently. And if that's true, the enemy shouldn't start patrolling since
+		*  that would made the enemy to slide!
+		*/
+		ClearAttackTimer();
 		LoseInterest();
-		StartPatrolling();
+		if (!IsEngaged()) StartPatrolling();
 	}
 	else if (IsOutsideAttackRadius() && !IsChasing())
 	{
-		ChaseTarget();
+		/** 
+		* We shall clear the attack timer here as well to avoid calling the attack while chasing the target.
+		* Then, we check if it's not engaged and only then, the enemy can chase the target.
+		*/
+		ClearAttackTimer();
+		if (!IsEngaged()) ChaseTarget(); 
 	}
-	else if (IsInsideAttackRadius() && !IsAttacking())
+	else if (CanAttack())
 	{
+		/** 
+		* We'll also clear the attack timer here because there's a chance for the timer to still be running,
+		*  then when that time is up, the enemy will attack prematurely.
+		* 
+		* Now, IsInsideAttackRadius() && !IsAttacking() are the conditions the enemy must be to then be able
+		*  to attack. Turns out there's a virtual function in the base class (BaseCharacter), CanAttack().
+		*  We'll override it here in enemy class, placing these conditions and to be safe check if it's not
+		*  in Dead state.
+		*/
+		ClearAttackTimer();
 		StartAttackTimer();
 	}
 }
@@ -350,6 +389,15 @@ void AEnemy::Attack()
 	PlayAttackMontage();
 }
 
+bool AEnemy::CanAttack()
+{
+	bool bCanAttack =
+		IsInsideAttackRadius() &&
+		!IsAttacking() &&
+		!IsDead();
+	return bCanAttack; 
+}
+
 FName& AEnemy::IdlePatrolSectionName()
 {
 	const int32 Selection = FMath::RandRange(0, 2);
@@ -521,6 +569,16 @@ bool AEnemy::IsAttacking()
 	return EnemyState == EEnemyState::EES_Attacking;
 }
 
+bool AEnemy::IsDead()
+{
+	return EnemyState == EEnemyState::EES_Dead;
+}
+
+bool AEnemy::IsEngaged()
+{
+	return EnemyState == EEnemyState::EES_Engaged;
+}
+
 void AEnemy::StartAttackTimer()
 {
 	EnemyState = EEnemyState::EES_Attacking;
@@ -528,7 +586,17 @@ void AEnemy::StartAttackTimer()
 	GetWorldTimerManager().SetTimer(AttackTimer, this, &AEnemy::Attack, AttackTime);
 }
 
+void AEnemy::ClearAttackTimer()
+{
+	GetWorldTimerManager().ClearTimer(AttackTimer);
+}
+
 bool AEnemy::IsInsideAttackRadius()
 {
 	return InTargetRange(CombatTarget, AttackRadius);
+}
+
+bool AEnemy::IsIdlePatrolling()
+{
+	return EnemyVelocity == 0.f && EnemyState == EEnemyState::EES_IdlePatrol;
 }

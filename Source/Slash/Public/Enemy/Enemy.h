@@ -78,6 +78,7 @@ protected:
 
 	/** Attack */
 	virtual void Attack() override;
+	virtual bool CanAttack() override;
 
 	FName& IdlePatrolSectionName();
 	// have a FName member variable to return a FName& instead of a copy?
@@ -120,6 +121,8 @@ protected:
 	/** Callback function to use with OnSeePawn delegate. Bound in BeginPlay() */
 	UFUNCTION() // to be bound to a delegate
 	void PawnSeen(APawn* SeenPawn);
+
+
 
 private:
 	/** 
@@ -205,10 +208,13 @@ private:
 	bool IsOutsideCombatRadius();
 	bool IsOutsideAttackRadius();
 	bool IsInsideAttackRadius();
+	bool IsIdlePatrolling();
 
 	/** Checking enemy states */
 	bool IsChasing();
 	bool IsAttacking();
+	bool IsDead();
+	bool IsEngaged();
 
 	/** Combat */
 	UPROPERTY(EditAnywhere, Category = "Combat")
@@ -218,6 +224,8 @@ private:
 
 	// Handling function used to start the timer, set state to Attacking, and call Attack()
 	void StartAttackTimer();
+	void ClearAttackTimer();
+
 	FTimerHandle AttackTimer;
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
