@@ -178,6 +178,7 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "AI Navigation")
 	float WaitMin = 9.5f;
+	UPROPERTY(EditAnywhere, Category = "AI Navigation")
 	float WaitMax = 10.5f;
 	/**
 	* TimerHandle is a struct that the world timer manager uses to keep track of various timers that we set.
