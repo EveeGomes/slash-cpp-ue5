@@ -157,13 +157,13 @@ void AEnemy::CheckCombatTarget()
 		/** 
 		* We'll also clear the attack timer here because there's a chance for the timer to still be running,
 		*  then when that time is up, the enemy will attack prematurely.
+		* He removed because in StartAttackTimer() the timer will be reset it, so there's no need to clear it before.
 		* 
 		* Now, IsInsideAttackRadius() && !IsAttacking() are the conditions the enemy must be to then be able
 		*  to attack. Turns out there's a virtual function in the base class (BaseCharacter), CanAttack().
 		*  We'll override it here in enemy class, placing these conditions and to be safe check if it's not
 		*  in Dead state.
 		*/
-		ClearAttackTimer();
 		StartAttackTimer();
 	}
 }
