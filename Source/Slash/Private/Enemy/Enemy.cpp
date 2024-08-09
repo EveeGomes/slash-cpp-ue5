@@ -111,18 +111,10 @@ void AEnemy::CheckPatrolTarget()
 
 void AEnemy::CheckCombatTarget()
 {
-	if (!InTargetRange(CombatTarget, CombatRadius))
+	if (IsOutsideCombatRadius())
 	{
-		// Outside CombatRadius, lose interest
-		CombatTarget = nullptr;
-		if (HealthBarWidget)
-		{
-			HealthBarWidget->SetVisibility(false);
-		}
-		/** Return to Patrolling state, velocity and target (PatrolTarget) */
-		EnemyState = EEnemyState::EES_Patrolling;
-		GetCharacterMovement()->MaxWalkSpeed = 125.f;
-		MoveToTarget(PatrolTarget);
+		LoseInterest();
+		StartPatrolling();
 	}
 	// check if it's in the AttackRadius AND if it's not already in Chasing state to avoid setting it again
 	else if (!InTargetRange(CombatTarget, AttackRadius) && EnemyState != EEnemyState::EES_Chasing) 
@@ -470,4 +462,39 @@ void AEnemy::PawnSeen(APawn* SeenPawn)
 void AEnemy::PatrolTimerFinished()
 {	
 	MoveToTarget(PatrolTarget);
+}
+
+void AEnemy::HideHealthBar()
+{
+	if (HealthBarWidget)
+	{
+		HealthBarWidget->SetVisibility(false);
+	}
+}
+
+void AEnemy::ShowHealthBar()
+{
+	if (HealthBarWidget)
+	{
+		HealthBarWidget->SetVisibility(true);
+	}
+}
+
+void AEnemy::LoseInterest()
+{
+	CombatTarget = nullptr;
+	HideHealthBar();
+}
+
+void AEnemy::StartPatrolling()
+{
+	/** Return to Patrolling: state and velocity, and move to target (PatrolTarget) */
+	EnemyState = EEnemyState::EES_Patrolling;
+	GetCharacterMovement()->MaxWalkSpeed = PatrollingSpeed;
+	MoveToTarget(PatrolTarget);
+}
+
+bool AEnemy::IsOutsideCombatRadius()
+{
+	return !InTargetRange(CombatTarget, CombatRadius);
 }

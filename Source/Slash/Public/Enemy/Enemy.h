@@ -191,4 +191,18 @@ private:
 	*/
 	/** Moves the enemy to a target after a certain time */
 	void PatrolTimerFinished();
+
+	/** 
+	* AI Behavior
+	*/
+	void HideHealthBar();
+	void ShowHealthBar();
+	void LoseInterest();
+	void StartPatrolling();
+	bool IsOutsideCombatRadius();
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	float PatrollingSpeed = 125.f;
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	float ChasingSpeed = 300.f;
 };
