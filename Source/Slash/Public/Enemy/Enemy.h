@@ -210,8 +210,18 @@ private:
 	bool IsChasing();
 	bool IsAttacking();
 
+	/** Combat */
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	float PatrollingSpeed = 125.f;
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	float ChasingSpeed = 300.f;
+
+	// Handling function used to start the timer and call Attack()
+	void StartAttackTimer();
+	FTimerHandle AttackTimer;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	float AttackMin = 0.5f;
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	float AttackMax = 1.f;
 };
