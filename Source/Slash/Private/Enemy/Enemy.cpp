@@ -328,6 +328,16 @@ void AEnemy::PlayIdlePatrolMontage(const FName& SectionName)
 	}
 }
 
+void AEnemy::PlayAttackMontage()
+{
+	Super::PlayAnimMontage();
+}
+
+void AEnemy::Attack()
+{
+	Super::Attack();
+}
+
 FName& AEnemy::IdlePatrolSectionName()
 {
 	const int32 Selection = FMath::RandRange(0, 2);

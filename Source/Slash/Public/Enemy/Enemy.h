@@ -74,6 +74,10 @@ protected:
 	* Play Montage Functions
 	*/
 	void PlayIdlePatrolMontage(const FName& SectionName);
+	virtual void PlayAttackMontage() override;
+
+	/** Attack */
+	virtual void Attack() override;
 
 	FName& IdlePatrolSectionName();
 	// have a FName member variable to return a FName& instead of a copy?
