@@ -55,21 +55,6 @@ protected:
 	TObjectPtr<UAnimMontage> DeathMontage;
 
 	/**
-	* Variable to set a sound when a character gets hit.
-	* Having this variable allows for setting different sounds to different characters.
-	*/
-	UPROPERTY(EditAnywhere, Category = "Sounds")
-	TObjectPtr<USoundBase> HitSound;
-
-	/**
-	* Particle system
-	* UParticleSystem is the type for the Cascade Particle System.
-	* To spawn this particle, we need to use the GamePlayStatics System.
-	*/
-	UPROPERTY(EditAnywhere, Category = "VisualEffects")
-	TObjectPtr<UParticleSystem> HitParticles;
-
-	/**
 	* Components
 	*/
 	/** Add our custom Attribute Component */
@@ -86,21 +71,38 @@ protected:
 	void PlayHitReactMontage(const FName& SectionName);
 	/** 
 	* Set the animation section name according to the hit direction angle and call PlayHitReactMontage()
-	* 
-	* As long as children classes have the same Section names for their own anim montage, we can use the implementation
-	*  we already had in Enemy.cpp
 	*/
 	void DirectionalHitReact(const FVector& ImpactPoint);
+
+	/** @param:		ImpactPoint coming from children classes? */
+	void PlayHitSound(const FVector& ImpactPoint);
+	void SpawnHitParticles(const FVector& ImpactPoint);
 
 	/** Attack */
 	virtual void Attack();
 	UFUNCTION(BlueprintCallable)
 	virtual void AttackEnd();
 	virtual bool CanAttack();
+	bool IsAlive();
 
 	/** 
 	* Plays Death Montage 
 	*/
 	virtual void Die();
 
+private:
+	/**
+	* Variable to set a sound when a character gets hit.
+	* Having this variable allows for setting different sounds to different characters.
+	*/
+	UPROPERTY(EditAnywhere, Category = "Sounds")
+	TObjectPtr<USoundBase> HitSound;
+
+	/**
+	* Particle system
+	* UParticleSystem is the type for the Cascade Particle System.
+	* To spawn this particle, we need to use the GamePlayStatics System.
+	*/
+	UPROPERTY(EditAnywhere, Category = "VisualEffects")
+	TObjectPtr<UParticleSystem> HitParticles;
 };

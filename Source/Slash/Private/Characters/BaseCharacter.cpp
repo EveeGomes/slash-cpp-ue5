@@ -10,6 +10,9 @@
 /** Use our custom actor component */
 #include "Components/AttributeComponent.h"
 
+/** Play sound, Spawn Cascade Particles emitter */
+#include "Kismet/GameplayStatics.h"
+
 ABaseCharacter::ABaseCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -97,6 +100,43 @@ void ABaseCharacter::DirectionalHitReact(const FVector& ImpactPoint)
 	PlayHitReactMontage(Section);
 }
 
+void ABaseCharacter::PlayHitSound(const FVector& ImpactPoint)
+{
+	// Play sound as soon as the character gets hit
+	if (HitSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(
+			this,
+			HitSound,
+			ImpactPoint
+		);
+	}
+}
+
+void ABaseCharacter::SpawnHitParticles(const FVector& ImpactPoint)
+{
+	/**
+	* Spawn an Emitter at location, using our HitParticles
+	*/
+	if (HitParticles && GetWorld())
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(
+			GetWorld(),
+			HitParticles,
+			ImpactPoint
+			/**
+			* UnrealEditor_Slash_patch_3!AEnemy::~AEnemy() [C:\Users\evepg\Documents\Udemy\UE5-Cpp-Game-Developer\Slash\Intermediate\Build\Win64\UnrealEditor\Inc\Slash\UHT\Enemy.gen.cpp:366]
+			* UnrealEditor_Slash_patch_3!AEnemy::`vector deleting destructor'()
+			* Unhandled Exception: EXCEPTION_ACCESS_VIOLATION reading address 0x0000000400000070
+			*/
+			/**
+			* ImpactPoint comes from BoxHit variable of type FHitResult which we get data in Weapon class after
+			*  calling BoxTraceSingle. Then we call Execute_GetHit and pass that variable.
+			*/
+		);
+	}
+}
+
 void ABaseCharacter::Attack()
 {
 }
@@ -108,6 +148,11 @@ void ABaseCharacter::AttackEnd()
 bool ABaseCharacter::CanAttack()
 {
 	return false;
+}
+
+bool ABaseCharacter::IsAlive()
+{
+	return Attributes && Attributes->IsAlive();
 }
 
 void ABaseCharacter::Die()

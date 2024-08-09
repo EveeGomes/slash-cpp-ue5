@@ -11,9 +11,6 @@
 #include "Slash/DebugMacros.h"
 #include "Kismet/KismetSystemLibrary.h"
 
-/** Play sound, Spawn Cascade Particles emitter */
-#include "Kismet/GameplayStatics.h"
-
 /** Use our custom actor component */
 #include "Components/AttributeComponent.h"
 
@@ -164,13 +161,12 @@ void AEnemy::CheckCombatTarget()
 
 void AEnemy::GetHit_Implementation(const FVector& ImpactPoint)
 {
-	// Show health bar widget
-	if (HealthBarWidget)
-	{
-		HealthBarWidget->SetVisibility(true);
-	}
-
-	if (Attributes && Attributes->IsAlive())
+	ShowHealthBar();
+	/** 
+	* Since we'll need to check Attributes in both children classes, we create a non-virtual function
+	*  IsAlive() for that. 
+	*/
+	if (IsAlive())
 	{
 		DirectionalHitReact(ImpactPoint);
 	}
@@ -180,37 +176,8 @@ void AEnemy::GetHit_Implementation(const FVector& ImpactPoint)
 		Die();
 	}
 
-	// Play sound as soon as the enemy gets hit
-	if (HitSound)
-	{
-		UGameplayStatics::PlaySoundAtLocation(
-			this,
-			HitSound,
-			ImpactPoint
-		);
-	}
-
-	/** 
-	* Spawn an Emitter at location, using our HitParticles
-	*/
-	if (HitParticles && GetWorld())
-	{
-		UGameplayStatics::SpawnEmitterAtLocation(
-			GetWorld(),
-			HitParticles,
-			ImpactPoint
-			/** 
-			* UnrealEditor_Slash_patch_3!AEnemy::~AEnemy() [C:\Users\evepg\Documents\Udemy\UE5-Cpp-Game-Developer\Slash\Intermediate\Build\Win64\UnrealEditor\Inc\Slash\UHT\Enemy.gen.cpp:366]
-			* UnrealEditor_Slash_patch_3!AEnemy::`vector deleting destructor'()
-			* Unhandled Exception: EXCEPTION_ACCESS_VIOLATION reading address 0x0000000400000070
-			*/
-
-			/** 
-			* ImpactPoint comes from BoxHit variable of type FHitResult which we get data in Weapon class after
-			*  calling BoxTraceSingle. Then we call Execute_GetHit and pass that variable.
-			*/
-		);
-	}
+	PlayHitSound(ImpactPoint);
+	SpawnHitParticles(ImpactPoint);
 }
 
 float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
