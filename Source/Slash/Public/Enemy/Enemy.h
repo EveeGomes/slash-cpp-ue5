@@ -29,7 +29,7 @@ public:
 	// Sets default values for this character's properties
 	AEnemy();
 	virtual void Tick(float DeltaTime) override;
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
 	/** 
 	* Enemy Patrolling, Chasing and Attacking behavior
 	*/
