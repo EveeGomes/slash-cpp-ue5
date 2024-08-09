@@ -439,7 +439,7 @@ AActor* AEnemy::ChoosePatrolTarget()
 	return nullptr;
 }
 
-void AEnemy::PawnSeen(APawn* SeenPawn)
+void AEnemy::PawnSeen(APawn* SeenPawn) 
 {
 	if (EnemyState == EEnemyState::EES_Chasing) return;
 

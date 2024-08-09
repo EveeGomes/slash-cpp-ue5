@@ -90,12 +90,20 @@ protected:
 	/** 
 	* States
 	*/
-	/** Start with the alive pose */
+	/** Start with the alive pose
+	* We'll now use EnemyState instead, as we added a new state: Dead.
+	* So, with EnemyState exposed to BP, in ABP_Paladin we'll create a new variable of type EEnemyState and set it in
+	*  Blueprint Thread Safe Update Animation.
+	* Therefore, to play Dead pose we'll check, in the transition rule, if the enemy is in Dead state instead of 
+	*  NOT in Alive state.
+	* Remove the default value of Alive and only set it when the Enemy dies.
+	* We can also remove the enum constant Alive from the EDeathPose enum.
+	*/
 	UPROPERTY(BlueprintReadOnly) // Only access what the variable is. No need to expose to the details panel either
-	EDeathPose DeathPose = EDeathPose::EDP_Alive;
+	EDeathPose DeathPose;
 
-	UPROPERTY(BlueprintReadOnly)
-	EEnemyState EnemyState = EEnemyState::EES_Patrolling; // MOVE TO PRIVATE AS IN THE COURSE?
+	UPROPERTY(BlueprintReadOnly) // This specifier only works for non-private variables!
+	EEnemyState EnemyState = EEnemyState::EES_Patrolling;
 
 	/** 
 	* Enemy Patrolling, Chasing and Attacking behavior
