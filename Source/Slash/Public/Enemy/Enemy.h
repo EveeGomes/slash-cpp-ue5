@@ -199,7 +199,12 @@ private:
 	void ShowHealthBar();
 	void LoseInterest();
 	void StartPatrolling();
+	/** Outside Attack range, chase SlashCharacter */
+	void ChaseTarget();
+
 	bool IsOutsideCombatRadius();
+	bool IsOutsideAttackRadius();
+	bool IsChasing();
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	float PatrollingSpeed = 125.f;

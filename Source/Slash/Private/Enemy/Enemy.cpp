@@ -116,15 +116,9 @@ void AEnemy::CheckCombatTarget()
 		LoseInterest();
 		StartPatrolling();
 	}
-	// check if it's in the AttackRadius AND if it's not already in Chasing state to avoid setting it again
-	else if (!InTargetRange(CombatTarget, AttackRadius) && EnemyState != EEnemyState::EES_Chasing) 
+	else if (IsOutsideAttackRadius() && !IsChasing())
 	{
-		// Outside Attack range, chase character
-		EnemyState = EEnemyState::EES_Chasing;
-
-		/** Move toward the target, chasing it */
-		GetCharacterMovement()->MaxWalkSpeed = 300.f;
-		MoveToTarget(CombatTarget);
+		ChaseTarget();
 	}
 	// Check if we are in attack range and if we're already in Attacking state
 	else if (InTargetRange(CombatTarget, AttackRadius) && EnemyState != EEnemyState::EES_Attacking)
@@ -497,4 +491,21 @@ void AEnemy::StartPatrolling()
 bool AEnemy::IsOutsideCombatRadius()
 {
 	return !InTargetRange(CombatTarget, CombatRadius);
+}
+
+void AEnemy::ChaseTarget() 
+{
+	EnemyState = EEnemyState::EES_Chasing;
+	GetCharacterMovement()->MaxWalkSpeed = ChasingSpeed;
+	MoveToTarget(CombatTarget);
+}
+
+bool AEnemy::IsOutsideAttackRadius()
+{
+	return !InTargetRange(CombatTarget, AttackRadius);
+}
+
+bool AEnemy::IsChasing()
+{
+	return EnemyState == EEnemyState::EES_Chasing;
 }
