@@ -122,14 +122,6 @@ void AEnemy::CheckCombatTarget()
 	}
 	else if (IsInsideAttackRadius() && !IsAttacking())
 	{
-		/** 
-		* As it is, the montage will be played once. Plus, we still need to control when it should stop the montage
-		*  (ie when the SlashCharacter runs, the Enemy tries to chase it and the mesh slides because it's still playing
-		*  the attack montage).
-		* 
-		* Use a timer handle to have a time between attacking animations!
-		*/
-		
 		StartAttackTimer();
 	}
 }
@@ -516,14 +508,7 @@ bool AEnemy::IsAttacking()
 
 void AEnemy::StartAttackTimer()
 {
-	/** 
-	* Since we want to start the AttackTimer, we also want to be in the Attacking state. But, as soon as the enemy
-	*  swing the sword, it'll be in the Engaged state.
-	* 
-	* Then, we'll choose a random attack time.
-	*/
 	EnemyState = EEnemyState::EES_Attacking;
-
 	const float AttackTime = FMath::RandRange(AttackMin, AttackMax);
 	GetWorldTimerManager().SetTimer(AttackTimer, this, &AEnemy::Attack, AttackTime);
 }

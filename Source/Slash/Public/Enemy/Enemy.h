@@ -216,7 +216,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	float ChasingSpeed = 300.f;
 
-	// Handling function used to start the timer and call Attack()
+	// Handling function used to start the timer, set state to Attacking, and call Attack()
 	void StartAttackTimer();
 	FTimerHandle AttackTimer;
 
