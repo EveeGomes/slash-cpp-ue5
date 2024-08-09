@@ -155,6 +155,18 @@ bool ABaseCharacter::IsAlive()
 	return Attributes && Attributes->IsAlive();
 }
 
+void ABaseCharacter::HandleDamage(float DamageAmount)
+{
+	/** 
+	* This won't change the HealthBarWidget as not all children will have one, but all classes
+	*  will have attributes that receive damage.
+	*/
+	if (Attributes)
+	{
+		Attributes->ReceiveDamage(DamageAmount);
+	}
+}
+
 void ABaseCharacter::Die()
 {
 }

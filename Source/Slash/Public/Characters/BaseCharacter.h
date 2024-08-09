@@ -85,6 +85,9 @@ protected:
 	virtual bool CanAttack();
 	bool IsAlive();
 
+	/** Damage */
+	virtual void HandleDamage(float DamageAmount);
+
 	/** 
 	* Plays Death Montage 
 	*/

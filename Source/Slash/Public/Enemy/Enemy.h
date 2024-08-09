@@ -226,6 +226,8 @@ private:
 	void StartAttackTimer();
 	void ClearAttackTimer();
 
+	virtual void HandleDamage(float DamageAmount) override;
+
 	FTimerHandle AttackTimer;
 
 	UPROPERTY(EditAnywhere, Category = "Combat")

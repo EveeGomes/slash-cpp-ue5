@@ -182,18 +182,9 @@ void AEnemy::GetHit_Implementation(const FVector& ImpactPoint)
 
 float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	if (Attributes && HealthBarWidget)
-	{
-		Attributes->ReceiveDamage(DamageAmount);
-		HealthBarWidget->SetHealthPercent(Attributes->GetHealthPercent());
-	}
-	// Get the pawn that's being controlled by this controller (EventInstigator) and set as the CombatTarget
+	HandleDamage(DamageAmount);
 	CombatTarget = EventInstigator->GetPawn();
-	
-	// Make the enemy chase and attack (from CheckCombatTarget()) the instigator
-	EnemyState = EEnemyState::EES_Chasing;
-	GetCharacterMovement()->MaxWalkSpeed = 300.f;
-	MoveToTarget(CombatTarget);
+	ChaseTarget();
 
 	return DamageAmount;
 }
@@ -550,6 +541,15 @@ void AEnemy::StartAttackTimer()
 void AEnemy::ClearAttackTimer()
 {
 	GetWorldTimerManager().ClearTimer(AttackTimer);
+}
+
+void AEnemy::HandleDamage(float DamageAmount)
+{
+	Super::HandleDamage(DamageAmount);
+	if (Attributes && HealthBarWidget)
+	{
+		HealthBarWidget->SetHealthPercent(Attributes->GetHealthPercent());
+	}
 }
 
 bool AEnemy::IsInsideAttackRadius()
