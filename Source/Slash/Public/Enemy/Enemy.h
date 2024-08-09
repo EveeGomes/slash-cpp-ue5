@@ -204,7 +204,11 @@ private:
 
 	bool IsOutsideCombatRadius();
 	bool IsOutsideAttackRadius();
+	bool IsInsideAttackRadius();
+
+	/** Checking enemy states */
 	bool IsChasing();
+	bool IsAttacking();
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	float PatrollingSpeed = 125.f;

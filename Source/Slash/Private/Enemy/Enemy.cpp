@@ -120,8 +120,7 @@ void AEnemy::CheckCombatTarget()
 	{
 		ChaseTarget();
 	}
-	// Check if we are in attack range and if we're already in Attacking state
-	else if (InTargetRange(CombatTarget, AttackRadius) && EnemyState != EEnemyState::EES_Attacking)
+	else if (IsInsideAttackRadius() && !IsAttacking())
 	{
 		// Inside Attack range, attack character
 		EnemyState = EEnemyState::EES_Attacking;
@@ -508,4 +507,14 @@ bool AEnemy::IsOutsideAttackRadius()
 bool AEnemy::IsChasing()
 {
 	return EnemyState == EEnemyState::EES_Chasing;
+}
+
+bool AEnemy::IsAttacking()
+{
+	EnemyState == EEnemyState::EES_Attacking;
+}
+
+bool AEnemy::IsInsideAttackRadius()
+{
+	return InTargetRange(CombatTarget, AttackRadius);
 }
