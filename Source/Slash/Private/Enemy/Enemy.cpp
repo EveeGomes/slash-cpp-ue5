@@ -80,8 +80,10 @@ void AEnemy::Tick(float DeltaTime)
 	{
 		CheckCombatTarget();
 	}
-
-	CheckPatrolTarget(); // Set to EAS_IdlePatrol
+	else
+	{
+		CheckPatrolTarget(); // Set to EAS_IdlePatrol
+	}
 }
 
 // Called to bind functionality to input
@@ -90,6 +92,7 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
+// Set to EAS_IdlePatrol
 void AEnemy::CheckPatrolTarget()
 {
 	EnemyVelocity = UKismetMathLibrary::VSizeXY(GetCharacterMovement()->Velocity);
