@@ -122,8 +122,6 @@ protected:
 	UFUNCTION() // to be bound to a delegate
 	void PawnSeen(APawn* SeenPawn);
 
-
-
 private:
 	/** 
 	* Animation Montages 
