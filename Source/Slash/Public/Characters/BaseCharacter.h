@@ -47,13 +47,15 @@ protected:
 	*/
 
 	/** 
-	* Array of section names that can have different amount in each children.
+	* Array of section names that can have different amount of elements in each children.
 	* So with that array we can choose at random a name for the section and send it to PlayMontageSection.
 	* Then, setting it up in BP we can add or remove elements (section names) and the function will accommodate
 	*  for that.
 	*/
 	UPROPERTY(EditAnywhere,  Category = "Combat")
 	TArray<FName> AttackMontageSections;
+
+	// TODO: HAVE TARRAYS FOR OTHER ANIMATION MONTAGES TO ADD/REMOVE THEIR SECTION NAMES IN BP!
 
 	UPROPERTY(EditDefaultsOnly, Category = "Montage")
 	TObjectPtr<UAnimMontage> AttackMontage;
@@ -78,8 +80,17 @@ protected:
 	*/
 	// Generic function to play any montage!
 	void PlayMontageSection(UAnimMontage* Montage, const FName& SectionName);
-	// Choose a section name from AttackMontageSections array 
-	void PlayAttackMontage();
+	/** 
+	* Play a random montage section. It also returns the selected index that represents the section name that will
+	*  be played.
+	* This will be called from functions that will pass the corresponding animation montage to play along with
+	*  their section names.
+	*/
+	int32 PlayRandomMontageSection(UAnimMontage* Montage, const TArray<FName>& SectionNames);
+
+	// Choose a section name from AttackMontageSections array
+	// Change to return a int32 which comes from the return of PlayRandomMontageSection.
+	int32 PlayAttackMontage();
 
 	void PlayHitReactMontage(const FName& SectionName);
 	/** 

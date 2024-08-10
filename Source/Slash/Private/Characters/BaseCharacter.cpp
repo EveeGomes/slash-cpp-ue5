@@ -50,13 +50,21 @@ void ABaseCharacter::PlayMontageSection(UAnimMontage* Montage, const FName& Sect
 	}
 }
 
-void ABaseCharacter::PlayAttackMontage()
+int32 ABaseCharacter::PlayRandomMontageSection(UAnimMontage* Montage, const TArray<FName>& SectionNames)
 {
-	if (AttackMontageSections.Num() <= 0) return;
-	const int32 MaxSectionIndex = AttackMontageSections.Num() - 1;
+	if (SectionNames.Num() <= 0) return;
+
+	const int32 MaxSectionIndex = SectionNames.Num() - 1;
 	const int32 Selection = FMath::RandRange(0, MaxSectionIndex);
 
-	PlayMontageSection(AttackMontage, AttackMontageSections[Selection]);
+	PlayMontageSection(Montage, SectionNames[Selection]);
+
+	return Selection;
+}
+
+int32 ABaseCharacter::PlayAttackMontage()
+{
+	return PlayRandomMontageSection(AttackMontage, AttackMontageSections);
 }
 
 void ABaseCharacter::PlayHitReactMontage(const FName& SectionName)
