@@ -56,6 +56,8 @@ protected:
 	TArray<FName> AttackMontageSections;
 
 	// TODO: HAVE TARRAYS FOR OTHER ANIMATION MONTAGES TO ADD/REMOVE THEIR SECTION NAMES IN BP!
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	TArray<FName> DeathMontageSections;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Montage")
 	TObjectPtr<UAnimMontage> AttackMontage;
@@ -90,7 +92,14 @@ protected:
 
 	// Choose a section name from AttackMontageSections array
 	// Change to return a int32 which comes from the return of PlayRandomMontageSection.
-	int32 PlayAttackMontage();
+	virtual int32 PlayAttackMontage();
+	/** 
+	* The return value we'll use in the transition to a Death pose in ABP.
+	* We'll override this function in the enemy class so it can use return value (the index).
+	* This is definitely going to be a virtual function and as optional we can make PlayAttackMontage() virtual
+	*  as well just in case we need it later.
+	*/
+	virtual int32 PlayDeathMontage();
 
 	void PlayHitReactMontage(const FName& SectionName);
 	/** 

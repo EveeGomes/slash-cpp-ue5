@@ -69,6 +69,7 @@ protected:
 	* Plays death montage 
 	*/
 	virtual void Die() override;
+	virtual int32 PlayDeathMontage() override;
 
 	/** 
 	* Play Montage Functions

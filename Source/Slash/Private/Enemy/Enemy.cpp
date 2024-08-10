@@ -294,6 +294,40 @@ void AEnemy::Die()
 	SetLifeSpan(3.f);
 }
 
+int32 AEnemy::PlayDeathMontage()
+{
+	/** 
+	* When calling Super::PlayDeathMontage(); its execution will return a int32, so we'll save it in a variable.
+	* Then we set the DeathPose state based on that index returned and saved in Selection!
+	* Once we set that, after playing a specific death montage section, we need to go to the DeathPose that corresponds
+	*  to that index, how to do it:
+	*  we need an Enum based on the int32 Selection, for that we're going to use a enum wrapper (UE enums): TEnumAsByte<>()
+	*   where we specify the enum type we need: TEnumAsByte<enum type>. We pass the int32 Selection to initialize it as 
+	*   there's an overload of the constructor of EEnumAsByte that takes an int32! It sets the TEnumAsByte wrapper to the value
+	*   of the enum type based on the int32! ie it'll set Pose to the value of EDeathPose based on Selection.
+	*  We know that in the enum type the first constant is associated to the integer value of 0, unless we give them other values.
+	*   And since we've specified in EDeathPose to be int8, those constants are technically unsigned eight bits integers,
+	*   therefore they're BYTES.
+	* 
+	* Then, we set the DeathPose to Pose, but before we shall check if the int32 Selection isn't greater than the values
+	*  of enum constants.
+	* In order to do that, to know how many enum constants there are in an enum, we should add a final enum constant (at the end)
+	*  of enum list, that we designate as the maximum: EnumName_MAX + UMETA. Having that, we can check to make sure that Pose
+	*  isn't greater than or equal to max: ie we check if Pose < EDP_MAX before using it.
+	* In need to add the section names in BP to the array that we created for our death sections.
+	* 
+	*  ---->>>>>> for the constructor, use {} instead of () ??
+	*/
+	const int32 Selection = Super::PlayDeathMontage();
+	TEnumAsByte<EDeathPose> Pose{ Selection };
+	if (Pose < EDeathPose::EDP_MAX)
+	{
+		DeathPose = Pose;
+	}
+
+	return Selection;
+}
+
 void AEnemy::PlayIdlePatrolMontage(const FName& SectionName)
 {
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();

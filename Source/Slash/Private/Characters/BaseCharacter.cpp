@@ -67,6 +67,11 @@ int32 ABaseCharacter::PlayAttackMontage()
 	return PlayRandomMontageSection(AttackMontage, AttackMontageSections);
 }
 
+int32 ABaseCharacter::PlayDeathMontage()
+{
+	return PlayRandomMontageSection(DeathMontage, DeathMontageSections);
+}
+
 void ABaseCharacter::PlayHitReactMontage(const FName& SectionName)
 {
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
