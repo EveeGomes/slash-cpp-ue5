@@ -304,21 +304,6 @@ void AEnemy::PlayIdlePatrolMontage(const FName& SectionName)
 	}
 }
 
-void AEnemy::PlayAttackMontage()
-{
-	/** 
-	* To be safe we'll check if the array isn't empty or has a negative number associated to its size even
-	*  though we know it won't (it might contain garbage data!).
-	* Then, we choose a random index number and use it when calling PlayMontageSection.
-	* However, all this should be done in the BaseCharacter because SlashCharacter also uses this same logic.
-	*/
-	if (AttackMontageSections.Num() <= 0) return;
-	const int32 MaxSectionIndex = AttackMontageSections.Num() - 1;
-	const int32 Selection = FMath::RandRange(0, MaxSectionIndex);
-
-	PlayMontageSection(AttackMontage, AttackMontageSections[Selection]);
-}
-
 void AEnemy::Attack()
 {
 	Super::Attack();

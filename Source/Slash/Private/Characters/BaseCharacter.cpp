@@ -34,26 +34,29 @@ void ABaseCharacter::SetWeaponCollisionEnabled(ECollisionEnabled::Type Collision
 	}
 }
 
-void ABaseCharacter::PlayMontageSection(UAnimMontage* Montage, const FName& SectionName)
-{
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if (AnimInstance && Montage)
-	{
-		AnimInstance->Montage_Play(AttackMontage);
-
-
-		AnimInstance->Montage_JumpToSection(SectionName, AttackMontage);
-	}
-}
-
 void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
 
+void ABaseCharacter::PlayMontageSection(UAnimMontage* Montage, const FName& SectionName)
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && Montage)
+	{
+		AnimInstance->Montage_Play(Montage);
+		AnimInstance->Montage_JumpToSection(SectionName, Montage);
+	}
+}
+
 void ABaseCharacter::PlayAttackMontage()
 {
+	if (AttackMontageSections.Num() <= 0) return;
+	const int32 MaxSectionIndex = AttackMontageSections.Num() - 1;
+	const int32 Selection = FMath::RandRange(0, MaxSectionIndex);
+
+	PlayMontageSection(AttackMontage, AttackMontageSections[Selection]);
 }
 
 void ABaseCharacter::PlayHitReactMontage(const FName& SectionName)
@@ -188,5 +191,3 @@ void ABaseCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
-
-

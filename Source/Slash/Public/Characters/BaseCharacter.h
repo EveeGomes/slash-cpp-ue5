@@ -45,8 +45,6 @@ protected:
 	/**
 	* Animation Montages
 	*/
-	// Generic function to play any montage!
-	void PlayMontageSection(UAnimMontage* Montage, const FName& SectionName);
 
 	/** 
 	* Array of section names that can have different amount in each children.
@@ -73,13 +71,16 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UAttributeComponent> Attributes;
 
-
 	virtual void BeginPlay() override;
 
 	/**
 	* Play Montage Functions
 	*/
-	virtual void PlayAttackMontage();
+	// Generic function to play any montage!
+	void PlayMontageSection(UAnimMontage* Montage, const FName& SectionName);
+	// Choose a section name from AttackMontageSections array 
+	void PlayAttackMontage();
+
 	void PlayHitReactMontage(const FName& SectionName);
 	/** 
 	* Set the animation section name according to the hit direction angle and call PlayHitReactMontage()
