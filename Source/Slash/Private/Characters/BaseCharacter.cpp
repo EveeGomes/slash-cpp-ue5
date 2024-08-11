@@ -56,7 +56,7 @@ int32 ABaseCharacter::PlayRandomMontageSection(UAnimMontage* Montage, const TArr
 	* Since this function must return a value, if SectionNames is empty, we'll return -1 because we
 	*  won't be able to do anything with that negative number.
 	*/
-	if (SectionNames.Num() <= 0) return;
+	if (SectionNames.Num() <= 0) return - 1;
 
 	const int32 MaxSectionIndex = SectionNames.Num() - 1;
 	const int32 Selection = FMath::RandRange(0, MaxSectionIndex);

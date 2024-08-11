@@ -21,7 +21,7 @@ enum class EActionState : uint8
 * The Enemy class can have a EDeathPose as long as we add CharacterTypes.h to it.
 */
 UENUM(BlueprintType)
-enum class EDeathPose : uint8
+enum EDeathPose
 {
 	EDP_Death1 UMETA(DisplayName = "Death1"),
 	EDP_Death2 UMETA(DisplayName = "Death2"),

@@ -101,7 +101,7 @@ protected:
 	* We can also remove the enum constant Alive from the EDeathPose enum.
 	*/
 	UPROPERTY(BlueprintReadOnly) // Only access what the variable is. No need to expose to the details panel either
-	EDeathPose DeathPose;
+	TEnumAsByte<EDeathPose> DeathPose;
 
 	UPROPERTY(BlueprintReadOnly) // This specifier only works for non-private variables!
 	EEnemyState EnemyState = EEnemyState::EES_Patrolling;
