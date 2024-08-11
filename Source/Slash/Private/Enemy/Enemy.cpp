@@ -243,14 +243,14 @@ void AEnemy::BeginPlay()
 
 void AEnemy::Die()
 {
+	// although it's not a scoped enum anymore we can still reference it with the enum name
+	EnemyState = EEnemyState::EES_Dead;
 	PlayDeathMontage();
-
+	// avoid attacking again if the attack timer is over or running by clearing out the attack timer
+	ClearAttackTimer();
 	HideHealthBar();
-
-	// Disable the capsule component collision
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	// Destroy the enemy after 3s of dying
-	SetLifeSpan(3.f);
+	DisableCapsule();
+	SetLifeSpan(DeathLifeSpan);
 }
 
 int32 AEnemy::PlayDeathMontage()

@@ -7,6 +7,9 @@
 #include "Components/BoxComponent.h"
 #include "Items/Weapons/Weapon.h"
 
+/** To disable capsule collision */
+#include "Components/CapsuleComponent.h"
+
 /** Use our custom actor component */
 #include "Components/AttributeComponent.h"
 
@@ -32,6 +35,11 @@ void ABaseCharacter::SetWeaponCollisionEnabled(ECollisionEnabled::Type Collision
 		// Clear the TArray with actors to ignore!
 		EquippedWeapon->IgnoreActors.Empty();
 	}
+}
+
+void ABaseCharacter::DisableCapsule()
+{
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void ABaseCharacter::BeginPlay()

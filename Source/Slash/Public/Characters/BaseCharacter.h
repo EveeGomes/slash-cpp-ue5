@@ -75,6 +75,9 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UAttributeComponent> Attributes;
 
+	// Disable the capsule component collision
+	void DisableCapsule();
+
 	virtual void BeginPlay() override;
 
 	/**

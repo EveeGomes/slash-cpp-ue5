@@ -71,6 +71,9 @@ protected:
 	virtual void Die() override;
 	virtual int32 PlayDeathMontage() override;
 
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	float DeathLifeSpan = 3.f;
+
 	/** 
 	* Play Montage Functions
 	*/
