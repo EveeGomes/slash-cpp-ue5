@@ -308,6 +308,8 @@ void AEnemy::PlayIdlePatrolMontage(const FName& SectionName)
 
 void AEnemy::Attack()
 {
+	/** Set the state to Engaged as it plays the attack montage */
+	EnemyState = EEnemyState::EES_Engaged;
 	Super::Attack();
 
 	PlayAttackMontage();
@@ -315,11 +317,37 @@ void AEnemy::Attack()
 
 bool AEnemy::CanAttack()
 {
+	/** we should also check if the enemy's not already Engaged, to avoid attacking again and spam the attacks */
 	bool bCanAttack =
 		IsInsideAttackRadius() &&
 		!IsAttacking() &&
+		!IsEngaged() &&
 		!IsDead();
 	return bCanAttack; 
+}
+
+void AEnemy::AttackEnd()
+{
+	/** 
+	* To implement this we gotta think of the following:
+	* We want the enemy to get out of the Engaged state, but which state should we be in?
+	* 1. if the character has exited the attack radius, then the enemy should be ready to chase the player, so it should enter
+	*  the Chasing state;
+	* 2. if the player is outside the patrol radius, then the enemy should go back to Patrolling;
+	* 3. and if the player is inside the patrol radius, then we should start the attack timer again.
+	* IE what we're doing is similar to CheckCombatTarget().
+	* Therefore, we could just call CheckCombatTarget() if the enemy's not in Engaged state anymore.
+	*  But what state should the enemy be in?
+	* 
+	* We should add another state, called NoState and once we call CheckCombatTarget() the enemy won't be Engaged or Attacking
+	*  and the enemy will be able to attack again.
+	* So it'll be in NoState just for a small amount of time as right after we call CheckCombatTarget() and things will be
+	*  set/done based on distance.
+	* 
+	* This function will be called linked to a anim notify from AM_Attack.
+	*/
+	EnemyState = EEnemyState::EES_NoState;
+	CheckCombatTarget();
 }
 
 FName& AEnemy::IdlePatrolSectionName()

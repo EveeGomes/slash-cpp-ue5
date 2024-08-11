@@ -72,7 +72,7 @@ protected:
 	virtual int32 PlayDeathMontage() override;
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
-	float DeathLifeSpan = 3.f;
+	float DeathLifeSpan = 4.f;
 
 	/** 
 	* Play Montage Functions
@@ -82,6 +82,7 @@ protected:
 	/** Attack */
 	virtual void Attack() override;
 	virtual bool CanAttack() override;
+	virtual void AttackEnd() override;
 
 	FName& IdlePatrolSectionName();
 	// have a FName member variable to return a FName& instead of a copy?
