@@ -303,18 +303,27 @@ int32 AEnemy::PlayDeathMontage()
 	*  to that index, how to do it:
 	*  we need an Enum based on the int32 Selection, for that we're going to use a enum wrapper (UE enums): TEnumAsByte<>()
 	*   where we specify the enum type we need: TEnumAsByte<enum type>. We pass the int32 Selection to initialize it as 
-	*   there's an overload of the constructor of EEnumAsByte that takes an int32! It sets the TEnumAsByte wrapper to the value
+	*   there's an overload of the constructor of TEnumAsByte that takes an int32! It sets the TEnumAsByte wrapper to the value
 	*   of the enum type based on the int32! ie it'll set Pose to the value of EDeathPose based on Selection.
-	*  We know that in the enum type the first constant is associated to the integer value of 0, unless we give them other values.
+	*  We know that in the enum type the first constant is associated to an integer value of 0, unless we give them 
+	*   other values.
 	*   And since we've specified in EDeathPose to be int8, those constants are technically unsigned eight bits integers,
 	*   therefore they're BYTES.
 	* 
 	* Then, we set the DeathPose to Pose, but before we shall check if the int32 Selection isn't greater than the values
 	*  of enum constants.
-	* In order to do that, to know how many enum constants there are in an enum, we should add a final enum constant (at the end)
+	* In order to do that, to know how many enum constants there are in an enum, we should add a final enum constant 
+	*  (at the end)
 	*  of enum list, that we designate as the maximum: EnumName_MAX + UMETA. Having that, we can check to make sure that Pose
 	*  isn't greater than or equal to max: ie we check if Pose < EDP_MAX before using it.
 	* In need to add the section names in BP to the array that we created for our death sections.
+	* 
+	* Compiling as is, we'll get the following warning:
+	* 1>C:\Program Files\Epic Games\UE_5.2\Engine\Source\Runtime\Core\Public\Containers\EnumAsByte.h(20): warning C4996: 'TEnumAsByte_EnumClass<true>': TEnumAsByte is not intended for use with enum classes - please derive your enum class from uint8 instead. Please update your code to the new API before upgrading to the next release, otherwise your project will no longer compile.
+	* That's because when we declare the enum in CharacterTypes.h, we make it fully qualified by adding the keyword class
+	*  and making it : uint8. 
+	* To resolve that warning, we should remove the class keyword, : uint8 and in Enemy.h we should declare the EDeathPose
+	*  variable wrapped in TEnumAsByte<>.
 	* 
 	*  ---->>>>>> for the constructor, use {} instead of () ??
 	*/
