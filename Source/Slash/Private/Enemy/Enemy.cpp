@@ -102,7 +102,7 @@ void AEnemy::CheckPatrolTarget()
 			EnemyState = EEnemyState::EES_IdlePatrol;
 		}
 
-		const float WaitTime = FMath::RandRange(WaitMin, WaitMax);
+		const float WaitTime = FMath::RandRange(PatrolWaitMin, PatrolWaitMax);
 		GetWorldTimerManager().SetTimer(PatrolTimer, this, &AEnemy::PatrolTimerFinished, WaitTime);
 	}
 }
