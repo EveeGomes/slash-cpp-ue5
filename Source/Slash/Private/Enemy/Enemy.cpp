@@ -445,7 +445,6 @@ void AEnemy::HandleDamage(float DamageAmount)
 	}
 }
 
-
 // Sets default values
 AEnemy::AEnemy()
 {
