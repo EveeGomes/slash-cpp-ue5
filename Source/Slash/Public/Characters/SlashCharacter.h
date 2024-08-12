@@ -81,6 +81,8 @@ protected:
 	void PlayEquipMontage(FName SectionName);
 	bool CanDisarm();
 	bool CanArm();
+	void Disarm();
+	void Arm();
 
 	// Attach the weapon to the spine socket
 	UFUNCTION(BlueprintCallable)
