@@ -23,6 +23,9 @@ ABaseCharacter::ABaseCharacter()
 	// Construct Attributes component
 	Attributes = CreateDefaultSubobject<UAttributeComponent>(TEXT("Attributes"));
 
+	// Disable collision for the camera
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+
 }
 
 void ABaseCharacter::SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled)
