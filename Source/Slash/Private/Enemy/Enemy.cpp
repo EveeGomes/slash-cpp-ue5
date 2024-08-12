@@ -22,6 +22,15 @@
 /** Attach the weapon in BeginPlay() */
 #include "Items/Weapons/Weapon.h"
 
+void AEnemy::InitializeEnemy()
+{
+	/** Move the enemy for the first time here (in BeginPlay) */
+	EnemyController = Cast<AAIController>(GetController());
+	MoveToTarget(PatrolTarget);
+	HideHealthBar();
+	SpawnDefaultWeapon();
+}
+
 bool AEnemy::InTargetRange(AActor* Target, double Radius)
 {
 	// Return false in case Target is invalid so in Tick we can remove some other validations
@@ -322,14 +331,10 @@ void AEnemy::ClearAttackTimer()
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-	/** Move the enemy for the first time here (in BeginPlay) */
-	EnemyController = Cast<AAIController>(GetController());
+
 	/** Bind the callback function to the delegate */
 	if (PawnSensing) PawnSensing->OnSeePawn.AddDynamic(this, &AEnemy::PawnSeen);
-
-	HideHealthBar();
-	MoveToTarget(PatrolTarget);
-	SpawnDefaultWeapon();
+	InitializeEnemy();
 }
 
 void AEnemy::Die()

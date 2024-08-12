@@ -29,6 +29,7 @@ private:
 	/** 
 	* AI Behavior
 	*/
+	void InitializeEnemy();
 	bool InTargetRange(AActor* Target, double Radius);
 	AActor* ChoosePatrolTarget();
 	void CheckPatrolTarget();
