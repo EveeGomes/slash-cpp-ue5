@@ -84,23 +84,7 @@ void ASlashCharacter::EKeyPressed()
 	AWeapon* OverlappingWeapon = Cast<AWeapon>(OverlappingItem);
 	if (OverlappingWeapon)
 	{
-		OverlappingWeapon->Equip(GetMesh(), FName("RightHandSocket"), this, this);
-		/** 
-		* Associate the actor who's equipping the weapon with the weapon itself.
-		* SetOwner(this) can be used because actors have the concept of ownership and once we set it to this, 
-		*  we'll be linking up this character with the weapon. Then, any actor can use the GetOwner and this will
-		*  be returned as the designated owner.
-		* Another way is to use SetInstigator(), but in this case it's more specific than SetOwner as it asks for
-		*  a pawn as a param (pawn can be controlled by a person or AI). An actor can also be owned by any given pawn
-		*  so we can pass this.
-		* However, as we're doing all this associated with the fact of equipping the weapon, it'd be a better idea to
-		*  pass in the ownner and instigator into the equip function for the weapon.
-		*/
-
-
-		CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
-		OverlappingItem = nullptr;
-		EquippedWeapon = OverlappingWeapon;
+		EquipWeapon(OverlappingWeapon);
 	}
 	else
 	{
@@ -127,6 +111,17 @@ void ASlashCharacter::Attack()
 	{
 		PlayAttackMontage();
 		ActionState = EActionState::EAS_Attacking;
+	}
+}
+
+void ASlashCharacter::EquipWeapon(AWeapon* Weapon)
+{
+	if (Weapon)
+	{
+		Weapon->Equip(GetMesh(), FName("RightHandSocket"), this, this);
+		CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
+		OverlappingItem = nullptr;
+		EquippedWeapon = Weapon;
 	}
 }
 
@@ -164,7 +159,7 @@ bool ASlashCharacter::CanArm()
 		 EquippedWeapon; // check if it's not a null pointer (meaning we had gotten a weapon already)
 }
 
-void ASlashCharacter::Disarm()
+void ASlashCharacter::AttachWeaponToBack()
 {
 	if (EquippedWeapon)
 	{
@@ -172,7 +167,7 @@ void ASlashCharacter::Disarm()
 	}
 }
 
-void ASlashCharacter::Arm()
+void ASlashCharacter::AttachWeaponToHand()
 {
 	if (EquippedWeapon)
 	{

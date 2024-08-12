@@ -73,6 +73,7 @@ protected:
 	virtual void Attack() override;
 
 	/** Combat */
+	void EquipWeapon(AWeapon* Weapon);
 	virtual void AttackEnd() override;
 	virtual bool CanAttack() override;
 
@@ -83,11 +84,11 @@ protected:
 
 	// Attach the weapon to the spine socket
 	UFUNCTION(BlueprintCallable)
-	void Disarm();
+	void AttachWeaponToBack();
 
 	// Attach the weapon to the right hand socket
 	UFUNCTION(BlueprintCallable)
-	void Arm();
+	void AttachWeaponToHand();
 
 	UFUNCTION(BlueprintCallable)
 	void FinishEquipping();
