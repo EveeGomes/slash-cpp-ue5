@@ -148,7 +148,7 @@ void AWeapon::BoxTrace(FHitResult& BoxHit)
       this,
       Start,
       End,
-      BoxTraceExtent, // represents the box extent; as the weapon changes it'd be better if this also changes. therefore we should have a variable that can be set in BP from those different weapons
+      BoxTraceExtent,
       TraceStart->GetComponentRotation(),
       ETraceTypeQuery::TraceTypeQuery1,
       false,
@@ -157,6 +157,6 @@ void AWeapon::BoxTrace(FHitResult& BoxHit)
       BoxHit,
       true
    );
-   // As soon as we hit the actor, add it to the TArray (it'll be removed from this TArray by the end of the attack animation). This is only to prevent box traces
+
    IgnoreActors.AddUnique(BoxHit.GetActor());
 }
