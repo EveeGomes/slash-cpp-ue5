@@ -26,6 +26,19 @@ class SLASH_API ABaseCharacter : public ACharacter, public IHitInterface
 	GENERATED_BODY()
 
 private:
+	/**
+	* Play Montage Functions
+	*/
+	// Generic function to play any montage!
+	void PlayMontageSection(UAnimMontage* Montage, const FName& SectionName);
+	/**
+	* Play a random montage section. It also returns the selected index that represents the section name that will
+	*  be played.
+	* This will be called from functions that will pass the corresponding animation montage to play along with
+	*  their section names.
+	*/
+	int32 PlayRandomMontageSection(UAnimMontage* Montage, const TArray<FName>& SectionNames);
+
 	UPROPERTY(EditAnywhere, Category = "Sounds")
 	TObjectPtr<USoundBase> HitSound;
 
@@ -64,35 +77,14 @@ protected:
 	/** Combat */
 	virtual void Attack();
 	virtual bool CanAttack();
-
-	UFUNCTION(BlueprintCallable)
-	virtual void AttackEnd();
-
 	bool IsAlive();
 	virtual void Die();
-
 	void DirectionalHitReact(const FVector& ImpactPoint);
 	virtual void HandleDamage(float DamageAmount);
 	void PlayHitSound(const FVector& ImpactPoint);
 	void SpawnHitParticles(const FVector& ImpactPoint);
 	void DisableCapsule();
 
-	/** Called in response to an Anim notify. The ABP calls this function to enable/disable collision on our weapon */
-	UFUNCTION(BlueprintCallable)
-	void SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
-
-	/**
-	* Play Montage Functions
-	*/
-	// Generic function to play any montage!
-	void PlayMontageSection(UAnimMontage* Montage, const FName& SectionName);
-	/** 
-	* Play a random montage section. It also returns the selected index that represents the section name that will
-	*  be played.
-	* This will be called from functions that will pass the corresponding animation montage to play along with
-	*  their section names.
-	*/
-	int32 PlayRandomMontageSection(UAnimMontage* Montage, const TArray<FName>& SectionNames);
 	void PlayHitReactMontage(const FName& SectionName);
 	// Choose a section name from AttackMontageSections array
 	virtual int32 PlayAttackMontage();
@@ -103,6 +95,13 @@ protected:
 	*  as well just in case we need it later.
 	*/
 	virtual int32 PlayDeathMontage();
+
+	UFUNCTION(BlueprintCallable)
+	virtual void AttackEnd();
+
+	/** Called in response to an Anim notify. The ABP calls this function to enable/disable collision on our weapon */
+	UFUNCTION(BlueprintCallable)
+	void SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
 	
 	// Variable for our currently equipped weapon
 	UPROPERTY(VisibleAnywhere, Category = "Weapon")
