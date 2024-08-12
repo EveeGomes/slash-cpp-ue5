@@ -25,39 +25,27 @@ class SLASH_API ABaseCharacter : public ACharacter, public IHitInterface
 {
 	GENERATED_BODY()
 
-public:
-	ABaseCharacter();
-	virtual void Tick(float DeltaTime) override;
+private:
+	UPROPERTY(EditAnywhere, Category = "Sounds")
+	TObjectPtr<USoundBase> HitSound;
 
-	/** 
-	* Since this function can be the same for both SlashCharacter and Enemy, we can only have it here and don't need to 
-	*  declare/implement in those classes.
-	*/
-	/** Called in response to an Anim notify. The ABP calls this function to enable/disable collision on our weapon */
-	UFUNCTION(BlueprintCallable)
-	void SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
+	UPROPERTY(EditAnywhere, Category = "VisualEffects")
+	TObjectPtr<UParticleSystem> HitParticles;
 
-protected:
-	// Variable for our currently equipped weapon
-	UPROPERTY(VisibleAnywhere, Category = "Weapon")
-	TObjectPtr<AWeapon> EquippedWeapon;
-
+	/** Section names arrays */
 	/**
-	* Animation Montages
-	*/
-
-	/** 
 	* Array of section names that can have different amount of elements in each children.
 	* So with that array we can choose at random a name for the section and send it to PlayMontageSection.
 	* Then, setting it up in BP we can add or remove elements (section names) and the function will accommodate
 	*  for that.
 	*/
-	UPROPERTY(EditAnywhere,  Category = "Combat")
+	UPROPERTY(EditAnywhere, Category = "Combat")
 	TArray<FName> AttackMontageSections;
 
 	// TODO: HAVE TARRAYS FOR OTHER ANIMATION MONTAGES TO ADD/REMOVE THEIR SECTION NAMES IN BP!
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	TArray<FName> DeathMontageSections;
+
 
 	UPROPERTY(EditDefaultsOnly, Category = "Montage")
 	TObjectPtr<UAnimMontage> AttackMontage;
@@ -68,17 +56,30 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Montage")
 	TObjectPtr<UAnimMontage> DeathMontage;
 
-	/**
-	* Components
-	*/
-	/** Add our custom Attribute Component */
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UAttributeComponent> Attributes;
+protected:
+	/** <AActor> */
+	virtual void BeginPlay() override;
+	/** </AActor> */
 
-	// Disable the capsule component collision
+	/** Combat */
+	virtual void Attack();
+	virtual bool CanAttack();
+
+	UFUNCTION(BlueprintCallable)
+	virtual void AttackEnd();
+
+	bool IsAlive();
+	virtual void Die();
+
+	void DirectionalHitReact(const FVector& ImpactPoint);
+	virtual void HandleDamage(float DamageAmount);
+	void PlayHitSound(const FVector& ImpactPoint);
+	void SpawnHitParticles(const FVector& ImpactPoint);
 	void DisableCapsule();
 
-	virtual void BeginPlay() override;
+	/** Called in response to an Anim notify. The ABP calls this function to enable/disable collision on our weapon */
+	UFUNCTION(BlueprintCallable)
+	void SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
 
 	/**
 	* Play Montage Functions
@@ -92,9 +93,8 @@ protected:
 	*  their section names.
 	*/
 	int32 PlayRandomMontageSection(UAnimMontage* Montage, const TArray<FName>& SectionNames);
-
+	void PlayHitReactMontage(const FName& SectionName);
 	// Choose a section name from AttackMontageSections array
-	// Change to return a int32 which comes from the return of PlayRandomMontageSection.
 	virtual int32 PlayAttackMontage();
 	/** 
 	* The return value we'll use in the transition to a Death pose in ABP.
@@ -103,45 +103,17 @@ protected:
 	*  as well just in case we need it later.
 	*/
 	virtual int32 PlayDeathMontage();
+	
+	// Variable for our currently equipped weapon
+	UPROPERTY(VisibleAnywhere, Category = "Weapon")
+	TObjectPtr<AWeapon> EquippedWeapon;
 
-	void PlayHitReactMontage(const FName& SectionName);
-	/** 
-	* Set the animation section name according to the hit direction angle and call PlayHitReactMontage()
-	*/
-	void DirectionalHitReact(const FVector& ImpactPoint);
+	/** Our custom Attribute Component */
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UAttributeComponent> Attributes;
 
-	/** @param:		ImpactPoint coming from children classes? */
-	void PlayHitSound(const FVector& ImpactPoint);
-	void SpawnHitParticles(const FVector& ImpactPoint);
+public:
+	ABaseCharacter();
+	virtual void Tick(float DeltaTime) override;
 
-	/** Attack */
-	virtual void Attack();
-	UFUNCTION(BlueprintCallable)
-	virtual void AttackEnd();
-	virtual bool CanAttack();
-	bool IsAlive();
-
-	/** Damage */
-	virtual void HandleDamage(float DamageAmount);
-
-	/** 
-	* Plays Death Montage 
-	*/
-	virtual void Die();
-
-private:
-	/**
-	* Variable to set a sound when a character gets hit.
-	* Having this variable allows for setting different sounds to different characters.
-	*/
-	UPROPERTY(EditAnywhere, Category = "Sounds")
-	TObjectPtr<USoundBase> HitSound;
-
-	/**
-	* Particle system
-	* UParticleSystem is the type for the Cascade Particle System.
-	* To spawn this particle, we need to use the GamePlayStatics System.
-	*/
-	UPROPERTY(EditAnywhere, Category = "VisualEffects")
-	TObjectPtr<UParticleSystem> HitParticles;
 };
