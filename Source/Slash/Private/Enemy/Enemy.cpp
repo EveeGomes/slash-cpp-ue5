@@ -98,6 +98,17 @@ void AEnemy::MoveToTarget(AActor* Target)
 	EnemyController->MoveTo(MoveRequest);
 }
 
+void AEnemy::SpawnDefaultWeapon()
+{
+	UWorld* World = GetWorld();
+	if (World && WeaponClass)
+	{
+		AWeapon* DefaultWeapon = World->SpawnActor<AWeapon>(WeaponClass);
+		DefaultWeapon->Equip(GetMesh(), FName("RightHandSocket"), this, this);
+		EquippedWeapon = DefaultWeapon;
+	}
+}
+
 void AEnemy::ClearPatrolTimer()
 {
 	GetWorldTimerManager().ClearTimer(PatrolTimer);
@@ -311,44 +322,14 @@ void AEnemy::ClearAttackTimer()
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// Hide the health bar at the beginning of the game
-	if (HealthBarWidget)
-	{
-		HealthBarWidget->SetVisibility(false);
-	}
-
 	/** Move the enemy for the first time here (in BeginPlay) */
 	EnemyController = Cast<AAIController>(GetController());
+	/** Bind the callback function to the delegate */
+	if (PawnSensing) PawnSensing->OnSeePawn.AddDynamic(this, &AEnemy::PawnSeen);
+
+	HideHealthBar();
 	MoveToTarget(PatrolTarget);
-
-	/**
-	* Bind the callback function to the delegate
-	*/
-	if (PawnSensing)
-	{
-		PawnSensing->OnSeePawn.AddDynamic(this, &AEnemy::PawnSeen);
-	}
-
-	/**
-	* Spawn an actor.
-	* We use UWorld because SpawnActor exists in that class.
-	* We'll do similar to what we did in BreakableActor class in GetHit_Implementation.
-	* There's no need to pass a location or rotation because we'll attach it.
-	*
-	* Then, we'll check the EKeyPressed() and Equip() functions from SlashCharacter.
-	* SpawnActor returns a AWeapon so we create a local AWeapon pointer and set to it.
-	* After that we use OverlappingWeapon->Equip(GetMesh(), FName("RightHandSocket"), this, this); changing
-	*  OverlappingWeapon to DefaultWeapon.
-	* So after we spwan the DefaultWeapon, we can set our EquippedWeapon
-	*/
-	UWorld* World = GetWorld();
-	if (World && WeaponClass)
-	{
-		AWeapon* DefaultWeapon = World->SpawnActor<AWeapon>(WeaponClass);
-		DefaultWeapon->Equip(GetMesh(), FName("RightHandSocket"), this, this);
-		EquippedWeapon = DefaultWeapon;
-	}
+	SpawnDefaultWeapon();
 }
 
 void AEnemy::Die()

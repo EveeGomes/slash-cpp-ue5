@@ -35,6 +35,7 @@ private:
 	void PatrolTimerFinished();
 	void StartPatrolling();
 	void MoveToTarget(AActor* Target);
+	void SpawnDefaultWeapon();
 
 	void ClearPatrolTimer();
 	void CheckCombatTarget();
