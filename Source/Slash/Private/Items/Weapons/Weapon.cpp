@@ -43,16 +43,36 @@ void AWeapon::BeginPlay()
 
 void AWeapon::Equip(USceneComponent* InParent, FName InSocketName, AActor* NewOwner, APawn* NewInstigator)
 {
-   /** 
-   * Now, we can set the owner and instigator here. That way the actor won't have to worry about it.
-   */
-   SetOwner(NewOwner);
-   SetInstigator(NewInstigator);
-
-   AttachMeshToSocket(InParent, InSocketName);
    ItemState = EItemState::EIS_Equipped;
 
-   // Play sound when attaching the weapon
+   /** Set the owner and instigator here. That way the actor won't have to worry about it. */
+   SetOwner(NewOwner);
+   SetInstigator(NewInstigator);
+   AttachMeshToSocket(InParent, InSocketName);
+   DisableSphereCollision();
+
+   PlayEquipSound();
+   DeactivateEmbers();
+}
+
+void AWeapon::DeactivateEmbers()
+{
+   if (EmbersEffect)
+   {
+      EmbersEffect->Deactivate();
+   }
+}
+
+void AWeapon::DisableSphereCollision()
+{
+   if (Sphere)
+   {
+      Sphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+   }
+}
+
+void AWeapon::PlayEquipSound()
+{
    if (EquipSound)
    {
       UGameplayStatics::PlaySoundAtLocation(
@@ -60,14 +80,6 @@ void AWeapon::Equip(USceneComponent* InParent, FName InSocketName, AActor* NewOw
          EquipSound,
          GetActorLocation()
       );
-   }
-   if (Sphere)
-   {
-      Sphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-   }
-   if (EmbersEffect)
-   {
-      EmbersEffect->Deactivate();
    }
 }
 
