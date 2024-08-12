@@ -94,17 +94,13 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
    FHitResult BoxHit;
    BoxTrace(BoxHit);
 
-   /** 
-   * Call GetHit() using the ImpactPoint that is placed in BoxHit.
-   */
    if (BoxHit.GetActor())
    {
       /**
-      * We need the damage to be applied before we play the montage, so that when it goes calls Execute_GetHit,
+      * We need the damage to be applied before we play the montage, so that when it calls Execute_GetHit,
       *  and there it calls the montage to play, it'll play either the hit or death montage (by checking if the
       *  enemy still has health).
       */
-
       UGameplayStatics::ApplyDamage(
          BoxHit.GetActor(),
          Damage,
@@ -113,21 +109,25 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
          UDamageType::StaticClass()
       );
 
-      IHitInterface* HitInterface = Cast<IHitInterface>(BoxHit.GetActor());
-      if (HitInterface)
-      {
-         /** 
-         * Now, we can't call this function HitInterface->GetHit(BoxHit.ImpactPoint); directly anymore. We have to allow
-         *  UE reflection system to handle this interface a little different for us.
-         * As we made this function a BlueprintNativeEvent in the Interface class, we now have different ways of calling it,
-         *  and we'll choose the Execute_GetHit()
-         * @UObject* the object to execute this event on
-         * @const FVector& the GetHit original parameter
-         */
-         HitInterface->Execute_GetHit(BoxHit.GetActor(), BoxHit.ImpactPoint);
-      }
-
+      ExecuteGetHit(BoxHit);
       CreateFields(BoxHit.ImpactPoint);
+   }
+}
+
+void AWeapon::ExecuteGetHit(FHitResult& BoxHit)
+{
+   IHitInterface* HitInterface = Cast<IHitInterface>(BoxHit.GetActor());
+   if (HitInterface)
+   {
+      /**
+      * Now, we can't call this function HitInterface->GetHit(BoxHit.ImpactPoint); directly anymore. We have to allow
+      *  UE reflection system to handle this interface a little different for us.
+      * As we made this function a BlueprintNativeEvent in the Interface class, we now have different ways of calling it,
+      *  and we'll choose the Execute_GetHit()
+      * @UObject* the object to execute this event on
+      * @const FVector& the GetHit original parameter
+      */
+      HitInterface->Execute_GetHit(BoxHit.GetActor(), BoxHit.ImpactPoint);
    }
 }
 

@@ -48,9 +48,11 @@ protected:
 		const FHitResult& SweepResult
 	);
 
+	void ExecuteGetHit(FHitResult& BoxHit);
+
 	/** 
 	* Create some Transient Field.
-	* @param to know where that field should be
+	* @param		FieldLocation To know where that field should be
 	* 
 	* It'll be called from C++ but handled in BP (its definition)
 	*/
