@@ -16,41 +16,6 @@
 /** Play sound, Spawn Cascade Particles emitter */
 #include "Kismet/GameplayStatics.h"
 
-ABaseCharacter::ABaseCharacter()
-{
-	PrimaryActorTick.bCanEverTick = true;
-
-	// Construct Attributes component
-	Attributes = CreateDefaultSubobject<UAttributeComponent>(TEXT("Attributes"));
-
-	// Disable collision for the camera
-	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
-
-}
-
-void ABaseCharacter::SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled)
-{
-	// Check if the character has a weapon equipped to it
-	if (EquippedWeapon && EquippedWeapon->GetWeaponBox()) // Also check if WeaponBox isn't null
-	{
-		// Set the weapon's collision enabled
-		EquippedWeapon->GetWeaponBox()->SetCollisionEnabled(CollisionEnabled);
-		// Clear the TArray with actors to ignore!
-		EquippedWeapon->IgnoreActors.Empty();
-	}
-}
-
-void ABaseCharacter::DisableCapsule()
-{
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-}
-
-void ABaseCharacter::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
-
 void ABaseCharacter::PlayMontageSection(UAnimMontage* Montage, const FName& SectionName)
 {
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
@@ -77,24 +42,28 @@ int32 ABaseCharacter::PlayRandomMontageSection(UAnimMontage* Montage, const TArr
 	return Selection;
 }
 
-int32 ABaseCharacter::PlayAttackMontage()
+void ABaseCharacter::BeginPlay()
 {
-	return PlayRandomMontageSection(AttackMontage, AttackMontageSections);
+	Super::BeginPlay();
+	
 }
 
-int32 ABaseCharacter::PlayDeathMontage()
+void ABaseCharacter::Attack()
 {
-	return PlayRandomMontageSection(DeathMontage, DeathMontageSections);
 }
 
-void ABaseCharacter::PlayHitReactMontage(const FName& SectionName)
+bool ABaseCharacter::CanAttack()
 {
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if (AnimInstance && HitReactMontage)
-	{
-		AnimInstance->Montage_Play(HitReactMontage);
-		AnimInstance->Montage_JumpToSection(SectionName, HitReactMontage);
-	}
+	return false;
+}
+
+bool ABaseCharacter::IsAlive()
+{
+	return Attributes && Attributes->IsAlive();
+}
+
+void ABaseCharacter::Die()
+{
 }
 
 void ABaseCharacter::DirectionalHitReact(const FVector& ImpactPoint)
@@ -143,6 +112,18 @@ void ABaseCharacter::DirectionalHitReact(const FVector& ImpactPoint)
 	PlayHitReactMontage(Section);
 }
 
+void ABaseCharacter::HandleDamage(float DamageAmount)
+{
+	/** 
+	* This won't change the HealthBarWidget as not all children will have one, but all classes
+	*  will have attributes that receive damage.
+	*/
+	if (Attributes)
+	{
+		Attributes->ReceiveDamage(DamageAmount);
+	}
+}
+
 void ABaseCharacter::PlayHitSound(const FVector& ImpactPoint)
 {
 	// Play sound as soon as the character gets hit
@@ -167,51 +148,61 @@ void ABaseCharacter::SpawnHitParticles(const FVector& ImpactPoint)
 			GetWorld(),
 			HitParticles,
 			ImpactPoint
-			/**
-			* UnrealEditor_Slash_patch_3!AEnemy::~AEnemy() [C:\Users\evepg\Documents\Udemy\UE5-Cpp-Game-Developer\Slash\Intermediate\Build\Win64\UnrealEditor\Inc\Slash\UHT\Enemy.gen.cpp:366]
-			* UnrealEditor_Slash_patch_3!AEnemy::`vector deleting destructor'()
-			* Unhandled Exception: EXCEPTION_ACCESS_VIOLATION reading address 0x0000000400000070
-			*/
-			/**
-			* ImpactPoint comes from BoxHit variable of type FHitResult which we get data in Weapon class after
-			*  calling BoxTraceSingle. Then we call Execute_GetHit and pass that variable.
-			*/
 		);
 	}
 }
 
-void ABaseCharacter::Attack()
+void ABaseCharacter::DisableCapsule()
 {
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void ABaseCharacter::PlayHitReactMontage(const FName& SectionName)
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && HitReactMontage)
+	{
+		AnimInstance->Montage_Play(HitReactMontage);
+		AnimInstance->Montage_JumpToSection(SectionName, HitReactMontage);
+	}
+}
+
+int32 ABaseCharacter::PlayAttackMontage()
+{
+	return PlayRandomMontageSection(AttackMontage, AttackMontageSections);
+}
+
+int32 ABaseCharacter::PlayDeathMontage()
+{
+	return PlayRandomMontageSection(DeathMontage, DeathMontageSections);
 }
 
 void ABaseCharacter::AttackEnd()
 {
 }
 
-bool ABaseCharacter::CanAttack()
+void ABaseCharacter::SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled)
 {
-	return false;
-}
-
-bool ABaseCharacter::IsAlive()
-{
-	return Attributes && Attributes->IsAlive();
-}
-
-void ABaseCharacter::HandleDamage(float DamageAmount)
-{
-	/** 
-	* This won't change the HealthBarWidget as not all children will have one, but all classes
-	*  will have attributes that receive damage.
-	*/
-	if (Attributes)
+	// Check if the character has a weapon equipped to it
+	if (EquippedWeapon && EquippedWeapon->GetWeaponBox()) // Also check if WeaponBox isn't null
 	{
-		Attributes->ReceiveDamage(DamageAmount);
+		// Set the weapon's collision enabled
+		EquippedWeapon->GetWeaponBox()->SetCollisionEnabled(CollisionEnabled);
+		// Clear the TArray with actors to ignore!
+		EquippedWeapon->IgnoreActors.Empty();
 	}
 }
 
-void ABaseCharacter::Die()
+ABaseCharacter::ABaseCharacter()
 {
+	PrimaryActorTick.bCanEverTick = true;
+
+	// Construct Attributes component
+	Attributes = CreateDefaultSubobject<UAttributeComponent>(TEXT("Attributes"));
+
+	// Disable collision for the camera
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+
 }
 
 void ABaseCharacter::Tick(float DeltaTime)
