@@ -91,32 +91,8 @@ void AWeapon::AttachMeshToSocket(USceneComponent* InParent, const FName& InSocke
 
 void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-   const FVector Start = TraceStart->GetComponentLocation();
-   const FVector End = TraceEnd->GetComponentLocation();
-   
-   TArray<AActor*> ActorsToIgnore;
-   ActorsToIgnore.Add(this);
-
-   for (AActor* Actor : IgnoreActors)
-   {
-      ActorsToIgnore.AddUnique(Actor);
-   }
-
    FHitResult BoxHit;
-
-   UKismetSystemLibrary::BoxTraceSingle(
-      this,
-      Start,
-      End,
-      FVector(5.f, 5.f, 5.f),
-      TraceStart->GetComponentRotation(),
-      ETraceTypeQuery::TraceTypeQuery1,
-      false,
-      ActorsToIgnore,
-      EDrawDebugTrace::None,
-      BoxHit,
-      true
-   );
+   BoxTrace(BoxHit);
 
    /** 
    * Call GetHit() using the ImpactPoint that is placed in BoxHit.
@@ -150,13 +126,37 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
          */
          HitInterface->Execute_GetHit(BoxHit.GetActor(), BoxHit.ImpactPoint);
       }
-      // As soon as we hit the actor, add it to the TArray (it'll be removed from this TArray by the end of the attack animation)
-      IgnoreActors.AddUnique(BoxHit.GetActor());
 
       CreateFields(BoxHit.ImpactPoint);
+   }
+}
 
+void AWeapon::BoxTrace(FHitResult& BoxHit)
+{
+   const FVector Start = TraceStart->GetComponentLocation();
+   const FVector End = TraceEnd->GetComponentLocation();
 
+   TArray<AActor*> ActorsToIgnore;
+   ActorsToIgnore.Add(this);
+
+   for (AActor* Actor : IgnoreActors)
+   {
+      ActorsToIgnore.AddUnique(Actor);
    }
 
-   
+   UKismetSystemLibrary::BoxTraceSingle(
+      this,
+      Start,
+      End,
+      BoxTraceExtent, // represents the box extent; as the weapon changes it'd be better if this also changes. therefore we should have a variable that can be set in BP from those different weapons
+      TraceStart->GetComponentRotation(),
+      ETraceTypeQuery::TraceTypeQuery1,
+      false,
+      ActorsToIgnore,
+      bShowBoxDebug ? EDrawDebugTrace::ForDuration : EDrawDebugTrace::None,
+      BoxHit,
+      true
+   );
+   // As soon as we hit the actor, add it to the TArray (it'll be removed from this TArray by the end of the attack animation). This is only to prevent box traces
+   IgnoreActors.AddUnique(BoxHit.GetActor());
 }
