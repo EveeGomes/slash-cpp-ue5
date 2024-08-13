@@ -91,6 +91,12 @@ void AWeapon::AttachMeshToSocket(USceneComponent* InParent, const FName& InSocke
 
 void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+   /** 
+   * Enemies ignore each other. This can also be more generic if we want not only Enemies to "know" each other,
+   *  and in that case we use the same concept of Keys in print string node or debug message.
+   */
+   if (GetOwner()->ActorHasTag(TEXT("Enemy")) && OtherActor->ActorHasTag(TEXT("Enemy"))) return;
+
    FHitResult BoxHit;
    BoxTrace(BoxHit);
 

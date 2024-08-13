@@ -43,7 +43,7 @@ void ASlashCharacter::BeginPlay()
 	/** 
 	* Use the Tags variable from the Character and Add method to add a tag which can get any name we want.
 	*/
-	Tags.Add(FName("SlashCharacter"));
+	Tags.Add(FName("EngageableTarget"));
 }
 
 void ASlashCharacter::Move(const FInputActionValue& Value)
