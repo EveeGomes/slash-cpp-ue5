@@ -95,13 +95,30 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
    * Enemies ignore each other. This can also be more generic if we want not only Enemies to "know" each other,
    *  and in that case we use the same concept of Keys in print string node or debug message.
    */
-   if (GetOwner()->ActorHasTag(TEXT("Enemy")) && OtherActor->ActorHasTag(TEXT("Enemy"))) return;
+   if (ActorIsSameType(OtherActor)) return;
 
    FHitResult BoxHit;
    BoxTrace(BoxHit);
 
    if (BoxHit.GetActor())
    {
+      /** 
+      * There's a situation that could happen: 
+      *  an enemy could be swinging the sword and another enemy could be nearby, and as soon as that box overlaps
+      *   with the SlashCharacter, then the check if OtherActor is Enemy will not return because the overlapped
+      *   actor isn't an enemy! Therefore it'll continue and do a Box Trace, and what happens if that box trace
+      *   hit another enemy? A: it'll apply damage and execute get hit!
+      * In order to avoid that, we shall add the same check as before, but after doing the BoxTrace, changing the 
+      *  OhterActor to the actor hit by the box trace:
+      * if (GetOwner()->ActorHasTag(TEXT("Enemy")) && BoxHit.GetActor()->ActorHasTag(TEXT("Enemy"))) return;
+      * 
+      * Turns out we'd be doing the same thing again, so that could be turned into a function.
+      * 
+      * This way we're checking when we overlap and checking when we get a hit as well.
+      */
+
+      if (ActorIsSameType(BoxHit.GetActor())) return;
+
       /**
       * We need the damage to be applied before we play the montage, so that when it calls Execute_GetHit,
       *  and there it calls the montage to play, it'll play either the hit or death montage (by checking if the
@@ -118,6 +135,11 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
       ExecuteGetHit(BoxHit);
       CreateFields(BoxHit.ImpactPoint);
    }
+}
+
+bool AWeapon::ActorIsSameType(AActor* OtherActor)
+{
+   return GetOwner()->ActorHasTag(TEXT("Enemy")) && OtherActor->ActorHasTag(TEXT("Enemy"));
 }
 
 void AWeapon::ExecuteGetHit(FHitResult& BoxHit)

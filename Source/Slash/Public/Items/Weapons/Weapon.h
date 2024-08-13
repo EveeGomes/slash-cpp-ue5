@@ -48,6 +48,8 @@ protected:
 		const FHitResult& SweepResult
 	);
 
+	bool ActorIsSameType(AActor* OtherActor);
+
 	void ExecuteGetHit(FHitResult& BoxHit);
 
 	/** 
