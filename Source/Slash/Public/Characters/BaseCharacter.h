@@ -39,10 +39,10 @@ private:
 	*/
 	int32 PlayRandomMontageSection(UAnimMontage* Montage, const TArray<FName>& SectionNames);
 
-	UPROPERTY(EditAnywhere, Category = "Sounds")
+	UPROPERTY(EditAnywhere, Category = "Combat")
 	TObjectPtr<USoundBase> HitSound;
 
-	UPROPERTY(EditAnywhere, Category = "VisualEffects")
+	UPROPERTY(EditAnywhere, Category = "Combat")
 	TObjectPtr<UParticleSystem> HitParticles;
 
 	/** Section names arrays */
@@ -60,13 +60,13 @@ private:
 	TArray<FName> DeathMontageSections;
 
 
-	UPROPERTY(EditDefaultsOnly, Category = "Montage")
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
 	TObjectPtr<UAnimMontage> AttackMontage;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Montage")
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
 	TObjectPtr<UAnimMontage> HitReactMontage;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Montage")
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
 	TObjectPtr<UAnimMontage> DeathMontage;
 
 protected:

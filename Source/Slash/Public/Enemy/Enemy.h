@@ -190,5 +190,4 @@ public:
 	/** <IHitInterface> */
 	virtual void GetHit_Implementation(const FVector& ImpactPoint) override;
 	/** </IHitInterface> */
-
 };
