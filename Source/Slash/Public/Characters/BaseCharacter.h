@@ -74,6 +74,10 @@ protected:
 	virtual void BeginPlay() override;
 	/** </AActor> */
 
+	/** <IHitInterface> */
+	virtual void GetHit_Implementation(const FVector& ImpactPoint) override;
+	/** </IHitInterface> */
+
 	/** Combat */
 	virtual void Attack();
 	virtual bool CanAttack();

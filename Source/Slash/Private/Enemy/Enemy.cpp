@@ -520,21 +520,6 @@ void AEnemy::Destroyed()
 
 void AEnemy::GetHit_Implementation(const FVector& ImpactPoint)
 {
+	Super::GetHit_Implementation(ImpactPoint);
 	ShowHealthBar();
-	/** 
-	* Since we'll need to check Attributes in both children classes, we create a non-virtual function
-	*  IsAlive() for that. 
-	*/
-	if (IsAlive())
-	{
-		DirectionalHitReact(ImpactPoint);
-	}
-	else
-	{
-		// Play death montage using a function that handles the enemy death montage
-		Die();
-	}
-
-	PlayHitSound(ImpactPoint);
-	SpawnHitParticles(ImpactPoint);
 }
