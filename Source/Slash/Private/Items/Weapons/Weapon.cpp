@@ -43,16 +43,36 @@ void AWeapon::BeginPlay()
 
 void AWeapon::Equip(USceneComponent* InParent, FName InSocketName, AActor* NewOwner, APawn* NewInstigator)
 {
-   /** 
-   * Now, we can set the owner and instigator here. That way the actor won't have to worry about it.
-   */
-   SetOwner(NewOwner);
-   SetInstigator(NewInstigator);
-
-   AttachMeshToSocket(InParent, InSocketName);
    ItemState = EItemState::EIS_Equipped;
 
-   // Play sound when attaching the weapon
+   /** Set the owner and instigator here. That way the actor won't have to worry about it. */
+   SetOwner(NewOwner);
+   SetInstigator(NewInstigator);
+   AttachMeshToSocket(InParent, InSocketName);
+   DisableSphereCollision();
+
+   PlayEquipSound();
+   DeactivateEmbers();
+}
+
+void AWeapon::DeactivateEmbers()
+{
+   if (EmbersEffect)
+   {
+      EmbersEffect->Deactivate();
+   }
+}
+
+void AWeapon::DisableSphereCollision()
+{
+   if (Sphere)
+   {
+      Sphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+   }
+}
+
+void AWeapon::PlayEquipSound()
+{
    if (EquipSound)
    {
       UGameplayStatics::PlaySoundAtLocation(
@@ -60,14 +80,6 @@ void AWeapon::Equip(USceneComponent* InParent, FName InSocketName, AActor* NewOw
          EquipSound,
          GetActorLocation()
       );
-   }
-   if (Sphere)
-   {
-      Sphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-   }
-   if (EmbersEffect)
-   {
-      EmbersEffect->Deactivate();
    }
 }
 
@@ -77,56 +89,41 @@ void AWeapon::AttachMeshToSocket(USceneComponent* InParent, const FName& InSocke
    ItemMesh->AttachToComponent(InParent, TransformRules, InSocketName);
 }
 
-void AWeapon::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-   Super::OnSphereOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
-}
-
-void AWeapon::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-   Super::OnSphereEndOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex);
-}
-
 void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-   const FVector Start = TraceStart->GetComponentLocation();
-   const FVector End = TraceEnd->GetComponentLocation();
-   
-   TArray<AActor*> ActorsToIgnore;
-   ActorsToIgnore.Add(this);
-
-   for (AActor* Actor : IgnoreActors)
-   {
-      ActorsToIgnore.AddUnique(Actor);
-   }
+   /** 
+   * Enemies ignore each other. This can also be more generic if we want not only Enemies to "know" each other,
+   *  and in that case we use the same concept of Keys in print string node or debug message.
+   */
+   if (ActorIsSameType(OtherActor)) return;
 
    FHitResult BoxHit;
+   BoxTrace(BoxHit);
 
-   UKismetSystemLibrary::BoxTraceSingle(
-      this,
-      Start,
-      End,
-      FVector(5.f, 5.f, 5.f),
-      TraceStart->GetComponentRotation(),
-      ETraceTypeQuery::TraceTypeQuery1,
-      false,
-      ActorsToIgnore,
-      EDrawDebugTrace::None,
-      BoxHit,
-      true
-   );
-
-   /** 
-   * Call GetHit() using the ImpactPoint that is placed in BoxHit.
-   */
    if (BoxHit.GetActor())
    {
+      /** 
+      * There's a situation that could happen: 
+      *  an enemy could be swinging the sword and another enemy could be nearby, and as soon as that box overlaps
+      *   with the SlashCharacter, then the check if OtherActor is Enemy will not return because the overlapped
+      *   actor isn't an enemy! Therefore it'll continue and do a Box Trace, and what happens if that box trace
+      *   hit another enemy? A: it'll apply damage and execute get hit!
+      * In order to avoid that, we shall add the same check as before, but after doing the BoxTrace, changing the 
+      *  OhterActor to the actor hit by the box trace:
+      * if (GetOwner()->ActorHasTag(TEXT("Enemy")) && BoxHit.GetActor()->ActorHasTag(TEXT("Enemy"))) return;
+      * 
+      * Turns out we'd be doing the same thing again, so that could be turned into a function.
+      * 
+      * This way we're checking when we overlap and checking when we get a hit as well.
+      */
+
+      if (ActorIsSameType(BoxHit.GetActor())) return;
+
       /**
-      * We need the damage to be applied before we play the montage, so that when it goes calls Execute_GetHit,
+      * We need the damage to be applied before we play the montage, so that when it calls Execute_GetHit,
       *  and there it calls the montage to play, it'll play either the hit or death montage (by checking if the
       *  enemy still has health).
       */
-
       UGameplayStatics::ApplyDamage(
          BoxHit.GetActor(),
          Damage,
@@ -135,26 +132,59 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
          UDamageType::StaticClass()
       );
 
-      IHitInterface* HitInterface = Cast<IHitInterface>(BoxHit.GetActor());
-      if (HitInterface)
-      {
-         /** 
-         * Now, we can't call this function HitInterface->GetHit(BoxHit.ImpactPoint); directly anymore. We have to allow
-         *  UE reflection system to handle this interface a little different for us.
-         * As we made this function a BlueprintNativeEvent in the Interface class, we now have different ways of calling it,
-         *  and we'll choose the Execute_GetHit()
-         * @UObject* the object to execute this event on
-         * @const FVector& the GetHit original parameter
-         */
-         HitInterface->Execute_GetHit(BoxHit.GetActor(), BoxHit.ImpactPoint);
-      }
-      // As soon as we hit the actor, add it to the TArray (it'll be removed from this TArray by the end of the attack animation)
-      IgnoreActors.AddUnique(BoxHit.GetActor());
-
+      ExecuteGetHit(BoxHit);
       CreateFields(BoxHit.ImpactPoint);
+   }
+}
 
+bool AWeapon::ActorIsSameType(AActor* OtherActor)
+{
+   return GetOwner()->ActorHasTag(TEXT("Enemy")) && OtherActor->ActorHasTag(TEXT("Enemy"));
+}
 
+void AWeapon::ExecuteGetHit(FHitResult& BoxHit)
+{
+   IHitInterface* HitInterface = Cast<IHitInterface>(BoxHit.GetActor());
+   if (HitInterface)
+   {
+      /**
+      * Now, we can't call this function HitInterface->GetHit(BoxHit.ImpactPoint); directly anymore. We have to allow
+      *  UE reflection system to handle this interface a little different for us.
+      * As we made this function a BlueprintNativeEvent in the Interface class, we now have different ways of calling it,
+      *  and we'll choose the Execute_GetHit()
+      * @UObject* the object to execute this event on
+      * @const FVector& the GetHit original parameter
+      */
+      HitInterface->Execute_GetHit(BoxHit.GetActor(), BoxHit.ImpactPoint);
+   }
+}
+
+void AWeapon::BoxTrace(FHitResult& BoxHit)
+{
+   const FVector Start = TraceStart->GetComponentLocation();
+   const FVector End = TraceEnd->GetComponentLocation();
+
+   TArray<AActor*> ActorsToIgnore;
+   ActorsToIgnore.Add(this);
+
+   for (AActor* Actor : IgnoreActors)
+   {
+      ActorsToIgnore.AddUnique(Actor);
    }
 
-   
+   UKismetSystemLibrary::BoxTraceSingle(
+      this,
+      Start,
+      End,
+      BoxTraceExtent,
+      TraceStart->GetComponentRotation(),
+      ETraceTypeQuery::TraceTypeQuery1,
+      false,
+      ActorsToIgnore,
+      bShowBoxDebug ? EDrawDebugTrace::ForDuration : EDrawDebugTrace::None,
+      BoxHit,
+      true
+   );
+
+   IgnoreActors.AddUnique(BoxHit.GetActor());
 }

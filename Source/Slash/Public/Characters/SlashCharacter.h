@@ -3,7 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
+
+#include "BaseCharacter.h"
 
 #include "InputActionValue.h"
 #include "CharacterTypes.h"
@@ -21,65 +22,75 @@ class UAnimMontage;
 class AWeapon;
 
 UCLASS()
-class SLASH_API ASlashCharacter : public ACharacter
+class SLASH_API ASlashCharacter : public ABaseCharacter
 {
 	GENERATED_BODY()
 
-public:
-	ASlashCharacter();
-	virtual void Tick(float DeltaTime) override;
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+private:
+	/** 
+	* Components
+	*/
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USpringArmComponent> SpringArm;
+	
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UCameraComponent> ViewCamera;
 
-	UFUNCTION(BlueprintCallable)
-	void SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UGroomComponent> Hair;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UGroomComponent> Eyebrows;
+
+	/** 
+	* Items
+	*/
+	UPROPERTY(VisibleInstanceOnly)
+	TObjectPtr<AItem> OverlappingItem;
+
+	/** 
+	* Animation Montages 
+	*/
+	UPROPERTY(EditDefaultsOnly, Category = "Montage")
+	TObjectPtr<UAnimMontage> EquipMontage;
+
+	/**
+	* States
+	*/
+	ECharacterState CharacterState = ECharacterState::ECS_Unequipped;
+
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	EActionState ActionState = EActionState::EAS_Unoccupied;
 
 protected:
 	virtual void BeginPlay() override;
-
-	/** Input Mapping Context */
-	UPROPERTY(EditAnywhere, Category = "Input")
-	UInputMappingContext* SlashContext;
-
-	/** Input Actions */
-	UPROPERTY(EditAnywhere, Category = "Input")
-	UInputAction* MovementAction;
-
-	UPROPERTY(EditAnywhere, Category = "Input")
-	UInputAction* LookAction;
-
-	UPROPERTY(EditAnywhere, Category = "Input")
-	UInputAction* JumpAction;
-
-	UPROPERTY(EditAnywhere, Category = "Input")
-	UInputAction* EquipAction;
-
-	UPROPERTY(EditAnywhere, Category = "Input")
-	UInputAction* AttackAction;
 
 	/** Callbacks for input */
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	virtual void Jump() override;
 	void EKeyPressed();
-	void Attack();
+	virtual void Attack() override;
 
-	/** Play Montage Functions */
-	void PlayAttackMontage();
+	/** Combat */
+	void EquipWeapon(AWeapon* Weapon);
+	virtual void AttackEnd() override;
+	virtual bool CanAttack() override;
 
-	UFUNCTION(BlueprintCallable)
-	void AttackEnd();
-	bool CanAttack();
-
+	/** Equip / Unequip */
 	void PlayEquipMontage(FName SectionName);
 	bool CanDisarm();
 	bool CanArm();
+	void Disarm();
+	void Arm();
 
 	// Attach the weapon to the spine socket
 	UFUNCTION(BlueprintCallable)
-	void Disarm();
+	void AttachWeaponToBack();
 
+	// Attach the weapon to the right hand socket
 	UFUNCTION(BlueprintCallable)
-	void Arm();
+	void AttachWeaponToHand();
 
 	UFUNCTION(BlueprintCallable)
 	void FinishEquipping();
@@ -91,39 +102,37 @@ protected:
 	//UFUNCTION(BlueprintCallable)
 	//void SetCanJump(bool bCan) { bCanJump = bCan; }
 
-private:
-	ECharacterState CharacterState = ECharacterState::ECS_Unequipped;
+	/** Input Mapping Context */
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputMappingContext> SlashContext;
 
-	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	EActionState ActionState = EActionState::EAS_Unoccupied;
+	/** Input Actions */
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> MovementAction;
 
-	UPROPERTY(VisibleAnywhere)
-	USpringArmComponent* SpringArm;
-	
-	UPROPERTY(VisibleAnywhere)
-	UCameraComponent* ViewCamera;
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> LookAction;
 
-	UPROPERTY(VisibleAnywhere)
-	UGroomComponent* Hair;
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> JumpAction;
 
-	UPROPERTY(VisibleAnywhere)
-	UGroomComponent* Eyebrows;
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> EquipAction;
 
-	UPROPERTY(VisibleInstanceOnly)
-	AItem* OverlappingItem;
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> AttackAction;
 
-	// Variable for our currently equipped weapon
-	UPROPERTY(VisibleAnywhere, Category = "Weapon")
-	AWeapon* EquippedWeapon;
-
-	/** Animation Montages */
-	UPROPERTY(EditDefaultsOnly, Category = "Montage")
-	UAnimMontage* AttackMontage;
-	UPROPERTY(EditDefaultsOnly, Category = "Montage")
-	UAnimMontage* EquipMontage;
-	
-	// Public section for getters and setters
 public:
+	ASlashCharacter();
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	/** <IHitInterface> */
+	virtual void GetHit_Implementation(const FVector& ImpactPoint) override;
+	/** </IHitInterface> */
+
+	/** 
+	* Getters and Setters
+	*/
 	FORCEINLINE void SetOverlappingItem(AItem* Item) { OverlappingItem = Item; }
 	FORCEINLINE ECharacterState GetCharacterState() const { return CharacterState; }
 };

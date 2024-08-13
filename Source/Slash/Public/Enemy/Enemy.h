@@ -4,162 +4,105 @@
 
 #include "CoreMinimal.h"
 
-/** Include the headers of the classes this one is inhereting from */
-#include "GameFramework/Character.h"
-#include "Interfaces/HitInterface.h"
-#include "Characters/CharacterTypes.h"
+/** Inheritance */
+#include "Characters/BaseCharacter.h"
 
 /** Use Action States */
 #include "Characters/CharacterTypes.h"
 
 #include "Enemy.generated.h"
 
-/** For animation montage logic */
+/** 
+* Class forward declaration 
+*/
 class UAnimMontage;
-
-class UAttributeComponent;
 class UMyHealthBarComponent;
 class UPawnSensingComponent;
+class AWeapon;
 
 UCLASS()
-class SLASH_API AEnemy : public ACharacter, public IHitInterface
+class SLASH_API AEnemy : public ABaseCharacter
 {
 	GENERATED_BODY()
 
-public:
-	// Sets default values for this character's properties
-	AEnemy();
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	void CheckPatrolTarget();
-
-	void CheckCombatTarget();
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	void DirectionalHitReact(const FVector& ImpactPoint);
-
-	virtual void GetHit_Implementation(const FVector& ImpactPoint) override;
-
-	/** Public virtual function from AActor */
-	virtual float TakeDamage(
-		float DamageAmount, 
-		struct FDamageEvent const& DamageEvent, 
-		class AController* EventInstigator, 
-		AActor* DamageCauser
-	) override;
-
-	float EnemyVelocity = 0.0f;
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-	/** Play the death montage */
-	void Die();
-
+private:
 	/** 
-	* Play Montage Functions 
+	* AI Behavior
 	*/
-	void PlayHitReactMontage(const FName& SectionName);
-	void PlayIdlePatrolMontage(const FName& SectionName);
-	FName& IdlePatrolSectionName();
-	// have a FName member variable to return a FName& instead of a copy?
-	FName IdleSectionName = FName();
-
-	/** Start with the alive pose */
-	UPROPERTY(BlueprintReadOnly) // Only access what the variable is. No need to expose to the details panel either
-	EDeathPose DeathPose = EDeathPose::EDP_Alive;
-
-	UPROPERTY(BlueprintReadOnly)
-	EEnemyState EnemyState = EEnemyState::EES_Patrolling; // MOVE TO PRIVATE AS IN THE COURSE?
-
-	/** Returns true if we're in range of that Target, based on a specified radius */
+	void InitializeEnemy();
 	bool InTargetRange(AActor* Target, double Radius);
-
-	/** It calls MoveTo */
-	void MoveToTarget(AActor* Target);
-
-	/** Pick a new patrol target at random */
 	AActor* ChoosePatrolTarget();
+	void CheckPatrolTarget();
+	void PatrolTimerFinished();
+	void StartPatrolling();
+	void MoveToTarget(AActor* Target);
+	void SpawnDefaultWeapon();
 
-	UFUNCTION(BlueprintCallable)
-	void FinishIdlePatrol();
+	void ClearPatrolTimer();
+	void CheckCombatTarget();
+	void ChaseTarget();
+	void ShowHealthBar();
+	void LoseInterest();
+	void HideHealthBar();
 
-	/** Make a callback function to use with On See Pawn delegate */
+	// Callback function to use with OnSeePawn delegate (UPawnSensingComponent). Bound in BeginPlay()
 	UFUNCTION() // to be bound to a delegate
 	void PawnSeen(APawn* SeenPawn);
 
-private:
-	/** 
-	* Animation Montages 
-	*/
-	UPROPERTY(EditDefaultsOnly, Category = "Montage")
-	TObjectPtr<UAnimMontage> HitReactMontage;
+	bool IsOutsideCombatRadius();
+	bool IsOutsideAttackRadius();
+	bool IsInsideAttackRadius();
+	bool IsIdlePatrolling();
 
-	UPROPERTY(EditDefaultsOnly, Category = "Montage")
-	TObjectPtr<UAnimMontage> DeathMontage;
+	/** Checking enemy states */
+	bool IsChasing();
+	bool IsAttacking();
+	bool IsDead();
+	bool IsEngaged();
 
-	UPROPERTY(EditDefaultsOnly, Category = "Montage")
-	TObjectPtr<UAnimMontage> IdlePatrolMontage;
+	/** Idle Patrol Animation */
+	void PlayIdlePatrolMontage(const FName& SectionName);
+	FName& IdlePatrolSectionName();
+	// Called once IdlePatrolEnd section name is reached in Anim Montage
+	UFUNCTION(BlueprintCallable)
+	void FinishIdlePatrol();
 
-	/** 
-	* Variable to set a sound when an enemy gets hit.
-	* Having this variable allows for setting different sounds to different enemies.
-	*/
-	UPROPERTY(EditAnywhere, Category = "Sounds")
-	TObjectPtr<USoundBase> HitSound;
+	/** Combat */
+	// Handling function used to start the timer, set state to Attacking, and call Attack()
+	void StartAttackTimer();
+	void ClearAttackTimer();
 
-	/** 
-	* Particle system 
-	* UParticleSystem is the type for the Cascade Particle System.
-	* To spawn this particle, we need to use the GamePlayStatics System.
-	*/
-	UPROPERTY(EditAnywhere, Category = "VisualEffects")
-	TObjectPtr<UParticleSystem> HitParticles;
+	UPROPERTY()
+	TObjectPtr<class AAIController> EnemyController;
 
-
-	/** 
-	* Components
-	*/
-	/** Add our custom Attribute Component */
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UAttributeComponent> Attributes;
-
+	/** Components */
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UMyHealthBarComponent> HealthBarWidget;
-
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UPawnSensingComponent> PawnSensing;
 
-	/** 
-	* 
-	*/
-	/** Pointer to store what has hit the enemy */
+	// Spawn a weapon
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AWeapon> WeaponClass;
+
+	// Pointer to store what has hit the enemy
 	UPROPERTY() // ensures the pointer is set to null
 	TObjectPtr<AActor> CombatTarget;
 
-	/** Threshold to check the DistanceToTarget */
+	// Threshold to check Distance To Target
 	UPROPERTY(EditAnywhere)
-	double CombatRadius = 500.f;
+	double CombatRadius = 1000.f;
 
-	/** Threshold to start attacking the player */
+	// Threshold to start attacking the player
 	UPROPERTY(EditAnywhere)
 	double AttackRadius = 150.f;
 
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	float ChasingSpeed = 300.f;
+
+	// Threshold to patrol
 	UPROPERTY(EditAnywhere)
 	double PatrolRadius = 200.f;
-
-	float m_AcceptanceRadius = 0.f;
-
-
-	/** 
-	* Navigation
-	*/
-	UPROPERTY()
-	TObjectPtr<class AAIController> EnemyController;
 
 	// Current patrol target
 	UPROPERTY(EditInstanceOnly, Category = "AI Navigation")
@@ -169,19 +112,82 @@ private:
 	UPROPERTY(EditInstanceOnly, Category = "AI Navigation")
 	TArray<TObjectPtr<AActor>> PatrolTargets;
 
-	/**
-	* TimerHandle is a struct that the world timer manager uses to keep track of various timers that we set.
-	*/
-	FTimerHandle PatrolTimer;
-	/** 
-	* In order to have a timer do something, we'll need a callback function.
-	* When we set a timer, we specify the TimerHandle (PatrolTimer), which allows the world timer manager keep track
-	*  of that timer. (Like an alarm clock with a function attached: PatrolTimerFinished()). 
-	*/
-	/** Moves the enemy to a target after a certain time */
-	void PatrolTimerFinished();
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	float PatrollingSpeed = 125.f;
 
+	/** Idle Patrol */
+	UPROPERTY(EditDefaultsOnly, Category = "Montage")
+	TObjectPtr<UAnimMontage> IdlePatrolMontage;
+	// Used in Tick() to check if IdlePatrol animation can be played
+	float EnemyVelocity = 0.0f;
+	// have a FName member variable to return a FName& instead of a copy?
+	FName IdleSectionName = FName();
+
+
+	/** Timer Handle */
+	/** Patrol */
+	FTimerHandle PatrolTimer;
 	UPROPERTY(EditAnywhere, Category = "AI Navigation")
-	float WaitMin = 9.5f;
-	float WaitMax = 10.5f;
+	float PatrolWaitMin = 9.5f;
+	UPROPERTY(EditAnywhere, Category = "AI Navigation")
+	float PatrolWaitMax = 10.5f;
+
+	/** Attack */
+	FTimerHandle AttackTimer;
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	float AttackMin = 0.5f;
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	float AttackMax = 1.f;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	float DeathLifeSpan = 4.f;
+
+protected:
+	/** <AActor> */
+	virtual void BeginPlay() override;
+	/** </AActor> */
+
+	/** <ABaseCharacter> */
+	virtual void Die() override;
+	virtual int32 PlayDeathMontage() override;
+	/** Attack */
+	virtual void Attack() override;
+	virtual bool CanAttack() override;
+	virtual void AttackEnd() override;
+	virtual void HandleDamage(float DamageAmount) override;
+	/** </ABaseCharacter> */
+
+	/** States */
+	UPROPERTY(BlueprintReadOnly) // Only access what the variable is. No need to expose to the details panel either
+	TEnumAsByte<EDeathPose> DeathPose;
+
+	UPROPERTY(BlueprintReadOnly) // This specifier only works for non-private variables!
+	EEnemyState EnemyState = EEnemyState::EES_Patrolling;
+
+public:
+	AEnemy();
+
+	/** <AActor> */
+	virtual void Tick(float DeltaTime) override;
+	/**
+	* This function is already inherented from Actor class.
+	* We don't really need to implement it in the BaseCharacter, unless there's something here we want to do
+	*  in both classes.
+	* Something that would not be unique (probably) is taking the Attributes component and call ReceiveDamage on it.
+	* But since SlashCharacter might take damage in a slighly different way, we'll leave as is and override it
+	*  separately in SlashCharacter!
+	*/
+	virtual float TakeDamage(
+		float DamageAmount,
+		struct FDamageEvent const& DamageEvent,
+		class AController* EventInstigator,
+		AActor* DamageCauser
+	) override;
+	/** Destroy the weapon as soon as the enemy instance is also destroyed */
+	virtual void Destroyed() override;
+	/** </AActor> */
+
+	/** <IHitInterface> */
+	virtual void GetHit_Implementation(const FVector& ImpactPoint) override;
+	/** </IHitInterface> */
 };
