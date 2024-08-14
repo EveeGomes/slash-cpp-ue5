@@ -85,10 +85,6 @@ private:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AWeapon> WeaponClass;
 
-	// Pointer to store what has hit the enemy
-	UPROPERTY() // ensures the pointer is set to null
-	TObjectPtr<AActor> CombatTarget;
-
 	// Threshold to check Distance To Target
 	UPROPERTY(EditAnywhere)
 	double CombatRadius = 1000.f;
@@ -163,6 +159,10 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly) // This specifier only works for non-private variables!
 	EEnemyState EnemyState = EEnemyState::EES_Patrolling;
+
+	// Pointer to store what has hit the enemy
+	UPROPERTY(BlueprintReadOnly, Category = "Combat")
+	TObjectPtr<AActor> CombatTarget;
 
 public:
 	AEnemy();
