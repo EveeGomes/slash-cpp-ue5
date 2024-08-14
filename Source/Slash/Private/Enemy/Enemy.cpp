@@ -349,6 +349,7 @@ void AEnemy::Die()
 	HideHealthBar();
 	DisableCapsule();
 	SetLifeSpan(DeathLifeSpan);
+	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 int32 AEnemy::PlayDeathMontage()
