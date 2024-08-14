@@ -31,5 +31,5 @@ public:
 	*  GetHit_Implementation. So in Enemy class for example, its virtual version needs to have _Implementation added to its name!
 	*/
 	UFUNCTION(BlueprintNativeEvent)
-	void GetHit(const FVector& ImpactPoint);
+	void GetHit(const FVector& ImpactPoint, AActor* Hitter);
 };
