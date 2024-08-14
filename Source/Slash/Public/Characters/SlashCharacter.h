@@ -95,6 +95,9 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void FinishEquipping();
 
+	UFUNCTION(BlueprintCallable)
+	void HitReactEnd();
+
 	/** Fix Jump animation after doing IK */
 	//UPROPERTY(BlueprintReadOnly)
 	//bool bCanJump = true;
