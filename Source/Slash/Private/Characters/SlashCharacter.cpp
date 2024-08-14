@@ -247,4 +247,13 @@ void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 void ASlashCharacter::GetHit_Implementation(const FVector& ImpactPoint)
 {
 	Super::GetHit_Implementation(ImpactPoint);
+
+	/** 
+	* The player shouldn't be able to attack while playing the Hit Reaction, ie while in HitReaction state!
+	* So when it call Attack() and check CanAttack, the states won't allow the character to attack :)
+	* 
+	* We also need a way to change from HitReaction state. For that we'll use a BlueprintCallable function
+	*  that'll be called from a AM.
+	*/
+	ActionState = EActionState::EAS_HitReaction;
 }
