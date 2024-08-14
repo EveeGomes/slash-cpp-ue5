@@ -523,4 +523,5 @@ void AEnemy::GetHit_Implementation(const FVector& ImpactPoint)
 {
 	Super::GetHit_Implementation(ImpactPoint);
 	ShowHealthBar();
+	ClearPatrolTimer();
 }
