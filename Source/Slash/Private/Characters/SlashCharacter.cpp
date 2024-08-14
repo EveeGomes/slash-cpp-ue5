@@ -252,6 +252,7 @@ void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 void ASlashCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter)
 {
 	Super::GetHit_Implementation(ImpactPoint, Hitter);
+	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	/** 
 	* The player shouldn't be able to attack while playing the Hit Reaction, ie while in HitReaction state!
