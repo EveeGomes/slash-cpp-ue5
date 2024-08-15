@@ -37,13 +37,13 @@ enum EDeathPose
 UENUM(BlueprintType)
 enum class EEnemyState : uint8
 {
+	EES_NoState UMETA(DisplayName = "NoState"),
+	
 	EES_Dead UMETA(DisplayName = "Dead"), // the most dorment state the enemy can be
 	EES_Idle UMETA(DisplayName = "Idle"),
 	EES_IdlePatrol UMETA(DisplayName = "Idle Patrol"),
 	EES_Patrolling UMETA(DisplayName = "Patrolling"),
 	EES_Chasing UMETA(DisplayName = "Chasing"),
 	EES_Attacking UMETA(DisplayName = "Attacking"),
-	EES_Engaged UMETA(DisplayName = "Engaged"),
-
-	EES_NoState UMETA(DisplayName = "NoState")
+	EES_Engaged UMETA(DisplayName = "Engaged")
 };
