@@ -28,6 +28,28 @@
 /** For using Animation Montage in Attack() */
 #include "Animation/AnimMontage.h"
 
+/** Pawn Sensing component */
+#include "Perception/PawnSensingComponent.h"
+
+/** Check if it has detected the combat target */
+#include "Slash/DebugMacros.h"
+
+void ASlashCharacter::PawnSeen(APawn* SeenPawn)
+{
+	GEngine->AddOnScreenDebugMessage(1, 2.f, FColor::Yellow, TEXT("PawnSeenn called"));
+
+	// Check SeenPawn is valid?
+	if (SeenPawn->ActorHasTag(FName("Enemy")))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, TEXT("Pawn is valid"));
+
+		// TODO: Set the combat target 
+		CombatTarget = SeenPawn;
+
+		DRAW_SPHERE(CombatTarget->GetActorLocation());
+	}
+}
+
 void ASlashCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -38,6 +60,13 @@ void ASlashCharacter::BeginPlay()
 		{
 			Subsystem->AddMappingContext(SlashContext, 0);
 		}
+	}
+
+	/** Bind the callback function to the delegate */
+	if (PawnSensing)
+	{
+		PawnSensing->OnSeePawn.AddDynamic(this, &ASlashCharacter::PawnSeen);
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("OnSeePawn delegate bound")); // ok
 	}
 
 	/** 
@@ -233,6 +262,12 @@ ASlashCharacter::ASlashCharacter()
 	Eyebrows = CreateDefaultSubobject<UGroomComponent>(TEXT("Eyebrows"));
 	Eyebrows->SetupAttachment(GetMesh());
 	Eyebrows->AttachmentName = FString("head");
+
+	// Construct Pawn Sensing component (give a native text name of PawnSensing)
+	PawnSensing = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensing"));
+	PawnSensing->SightRadius = 2000.f;
+	PawnSensing->SetPeripheralVisionAngle(45.f);
+	PawnSensing->bOnlySensePlayers = false; // IMPORTANT TO ALLOW NON-PLAYERS PAWNS TO BE SEEN!!!!!
 }
 
 void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

@@ -208,12 +208,12 @@ void AEnemy::PawnSeen(APawn* SeenPawn)
 {
 	/**
 	* Create a local bool in order to refactor a code where we can join if statements,
-	*  like in this case where we don't want to continue unless SeenPawn->ActorHasTag(FName("SlashCharacter")) returns true
-	*  and then EnemyState != EEnemyState::EES_Attacking returns true.
-	* The bool name should describe what's gonna happen if both conditions are true. In the bottom line, we want to chase
-	*  the target should the conditions return true!
-	* EnemyState < EEnemyState::EES_Attacking we'll be checking if it's less than Attacking or Engaged, since we shouldn't
-	*  be in either state.
+	*  like in this case where we don't want to continue unless SeenPawn->ActorHasTag(FName("SlashCharacter")) 
+	*  returns true and then EnemyState != EEnemyState::EES_Attacking returns true.
+	* The bool name should describe what's gonna happen if both conditions are true. In the bottom line, 
+	*  we want to chase the target should the conditions return true!
+	* EnemyState < EEnemyState::EES_Attacking we'll be checking if it's less than Attacking or Engaged, 
+	*  since we shouldn't be in either state.
 	* Now we just check a single condition using bShouldChaseTarget.
 	*/
 	const bool bShouldChaseTarget =

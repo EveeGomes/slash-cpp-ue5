@@ -20,6 +20,7 @@ class UGroomComponent;
 class AItem;
 class UAnimMontage;
 class AWeapon;
+class UPawnSensingComponent;
 
 UCLASS()
 class SLASH_API ASlashCharacter : public ABaseCharacter
@@ -27,6 +28,11 @@ class SLASH_API ASlashCharacter : public ABaseCharacter
 	GENERATED_BODY()
 
 private:
+
+	// Callback function to use with OnSeePawn delegate (UPawnSensingComponent). Bound in BeginPlay()
+	UFUNCTION() // to be bound to a delegate
+	void PawnSeen(APawn* SeenPawn);
+
 	/** 
 	* Components
 	*/
@@ -41,6 +47,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UGroomComponent> Eyebrows;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UPawnSensingComponent> PawnSensing;
 
 	/** 
 	* Items
