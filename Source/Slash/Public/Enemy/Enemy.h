@@ -160,10 +160,6 @@ protected:
 	UPROPERTY(BlueprintReadOnly) // This specifier only works for non-private variables!
 	EEnemyState EnemyState = EEnemyState::EES_Patrolling;
 
-	// Pointer to store what has hit the enemy
-	UPROPERTY(BlueprintReadOnly, Category = "Combat")
-	TObjectPtr<AActor> CombatTarget;
-
 public:
 	AEnemy();
 
