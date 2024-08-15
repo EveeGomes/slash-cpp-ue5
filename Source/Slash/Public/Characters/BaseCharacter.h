@@ -89,6 +89,7 @@ protected:
 	void SpawnHitParticles(const FVector& ImpactPoint);
 	void DisableCapsule();
 
+	/** Montage */
 	void PlayHitReactMontage(const FName& SectionName);
 	// Choose a section name from AttackMontageSections array
 	virtual int32 PlayAttackMontage();
@@ -99,6 +100,7 @@ protected:
 	*  as well just in case we need it later.
 	*/
 	virtual int32 PlayDeathMontage();
+	void StopAttackMontage();
 
 	UFUNCTION(BlueprintCallable)
 	virtual void AttackEnd();
