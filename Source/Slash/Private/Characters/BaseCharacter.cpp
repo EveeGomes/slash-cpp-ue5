@@ -16,9 +16,6 @@
 /** Play sound, Spawn Cascade Particles emitter */
 #include "Kismet/GameplayStatics.h"
 
-// to simply visualize the location to the combat target
-#include "Slash/DebugMacros.h"
-
 void ABaseCharacter::PlayMontageSection(UAnimMontage* Montage, const FName& SectionName)
 {
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
@@ -227,8 +224,6 @@ FVector ABaseCharacter::GetTranslationWarpTarget()
 	// After normalizing, scale it:
 	TargetToAttacker *= WarpTargetDistance;
 
-	// To visualize the location:
-	DRAW_SPHERE(CombatTargetLocation + TargetToAttacker);
 	return CombatTargetLocation + TargetToAttacker;
 }
 
