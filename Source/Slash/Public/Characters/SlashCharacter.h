@@ -80,6 +80,7 @@ protected:
 	virtual void Jump() override;
 	void EKeyPressed();
 	virtual void Attack() override;
+	void LockTarget();
 
 	/** Combat */
 	void EquipWeapon(AWeapon* Weapon);
@@ -133,6 +134,11 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputAction> AttackAction;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> LockOnTarget;
+
+	bool bLocked = false;
 
 public:
 	ASlashCharacter();

@@ -36,12 +36,10 @@
 
 void ASlashCharacter::PawnSeen(APawn* SeenPawn)
 {
-	GEngine->AddOnScreenDebugMessage(1, 2.f, FColor::Yellow, TEXT("PawnSeenn called"));
-
-	// Check SeenPawn is valid?
+	// Check SeenPawn is valid too?
 	if (SeenPawn->ActorHasTag(FName("Enemy")))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, TEXT("Pawn is valid"));
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("Pawn is valid"));
 
 		// TODO: Set the combat target 
 		CombatTarget = SeenPawn;
@@ -63,11 +61,7 @@ void ASlashCharacter::BeginPlay()
 	}
 
 	/** Bind the callback function to the delegate */
-	if (PawnSensing)
-	{
-		PawnSensing->OnSeePawn.AddDynamic(this, &ASlashCharacter::PawnSeen);
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("OnSeePawn delegate bound")); // ok
-	}
+	if (PawnSensing) PawnSensing->OnSeePawn.AddDynamic(this, &ASlashCharacter::PawnSeen);
 
 	/** 
 	* Use the Tags variable from the Character and Add method to add a tag which can get any name we want.
@@ -140,6 +134,40 @@ void ASlashCharacter::Attack()
 		PlayAttackMontage();
 		ActionState = EActionState::EAS_Attacking;
 	}
+}
+
+void ASlashCharacter::LockTarget()
+{
+	/*GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, TEXT("LockTagert() called"));*/ // OK!!!!
+	// Recriate the Flip Flop node by having a boolean that toggles T and F every time this function is called.
+	if (!bLocked)
+	{
+		// do whatever is needed in this function
+		bLocked = true;
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("1st bLocked: %d"), bLocked));
+
+		if (CombatTarget->ActorHasTag(FName("Enemy")))
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Combat target is enemy")); // OK!!!!
+		}
+
+	}
+	else
+	{
+		// when it's locked, and TAB is pressed again, set to false to unlock after removing combat target and
+		//  the particle and whatever is more necessary
+		bLocked = false;
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("2nd bLocked: %d"), bLocked));
+
+	}
+
+	/** 
+	* TODO:
+	* [] Only allow this function to be called if the pawn is in sight's radius!
+	* [] Lock camera rotation to the target's movement instead of the mouse
+	* [] Use a widget or niagara system to show it's targeted?
+	* [] Check slash states?
+	*/
 }
 
 void ASlashCharacter::EquipWeapon(AWeapon* Weapon)
@@ -281,6 +309,7 @@ void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Jump);
 		EnhancedInputComponent->BindAction(EquipAction, ETriggerEvent::Triggered, this, &ASlashCharacter::EKeyPressed);
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Attack);
+		EnhancedInputComponent->BindAction(LockOnTarget, ETriggerEvent::Started, this, &ASlashCharacter::LockTarget);
 	}
 }
 
