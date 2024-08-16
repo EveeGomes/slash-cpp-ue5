@@ -34,6 +34,9 @@
 /** Check if it has detected the combat target */
 #include "Slash/DebugMacros.h"
 
+/** To rotate the camera to Combat Tagert */
+#include "Kismet/KismetMathLibrary.h"
+
 void ASlashCharacter::PawnSeen(APawn* SeenPawn)
 {
 	// Check SeenPawn is valid too?
@@ -257,7 +260,7 @@ void ASlashCharacter::HitReactEnd()
 
 ASlashCharacter::ASlashCharacter()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	/** Movement */
 	bUseControllerRotationPitch = false;
@@ -310,6 +313,19 @@ void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 		EnhancedInputComponent->BindAction(EquipAction, ETriggerEvent::Triggered, this, &ASlashCharacter::EKeyPressed);
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Attack);
 		EnhancedInputComponent->BindAction(LockOnTarget, ETriggerEvent::Started, this, &ASlashCharacter::LockTarget);
+	}
+}
+
+void ASlashCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (bLocked && CombatTarget)
+	{
+		FVector SlashLocation = GetActorLocation();
+		FVector LockedTargetLocation = CombatTarget->GetActorLocation();
+
+		Controller->SetControlRotation(UKismetMathLibrary::FindLookAtRotation(SlashLocation, LockedTargetLocation));
 	}
 }
 
