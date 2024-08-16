@@ -147,8 +147,10 @@ void ASlashCharacter::LockTarget()
 	{
 		// do whatever is needed in this function
 		bLocked = true;
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("1st bLocked: %d"), bLocked));
+		GetCharacterMovement()->bOrientRotationToMovement = false; // change values to a boolean variable?
+		GetCharacterMovement()->bUseControllerDesiredRotation = true;
 
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("1st bLocked: %d"), bLocked));
 		if (CombatTarget->ActorHasTag(FName("Enemy")))
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Combat target is enemy")); // OK!!!!
@@ -161,7 +163,10 @@ void ASlashCharacter::LockTarget()
 		//  the particle and whatever is more necessary
 		bLocked = false;
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("2nd bLocked: %d"), bLocked));
+		//CombatTarget = nullptr; // creates exception
 
+		GetCharacterMovement()->bOrientRotationToMovement = true; // change values to a boolean variable?
+		GetCharacterMovement()->bUseControllerDesiredRotation = false;
 	}
 
 	/** 
@@ -320,12 +325,17 @@ void ASlashCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (bLocked && CombatTarget)
+	// apparently it's not checking if CombatTarget is valid, because when the enemy dies, it remains locked
+	if (bLocked && CombatTarget) 
 	{
+		
 		FVector SlashLocation = GetActorLocation();
 		FVector LockedTargetLocation = CombatTarget->GetActorLocation();
 
 		Controller->SetControlRotation(UKismetMathLibrary::FindLookAtRotation(SlashLocation, LockedTargetLocation));
+		// also rotate the character and the camera?
+		//Controller->SetIgnoreLookInput(false);
+
 	}
 }
 

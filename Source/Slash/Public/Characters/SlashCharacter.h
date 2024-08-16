@@ -34,6 +34,10 @@ private:
 	void PawnSeen(APawn* SeenPawn);
 
 	/** 
+	* 
+	*/
+
+	/** 
 	* Components
 	*/
 	UPROPERTY(VisibleAnywhere)
