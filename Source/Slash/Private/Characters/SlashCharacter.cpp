@@ -157,43 +157,36 @@ void ASlashCharacter::Attack()
 
 void ASlashCharacter::LockTarget()
 {
-	/*GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, TEXT("LockTagert() called"));*/ // OK!!!!
-	// Recriate the Flip Flop node by having a boolean that toggles T and F every time this function is called.
 	if (!bLocked)
 	{
-		// Engange lock
-
-		// do whatever is needed in this function
+		// Engage lock
 		bLocked = true;
 		SphereTrace();
 
-		if (CombatTarget && CombatTarget->ActorHasTag(FName("Enemy"))) // ok!!! :D
+		if (CombatTarget && CombatTarget->ActorHasTag(FName("Enemy")))
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Combat target is enemy")); // OK!!!!
-
-			GetCharacterMovement()->bOrientRotationToMovement = false; // change values to a boolean variable?
+			GetCharacterMovement()->bOrientRotationToMovement = false;
 			GetCharacterMovement()->bUseControllerDesiredRotation = true;
-		}
 
+			Controller->SetIgnoreLookInput(bLocked);
+		}
 	}
 	else
 	{
 		// Disangaged lock
-
-		// when it's locked, and TAB is pressed again, set to false to unlock after removing combat target and
-		//  the particle and whatever is more necessary
 		bLocked = false;
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("2nd bLocked: %d"), bLocked));
-		CombatTarget = nullptr; // ok (need to always check before using it!)
+		CombatTarget = nullptr;
 
-		GetCharacterMovement()->bOrientRotationToMovement = true; // change values to a boolean variable?
+		GetCharacterMovement()->bOrientRotationToMovement = true;
 		GetCharacterMovement()->bUseControllerDesiredRotation = false;
+
+		Controller->ResetIgnoreLookInput();
 	}
 
 	/** 
 	* TODO:
-	* [] Only allow this function to be called if the pawn is in sight's radius!
-	* [] Lock camera rotation to the target's movement instead of the mouse
+	* [x] Only allow this function to be called if the pawn is in sight's radius!
+	* [x] Lock camera rotation to the target's movement instead of the mouse
 	* [] Use a widget or niagara system to show it's targeted?
 	* [] Check slash states?
 	*/
@@ -345,6 +338,9 @@ void ASlashCharacter::Tick(float DeltaTime)
 	// apparently it's not checking if CombatTarget is valid, because when the enemy dies, it remains locked
 	if (bLocked && CombatTarget) 
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Yellow, TEXT("bLocked and CombatTarget valid."));
+		// NEED TO CHECK IN THE ABP IF IT NEEDS TO GO TO THE LOCKEDLOCOMOTION!
+		// IT SHOULD ONLY GO IF BLOCKED IS TRUE AND COMBAT TARGET IS ENEMY!!!! <<<<
 		FVector SlashLocation = GetActorLocation();
 		FVector LockedTargetLocation = CombatTarget->GetActorLocation();
 
