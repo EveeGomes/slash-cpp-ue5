@@ -37,18 +37,48 @@
 /** To rotate the camera to Combat Tagert */
 #include "Kismet/KismetMathLibrary.h"
 
-void ASlashCharacter::PawnSeen(APawn* SeenPawn)
+/** To use SphereTraceMultiObjects */
+#include "Kismet/KismetSystemLibrary.h"
+
+//void ASlashCharacter::PawnSeen(APawn* SeenPawn)
+//{
+//	// Check SeenPawn is valid too?
+//	if (SeenPawn->ActorHasTag(FName("Enemy")))
+//	{
+//		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("Pawn is valid"));
+//
+//		// TODO: Set the combat target 
+//		CombatTarget = SeenPawn;
+//
+//		//DRAW_SPHERE(CombatTarget->GetActorLocation());
+//	}
+//}
+
+void ASlashCharacter::SphereTrace()
 {
-	// Check SeenPawn is valid too?
-	if (SeenPawn->ActorHasTag(FName("Enemy")))
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("Pawn is valid"));
+	const FVector SlashLocation = GetActorLocation();
+	FVector CameraFwd = ViewCamera->GetForwardVector(); // a bit different from YT
+	FVector End = (CameraFwd * 500.f) + SlashLocation;
 
-		// TODO: Set the combat target 
-		CombatTarget = SeenPawn;
+	// Objects to trace against
+	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
+	ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_WorldDynamic)); // or pawn?
 
-		DRAW_SPHERE(CombatTarget->GetActorLocation());
-	}
+	TArray<AActor*> ActorsToIgnore;
+	TArray<FHitResult> ActorsHit;
+
+	UKismetSystemLibrary::SphereTraceMultiForObjects(
+		this,
+		SlashLocation,
+		End,
+		125.f,
+		ObjectTypes,
+		false,
+		ActorsToIgnore,
+		EDrawDebugTrace::ForDuration,
+		ActorsHit,
+		true
+	);
 }
 
 void ASlashCharacter::BeginPlay()
@@ -63,8 +93,8 @@ void ASlashCharacter::BeginPlay()
 		}
 	}
 
-	/** Bind the callback function to the delegate */
-	if (PawnSensing) PawnSensing->OnSeePawn.AddDynamic(this, &ASlashCharacter::PawnSeen);
+	///** Bind the callback function to the delegate */
+	//if (PawnSensing) PawnSensing->OnSeePawn.AddDynamic(this, &ASlashCharacter::PawnSeen);
 
 	/** 
 	* Use the Tags variable from the Character and Add method to add a tag which can get any name we want.
@@ -145,13 +175,16 @@ void ASlashCharacter::LockTarget()
 	// Recriate the Flip Flop node by having a boolean that toggles T and F every time this function is called.
 	if (!bLocked)
 	{
+		// Engange lock
+
 		// do whatever is needed in this function
 		bLocked = true;
 		GetCharacterMovement()->bOrientRotationToMovement = false; // change values to a boolean variable?
 		GetCharacterMovement()->bUseControllerDesiredRotation = true;
 
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("1st bLocked: %d"), bLocked));
-		if (CombatTarget->ActorHasTag(FName("Enemy")))
+		SphereTrace();
+
+		if (CombatTarget && CombatTarget->ActorHasTag(FName("Enemy")))
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Combat target is enemy")); // OK!!!!
 		}
@@ -159,11 +192,13 @@ void ASlashCharacter::LockTarget()
 	}
 	else
 	{
+		// Disangaged lock
+
 		// when it's locked, and TAB is pressed again, set to false to unlock after removing combat target and
 		//  the particle and whatever is more necessary
 		bLocked = false;
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("2nd bLocked: %d"), bLocked));
-		//CombatTarget = nullptr; // creates exception
+		CombatTarget = nullptr; // ok (need to always check before using it!)
 
 		GetCharacterMovement()->bOrientRotationToMovement = true; // change values to a boolean variable?
 		GetCharacterMovement()->bUseControllerDesiredRotation = false;
@@ -299,11 +334,11 @@ ASlashCharacter::ASlashCharacter()
 	Eyebrows->SetupAttachment(GetMesh());
 	Eyebrows->AttachmentName = FString("head");
 
-	// Construct Pawn Sensing component (give a native text name of PawnSensing)
-	PawnSensing = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensing"));
-	PawnSensing->SightRadius = 2000.f;
-	PawnSensing->SetPeripheralVisionAngle(45.f);
-	PawnSensing->bOnlySensePlayers = false; // IMPORTANT TO ALLOW NON-PLAYERS PAWNS TO BE SEEN!!!!!
+	//// Construct Pawn Sensing component (give a native text name of PawnSensing)
+	//PawnSensing = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensing"));
+	//PawnSensing->SightRadius = 2000.f;
+	//PawnSensing->SetPeripheralVisionAngle(45.f);
+	//PawnSensing->bOnlySensePlayers = false; // IMPORTANT TO ALLOW NON-PLAYERS PAWNS TO BE SEEN!!!!!
 }
 
 void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -328,14 +363,10 @@ void ASlashCharacter::Tick(float DeltaTime)
 	// apparently it's not checking if CombatTarget is valid, because when the enemy dies, it remains locked
 	if (bLocked && CombatTarget) 
 	{
-		
 		FVector SlashLocation = GetActorLocation();
 		FVector LockedTargetLocation = CombatTarget->GetActorLocation();
 
 		Controller->SetControlRotation(UKismetMathLibrary::FindLookAtRotation(SlashLocation, LockedTargetLocation));
-		// also rotate the character and the camera?
-		//Controller->SetIgnoreLookInput(false);
-
 	}
 }
 
