@@ -62,12 +62,12 @@ void ASlashCharacter::SphereTrace()
 
 	// Objects to trace against
 	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
-	ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_WorldDynamic)); // or pawn?
+	ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_Pawn)); // WorlDynamic or Pawn?
 
 	TArray<AActor*> ActorsToIgnore;
-	TArray<FHitResult> ActorsHit;
+	FHitResult HitActor;
 
-	UKismetSystemLibrary::SphereTraceMultiForObjects(
+	UKismetSystemLibrary::SphereTraceSingleForObjects(
 		this,
 		SlashLocation,
 		End,
@@ -76,9 +76,11 @@ void ASlashCharacter::SphereTrace()
 		false,
 		ActorsToIgnore,
 		EDrawDebugTrace::ForDuration,
-		ActorsHit,
+		HitActor,
 		true
 	);
+
+	CombatTarget = HitActor.GetActor();
 }
 
 void ASlashCharacter::BeginPlay()
