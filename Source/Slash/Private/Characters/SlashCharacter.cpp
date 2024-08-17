@@ -165,14 +165,14 @@ void ASlashCharacter::LockTarget()
 
 		// do whatever is needed in this function
 		bLocked = true;
-		GetCharacterMovement()->bOrientRotationToMovement = false; // change values to a boolean variable?
-		GetCharacterMovement()->bUseControllerDesiredRotation = true;
-
 		SphereTrace();
 
-		if (CombatTarget && CombatTarget->ActorHasTag(FName("Enemy")))
+		if (CombatTarget && CombatTarget->ActorHasTag(FName("Enemy"))) // ok!!! :D
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Combat target is enemy")); // OK!!!!
+
+			GetCharacterMovement()->bOrientRotationToMovement = false; // change values to a boolean variable?
+			GetCharacterMovement()->bUseControllerDesiredRotation = true;
 		}
 
 	}
