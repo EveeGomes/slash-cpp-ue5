@@ -306,6 +306,8 @@ ASlashCharacter::ASlashCharacter()
 	/** Spring arm and camera */
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(GetRootComponent());
+	SpringArm->SetRelativeLocation(FVector(0, 0, 100));
+	SpringArm->SetRelativeRotation(FRotator(-20, 0, 0));
 	SpringArm->TargetArmLength = 300.f;
 
 	ViewCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
