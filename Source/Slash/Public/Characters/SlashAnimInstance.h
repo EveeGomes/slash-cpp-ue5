@@ -32,6 +32,12 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = Movement)
 	float GroundSpeed;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Movement")
+	float Direction;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Movement")
+	bool bIsLocked;
+
 	UPROPERTY(BlueprintReadOnly, Category = Movement)
 	bool IsFalling;
 

@@ -141,9 +141,8 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputAction> LockOnTarget;
 
-	bool bLocked = false;
-
 public:
+
 	ASlashCharacter();
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
@@ -160,4 +159,7 @@ public:
 	*/
 	FORCEINLINE void SetOverlappingItem(AItem* Item) { OverlappingItem = Item; }
 	FORCEINLINE ECharacterState GetCharacterState() const { return CharacterState; }
+
+	/** Used in LockTarget and in SlashAnimInstance */
+	bool bLocked = false;
 };
