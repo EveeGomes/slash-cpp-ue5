@@ -29,10 +29,6 @@ class SLASH_API ASlashCharacter : public ABaseCharacter
 
 private:
 
-	//// Callback function to use with OnSeePawn delegate (UPawnSensingComponent). Bound in BeginPlay()
-	//UFUNCTION() // to be bound to a delegate
-	//void PawnSeen(APawn* SeenPawn);
-
 	/** 
 	* Create a Sphere box trace for objects function that uses the character location and the direction
 	*  to which the camera is facing. So it'll detect enemies that are in front of this character!

@@ -40,19 +40,6 @@
 /** To use SphereTraceMultiObjects */
 #include "Kismet/KismetSystemLibrary.h"
 
-//void ASlashCharacter::PawnSeen(APawn* SeenPawn)
-//{
-//	// Check SeenPawn is valid too?
-//	if (SeenPawn->ActorHasTag(FName("Enemy")))
-//	{
-//		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("Pawn is valid"));
-//
-//		// TODO: Set the combat target 
-//		CombatTarget = SeenPawn;
-//
-//		//DRAW_SPHERE(CombatTarget->GetActorLocation());
-//	}
-//}
 
 void ASlashCharacter::SphereTrace()
 {
@@ -94,9 +81,6 @@ void ASlashCharacter::BeginPlay()
 			Subsystem->AddMappingContext(SlashContext, 0);
 		}
 	}
-
-	///** Bind the callback function to the delegate */
-	//if (PawnSensing) PawnSensing->OnSeePawn.AddDynamic(this, &ASlashCharacter::PawnSeen);
 
 	/** 
 	* Use the Tags variable from the Character and Add method to add a tag which can get any name we want.
@@ -335,12 +319,6 @@ ASlashCharacter::ASlashCharacter()
 	Eyebrows = CreateDefaultSubobject<UGroomComponent>(TEXT("Eyebrows"));
 	Eyebrows->SetupAttachment(GetMesh());
 	Eyebrows->AttachmentName = FString("head");
-
-	//// Construct Pawn Sensing component (give a native text name of PawnSensing)
-	//PawnSensing = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensing"));
-	//PawnSensing->SightRadius = 2000.f;
-	//PawnSensing->SetPeripheralVisionAngle(45.f);
-	//PawnSensing->bOnlySensePlayers = false; // IMPORTANT TO ALLOW NON-PLAYERS PAWNS TO BE SEEN!!!!!
 }
 
 void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
