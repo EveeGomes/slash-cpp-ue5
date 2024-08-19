@@ -86,7 +86,11 @@ protected:
 	virtual void Attack() override;
 	void LockTarget();
 
-	void UnlockTarget();
+	void LockToTarget();
+
+	bool CanLock();
+
+	void UnlockFromTarget();
 
 	/** Combat */
 	void EquipWeapon(AWeapon* Weapon);
@@ -169,5 +173,5 @@ public:
 	bool bIsEnemy = false;
 
 	/** Should Slash knows about enemy? */
-	TObjectPtr<AEnemy> Enemy;
+	TObjectPtr<AEnemy> Enemy = nullptr;
 };

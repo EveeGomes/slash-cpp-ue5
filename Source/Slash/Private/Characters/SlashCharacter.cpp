@@ -162,30 +162,16 @@ void ASlashCharacter::Attack()
 void ASlashCharacter::LockTarget()
 {
 	// && ActionState != EActionState::EAS_Locked // it's not already locked?
-	if (!bLocked && CharacterState > ECharacterState::ECS_Unequipped) 
+	if (CanLock())
 	{
 		// Engage lock
-		bLocked = true;
-		// add a state so it can be used in transition rule from unlocked to locked locomotion?
-		ActionState = EActionState::EAS_Locked;
 		SphereTrace();
-
-		if (CombatTarget && CombatTarget->ActorHasTag(FName("Enemy")))
-		{
-			bIsEnemy = true;
-
-			Enemy = Cast<AEnemy>(CombatTarget);
-
-			GetCharacterMovement()->bOrientRotationToMovement = false;
-			GetCharacterMovement()->bUseControllerDesiredRotation = true;
-
-			Controller->SetIgnoreLookInput(bLocked);
-		}
+		LockToTarget();
 	}
 	else
 	{
 		// Disangaged lock
-		UnlockTarget();
+		UnlockFromTarget();
 		// which ActionState to return to? Unoccupied is the default state.
 		ActionState = EActionState::EAS_Unoccupied;
 	}
@@ -199,15 +185,33 @@ void ASlashCharacter::LockTarget()
 	*/
 }
 
-void ASlashCharacter::UnlockTarget()
+void ASlashCharacter::LockToTarget()
+{
+	if (CombatTarget && CombatTarget->ActorHasTag(FName("Enemy")))
+	{
+		// add a state so it can be used in transition rule from unlocked to locked locomotion?
+		ActionState = EActionState::EAS_Locked;
+		bLocked = true;
+		bIsEnemy = true;
+		Enemy = Cast<AEnemy>(CombatTarget);
+
+		GetCharacterMovement()->bOrientRotationToMovement = false;
+		GetCharacterMovement()->bUseControllerDesiredRotation = true;
+
+		Controller->SetIgnoreLookInput(bLocked);
+	}
+}
+
+bool ASlashCharacter::CanLock()
+{
+	return !bLocked && CharacterState > ECharacterState::ECS_Unequipped;
+}
+
+void ASlashCharacter::UnlockFromTarget()
 {
 	bLocked = false;
 	CombatTarget = nullptr;
 	bIsEnemy = false;
-	/** 
-	*/
-	//// which ActionState to return to? Unoccupied is the default state.
-	//ActionState = EActionState::EAS_Unoccupied;
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->bUseControllerDesiredRotation = false;
@@ -269,7 +273,7 @@ void ASlashCharacter::Disarm()
 	CharacterState = ECharacterState::ECS_Unequipped;
 	ActionState = EActionState::EAS_EquippingWeapon;
 	//bLocked = false;
-	UnlockTarget();
+	UnlockFromTarget();
 }
 
 void ASlashCharacter::Arm()
@@ -376,7 +380,7 @@ void ASlashCharacter::Tick(float DeltaTime)
 	}
 	else if (Enemy && Enemy->IsDead())
 	{
-		UnlockTarget();
+		UnlockFromTarget();
 	}
 }
 
