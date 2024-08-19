@@ -26,10 +26,10 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	ASlashCharacter* SlashCharacter;
 	
-	UPROPERTY(BlueprintReadOnly, Category = Movement)
+	UPROPERTY(BlueprintReadOnly, Category = "Movement")
 	UCharacterMovementComponent* SlashCharacterMovement;
 
-	UPROPERTY(BlueprintReadOnly, Category = Movement)
+	UPROPERTY(BlueprintReadOnly, Category = "Movement")
 	float GroundSpeed;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Movement")
@@ -38,9 +38,12 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Movement")
 	bool bIsLocked;
 
-	UPROPERTY(BlueprintReadOnly, Category = Movement)
+	UPROPERTY(BlueprintReadOnly, Category = "Movement")
 	bool IsFalling;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Movement | Character State")
 	ECharacterState CharacterState;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Movement")
+	EActionState ActionState;
 };

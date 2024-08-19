@@ -66,6 +66,8 @@ void ASlashCharacter::SphereTrace()
 		HitActor,
 		true
 	);
+	// add the hit actor to the ActorsToIgnore? Or it's not necessary as this function is called only 
+	//  when TAB is pressed?
 
 	CombatTarget = HitActor.GetActor();
 }
@@ -90,7 +92,7 @@ void ASlashCharacter::BeginPlay()
 
 void ASlashCharacter::Move(const FInputActionValue& Value)
 {
-	if (ActionState != EActionState::EAS_Unoccupied) return;
+	if (ActionState > EActionState::EAS_Unoccupied) return;
 
 	const FVector2D MovementVector = Value.Get<FVector2D>();
 
@@ -157,10 +159,12 @@ void ASlashCharacter::Attack()
 
 void ASlashCharacter::LockTarget()
 {
-	if (!bLocked)
+	if (!bLocked && CharacterState > ECharacterState::ECS_Unequipped) // && ActionState != EActionState::EAS_Locked // it's not already locked?
 	{
 		// Engage lock
 		bLocked = true;
+		// add a state so it can be used in transition rule from unlocked to locked locomotion?
+		ActionState = EActionState::EAS_Locked;
 		SphereTrace();
 
 		if (CombatTarget && CombatTarget->ActorHasTag(FName("Enemy")))
@@ -176,6 +180,8 @@ void ASlashCharacter::LockTarget()
 		// Disangaged lock
 		bLocked = false;
 		CombatTarget = nullptr;
+		// which ActionState to return to? Unoccupied is the default state.
+		ActionState = EActionState::EAS_Unoccupied;
 
 		GetCharacterMovement()->bOrientRotationToMovement = true;
 		GetCharacterMovement()->bUseControllerDesiredRotation = false;
@@ -210,8 +216,9 @@ void ASlashCharacter::AttackEnd()
 
 bool ASlashCharacter::CanAttack()
 {
-	return ActionState == EActionState::EAS_Unoccupied &&
-	    CharacterState != ECharacterState::ECS_Unequipped;
+	return (ActionState == EActionState::EAS_Unoccupied || 
+			 ActionState == EActionState::EAS_Locked) &&
+			 CharacterState != ECharacterState::ECS_Unequipped;
 }
 
 void ASlashCharacter::PlayEquipMontage(FName SectionName)
@@ -226,15 +233,17 @@ void ASlashCharacter::PlayEquipMontage(FName SectionName)
 
 bool ASlashCharacter::CanDisarm()
 {
-	return ActionState == EActionState::EAS_Unoccupied && 
-		 CharacterState != ECharacterState::ECS_Unequipped;
+	return (ActionState == EActionState::EAS_Unoccupied ||
+			 ActionState == EActionState::EAS_Locked) &&
+			 CharacterState != ECharacterState::ECS_Unequipped;
 }
 
 bool ASlashCharacter::CanArm()
 {
-	return ActionState == EActionState::EAS_Unoccupied &&
-		 CharacterState == ECharacterState::ECS_Unequipped &&
-		 EquippedWeapon; // check if it's not a null pointer (meaning we had gotten a weapon already)
+	return (ActionState == EActionState::EAS_Unoccupied || 
+			 ActionState == EActionState::EAS_Locked) &&
+			 CharacterState == ECharacterState::ECS_Unequipped &&
+			 EquippedWeapon; // check if it's not a null pointer (meaning we had gotten a weapon already)
 }
 
 void ASlashCharacter::Disarm()
