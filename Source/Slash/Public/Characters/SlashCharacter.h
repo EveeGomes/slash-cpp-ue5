@@ -85,6 +85,8 @@ protected:
 	virtual void Attack() override;
 	void LockTarget();
 
+	void UnlockTarget();
+
 	/** Combat */
 	void EquipWeapon(AWeapon* Weapon);
 	virtual void AttackEnd() override;

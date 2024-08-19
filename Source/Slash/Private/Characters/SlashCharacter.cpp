@@ -180,16 +180,9 @@ void ASlashCharacter::LockTarget()
 	else
 	{
 		// Disangaged lock
-		bLocked = false;
-		CombatTarget = nullptr;
-		bIsEnemy = false;
+		UnlockTarget();
 		// which ActionState to return to? Unoccupied is the default state.
 		ActionState = EActionState::EAS_Unoccupied;
-
-		GetCharacterMovement()->bOrientRotationToMovement = true;
-		GetCharacterMovement()->bUseControllerDesiredRotation = false;
-
-		Controller->ResetIgnoreLookInput();
 	}
 
 	/** 
@@ -199,6 +192,22 @@ void ASlashCharacter::LockTarget()
 	* [] Use a widget or niagara system to show it's targeted?
 	* [] Check slash states?
 	*/
+}
+
+void ASlashCharacter::UnlockTarget()
+{
+	bLocked = false;
+	CombatTarget = nullptr;
+	bIsEnemy = false;
+	/** 
+	*/
+	//// which ActionState to return to? Unoccupied is the default state.
+	//ActionState = EActionState::EAS_Unoccupied;
+
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->bUseControllerDesiredRotation = false;
+
+	Controller->ResetIgnoreLookInput();
 }
 
 void ASlashCharacter::EquipWeapon(AWeapon* Weapon)
@@ -254,6 +263,8 @@ void ASlashCharacter::Disarm()
 	PlayEquipMontage(FName("Unequip"));
 	CharacterState = ECharacterState::ECS_Unequipped;
 	ActionState = EActionState::EAS_EquippingWeapon;
+	//bLocked = false;
+	UnlockTarget();
 }
 
 void ASlashCharacter::Arm()
