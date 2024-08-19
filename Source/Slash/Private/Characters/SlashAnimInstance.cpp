@@ -30,6 +30,7 @@ void USlashAnimInstance::NativeUpdateAnimation(float DeltaTime)
       Direction = CalculateDirection(SlashVelocity, SlashRotation);
 
       bIsLocked = SlashCharacter->bLocked;
+      bIsEnemy = SlashCharacter->bIsEnemy;
 
       IsFalling = SlashCharacterMovement->IsFalling();
       CharacterState = SlashCharacter->GetCharacterState();

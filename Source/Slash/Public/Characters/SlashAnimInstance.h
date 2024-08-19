@@ -39,6 +39,9 @@ public:
 	bool bIsLocked;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Movement")
+	bool bIsEnemy;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Movement")
 	bool IsFalling;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Movement | Character State")

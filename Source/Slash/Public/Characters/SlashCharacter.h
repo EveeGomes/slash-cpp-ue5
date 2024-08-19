@@ -163,4 +163,5 @@ public:
 
 	/** Used in LockTarget and in SlashAnimInstance */
 	bool bLocked = false;
+	bool bIsEnemy = false;
 };

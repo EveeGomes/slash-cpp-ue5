@@ -169,6 +169,8 @@ void ASlashCharacter::LockTarget()
 
 		if (CombatTarget && CombatTarget->ActorHasTag(FName("Enemy")))
 		{
+			bIsEnemy = true;
+
 			GetCharacterMovement()->bOrientRotationToMovement = false;
 			GetCharacterMovement()->bUseControllerDesiredRotation = true;
 
@@ -180,6 +182,7 @@ void ASlashCharacter::LockTarget()
 		// Disangaged lock
 		bLocked = false;
 		CombatTarget = nullptr;
+		bIsEnemy = false;
 		// which ActionState to return to? Unoccupied is the default state.
 		ActionState = EActionState::EAS_Unoccupied;
 
