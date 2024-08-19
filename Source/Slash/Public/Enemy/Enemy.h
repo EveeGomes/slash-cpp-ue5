@@ -57,7 +57,6 @@ private:
 	/** Checking enemy states */
 	bool IsChasing();
 	bool IsAttacking();
-	bool IsDead();
 	bool IsEngaged();
 
 	/** Idle Patrol Animation */
@@ -186,4 +185,6 @@ public:
 	/** <IHitInterface> */
 	virtual void GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter) override;
 	/** </IHitInterface> */
+
+	bool IsDead();
 };

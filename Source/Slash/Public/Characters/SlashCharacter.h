@@ -21,6 +21,7 @@ class AItem;
 class UAnimMontage;
 class AWeapon;
 class UPawnSensingComponent;
+class AEnemy;
 
 UCLASS()
 class SLASH_API ASlashCharacter : public ABaseCharacter
@@ -166,4 +167,7 @@ public:
 	/** Used in LockTarget and in SlashAnimInstance */
 	bool bLocked = false;
 	bool bIsEnemy = false;
+
+	/** Should Slash knows about enemy? */
+	TObjectPtr<AEnemy> Enemy;
 };

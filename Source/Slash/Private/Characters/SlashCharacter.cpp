@@ -40,6 +40,8 @@
 /** To use SphereTraceMultiObjects */
 #include "Kismet/KismetSystemLibrary.h"
 
+#include "Enemy/Enemy.h"
+
 
 void ASlashCharacter::SphereTrace()
 {
@@ -159,7 +161,8 @@ void ASlashCharacter::Attack()
 
 void ASlashCharacter::LockTarget()
 {
-	if (!bLocked && CharacterState > ECharacterState::ECS_Unequipped) // && ActionState != EActionState::EAS_Locked // it's not already locked?
+	// && ActionState != EActionState::EAS_Locked // it's not already locked?
+	if (!bLocked && CharacterState > ECharacterState::ECS_Unequipped) 
 	{
 		// Engage lock
 		bLocked = true;
@@ -170,6 +173,8 @@ void ASlashCharacter::LockTarget()
 		if (CombatTarget && CombatTarget->ActorHasTag(FName("Enemy")))
 		{
 			bIsEnemy = true;
+
+			Enemy = Cast<AEnemy>(CombatTarget);
 
 			GetCharacterMovement()->bOrientRotationToMovement = false;
 			GetCharacterMovement()->bUseControllerDesiredRotation = true;
@@ -359,7 +364,7 @@ void ASlashCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	// apparently it's not checking if CombatTarget is valid, because when the enemy dies, it remains locked
-	if (bLocked && CombatTarget) 
+	if (bLocked && Enemy && !Enemy->IsDead()) //CombatTarget)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Yellow, TEXT("bLocked and CombatTarget valid."));
 		// NEED TO CHECK IN THE ABP IF IT NEEDS TO GO TO THE LOCKEDLOCOMOTION!
@@ -368,6 +373,10 @@ void ASlashCharacter::Tick(float DeltaTime)
 		FVector LockedTargetLocation = CombatTarget->GetActorLocation();
 
 		Controller->SetControlRotation(UKismetMathLibrary::FindLookAtRotation(SlashLocation, LockedTargetLocation));
+	}
+	else if (Enemy && Enemy->IsDead())
+	{
+		UnlockTarget();
 	}
 }
 
