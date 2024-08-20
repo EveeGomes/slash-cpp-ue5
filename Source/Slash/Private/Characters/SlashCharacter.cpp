@@ -198,6 +198,9 @@ void ASlashCharacter::LockToTarget()
 		
 		Enemy = Cast<AEnemy>(CombatTarget);
 		//if (Enemy) Enemy->ShowLockedEffect();
+		//FVector EnemyLocation = FVector{ Enemy->GetActorLocation().X, Enemy->GetActorLocation().Y - 50, Enemy->GetActorLocation().Z + 40.f };
+		//LockedEffect->SetWorldLocation(EnemyLocation);
+		LockedEffect->SetWorldLocation(Enemy->GetActorLocation());
 		LockedEffect->Activate();
 
 		GetCharacterMovement()->bOrientRotationToMovement = false;
@@ -216,6 +219,7 @@ void ASlashCharacter::UnlockFromTarget()
 {
 	bLocked = false;
 	CombatTarget = nullptr;
+	// should set Enemy to nullptr as well?
 	bIsEnemy = false;
 
 	//if (Enemy) Enemy->HideLockedEffect();
@@ -389,6 +393,8 @@ void ASlashCharacter::Tick(float DeltaTime)
 		FVector LockedTargetLocation = CombatTarget->GetActorLocation();
 
 		Controller->SetControlRotation(UKismetMathLibrary::FindLookAtRotation(SlashLocation, LockedTargetLocation));
+
+		LockedEffect->SetWorldLocation(FVector{ Enemy->GetActorLocation().X, Enemy->GetActorLocation().Y, Enemy->GetActorLocation().Z + 100 });
 	}
 	else if (Enemy && Enemy->IsDead())
 	{
