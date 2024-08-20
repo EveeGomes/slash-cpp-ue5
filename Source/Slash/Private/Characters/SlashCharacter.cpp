@@ -194,7 +194,6 @@ void ASlashCharacter::LockToTarget()
 		bIsEnemy = true;
 		
 		Enemy = Cast<AEnemy>(CombatTarget);
-
 		if (Enemy) Enemy->ShowLockedEffect();
 
 		GetCharacterMovement()->bOrientRotationToMovement = false;
@@ -378,14 +377,10 @@ void ASlashCharacter::Tick(float DeltaTime)
 
 		Controller->SetControlRotation(UKismetMathLibrary::FindLookAtRotation(SlashLocation, LockedTargetLocation));
 
-		// Check if
-		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Yellow, FString::Printf(TEXT("%d"), IsOutOfRange()));
 		if (IsOutOfRange()) UnlockFromTarget();
-
 	}
 	else if (Enemy && Enemy->IsDead())
 	{
-		/*GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Emerald, TEXT("IsOutOfRange true"));*/
 		UnlockFromTarget();
 	}
 }
