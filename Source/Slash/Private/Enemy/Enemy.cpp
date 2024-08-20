@@ -24,6 +24,8 @@
 
 #include "NiagaraComponent.h"
 
+#include "HUD/LockedTargetComponent.h"
+
 void AEnemy::InitializeEnemy()
 {
 	/** Move the enemy for the first time here (in BeginPlay) */
@@ -31,7 +33,7 @@ void AEnemy::InitializeEnemy()
 	MoveToTarget(PatrolTarget);
 	HideHealthBar();
 	SpawnDefaultWeapon();
-
+	HideLockedEffect();
 }
 
 bool AEnemy::InTargetRange(AActor* Target, double Radius)
@@ -276,15 +278,15 @@ bool AEnemy::IsDead()
 	return EnemyState == EEnemyState::EES_Dead;
 }
 
-//void AEnemy::ShowLockedEffect()
-//{
-//	if (LockedEffect) LockedEffect->Activate();
-//}
-//
-//void AEnemy::HideLockedEffect()
-//{
-//	if (LockedEffect) LockedEffect->Deactivate();
-//}
+void AEnemy::ShowLockedEffect()
+{
+	if (LockedEffectWidget) LockedEffectWidget->SetVisibility(true);
+}
+
+void AEnemy::HideLockedEffect()
+{
+	if (LockedEffectWidget) LockedEffectWidget->SetVisibility(false);
+}
 
 bool AEnemy::IsEngaged()
 {
@@ -489,9 +491,10 @@ AEnemy::AEnemy()
 	PawnSensing->SightRadius = 4000.f;
 	PawnSensing->SetPeripheralVisionAngle(45.f);
 
-	//LockedEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("LockedEffect"));
-	//LockedEffect->SetupAttachment(GetMesh(), FName("Spine1"));
-	//LockedEffect->bAutoActivate = false;
+	LockedEffectWidget = CreateDefaultSubobject<ULockedTargetComponent>(TEXT("LockedEffect"));
+	LockedEffectWidget->SetupAttachment(GetRootComponent());
+	//LockedEffectWidget->SetVisibility(false);
+	//LockedEffectWidget->bAutoActivate = false;
 }
 
 void AEnemy::Tick(float DeltaTime)

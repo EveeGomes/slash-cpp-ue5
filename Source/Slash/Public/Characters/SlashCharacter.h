@@ -22,7 +22,6 @@ class UAnimMontage;
 class AWeapon;
 class UPawnSensingComponent;
 class AEnemy;
-class UNiagaraComponent;
 
 UCLASS()
 class SLASH_API ASlashCharacter : public ABaseCharacter
@@ -180,8 +179,4 @@ public:
 	* Add the niagara system component to the this character and set its location
 	*  to the combat target?
 	*/
-
-	///** Locked effects */
-	UPROPERTY(EditAnywhere)
-	TObjectPtr<UNiagaraComponent> LockedEffect;
 };
