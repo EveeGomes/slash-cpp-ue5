@@ -370,16 +370,14 @@ void ASlashCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (bLocked && Enemy && !Enemy->IsDead()) //CombatTarget)
+	if (bLocked && Enemy && !Enemy->IsDead())
 	{
 		FVector SlashLocation = GetActorLocation();
 		FVector LockedTargetLocation = CombatTarget->GetActorLocation();
 
 		Controller->SetControlRotation(UKismetMathLibrary::FindLookAtRotation(SlashLocation, LockedTargetLocation));
-
-		//if (IsOutOfRange()) UnlockFromTarget();
 	}
-	if ((Enemy && Enemy->IsDead()) || IsOutOfRange()) // if? so it'll pass through it anyways
+	if ((Enemy && Enemy->IsDead()) || IsOutOfRange())
 	{
 		UnlockFromTarget();
 	}
