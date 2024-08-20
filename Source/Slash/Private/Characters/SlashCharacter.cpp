@@ -377,9 +377,9 @@ void ASlashCharacter::Tick(float DeltaTime)
 
 		Controller->SetControlRotation(UKismetMathLibrary::FindLookAtRotation(SlashLocation, LockedTargetLocation));
 
-		if (IsOutOfRange()) UnlockFromTarget();
+		//if (IsOutOfRange()) UnlockFromTarget();
 	}
-	else if (Enemy && Enemy->IsDead())
+	if ((Enemy && Enemy->IsDead()) || IsOutOfRange()) // if? so it'll pass through it anyways
 	{
 		UnlockFromTarget();
 	}
