@@ -174,4 +174,13 @@ public:
 
 	/** Should Slash knows about enemy? */
 	TObjectPtr<AEnemy> Enemy = nullptr;
+
+	/** 
+	* Add the niagara system component to the this character and set its location
+	*  to the combat target?
+	*/
+
+	///** Locked effects */
+	//UPROPERTY(EditAnywhere)
+	//TObjectPtr<UNiagaraComponent> LockedEffect;
 };

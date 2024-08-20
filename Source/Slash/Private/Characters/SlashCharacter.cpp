@@ -193,7 +193,9 @@ void ASlashCharacter::LockToTarget()
 		ActionState = EActionState::EAS_Locked;
 		bLocked = true;
 		bIsEnemy = true;
+		
 		Enemy = Cast<AEnemy>(CombatTarget);
+		if (Enemy) Enemy->ShowLockedEffect();
 
 		GetCharacterMovement()->bOrientRotationToMovement = false;
 		GetCharacterMovement()->bUseControllerDesiredRotation = true;
@@ -212,6 +214,8 @@ void ASlashCharacter::UnlockFromTarget()
 	bLocked = false;
 	CombatTarget = nullptr;
 	bIsEnemy = false;
+
+	if (Enemy) Enemy->HideLockedEffect();
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->bUseControllerDesiredRotation = false;

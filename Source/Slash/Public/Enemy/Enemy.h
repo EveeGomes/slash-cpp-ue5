@@ -19,6 +19,7 @@ class UAnimMontage;
 class UMyHealthBarComponent;
 class UPawnSensingComponent;
 class AWeapon;
+class UNiagaraComponent;
 
 UCLASS()
 class SLASH_API AEnemy : public ABaseCharacter
@@ -159,6 +160,10 @@ protected:
 	UPROPERTY(BlueprintReadOnly) // This specifier only works for non-private variables!
 	EEnemyState EnemyState = EEnemyState::EES_Patrolling;
 
+	/** Locked effects */
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UNiagaraComponent> LockedEffect;
+
 public:
 	AEnemy();
 
@@ -187,4 +192,7 @@ public:
 	/** </IHitInterface> */
 
 	bool IsDead();
+
+	void ShowLockedEffect();
+	void HideLockedEffect();
 };
