@@ -22,6 +22,7 @@ class UAnimMontage;
 class AWeapon;
 class UPawnSensingComponent;
 class AEnemy;
+class UNiagaraComponent;
 
 UCLASS()
 class SLASH_API ASlashCharacter : public ABaseCharacter
@@ -181,6 +182,6 @@ public:
 	*/
 
 	///** Locked effects */
-	//UPROPERTY(EditAnywhere)
-	//TObjectPtr<UNiagaraComponent> LockedEffect;
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UNiagaraComponent> LockedEffect;
 };

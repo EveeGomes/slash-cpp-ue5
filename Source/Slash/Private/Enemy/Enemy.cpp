@@ -276,15 +276,15 @@ bool AEnemy::IsDead()
 	return EnemyState == EEnemyState::EES_Dead;
 }
 
-void AEnemy::ShowLockedEffect()
-{
-	if (LockedEffect) LockedEffect->Activate();
-}
-
-void AEnemy::HideLockedEffect()
-{
-	if (LockedEffect) LockedEffect->Deactivate();
-}
+//void AEnemy::ShowLockedEffect()
+//{
+//	if (LockedEffect) LockedEffect->Activate();
+//}
+//
+//void AEnemy::HideLockedEffect()
+//{
+//	if (LockedEffect) LockedEffect->Deactivate();
+//}
 
 bool AEnemy::IsEngaged()
 {
@@ -489,10 +489,9 @@ AEnemy::AEnemy()
 	PawnSensing->SightRadius = 4000.f;
 	PawnSensing->SetPeripheralVisionAngle(45.f);
 
-	LockedEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("LockedEffect"));
-	LockedEffect->SetupAttachment(GetMesh(), FName("Spine1"));
-	LockedEffect->bAutoActivate = false;
-	//LockedEffect->SetVisibility(false);
+	//LockedEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("LockedEffect"));
+	//LockedEffect->SetupAttachment(GetMesh(), FName("Spine1"));
+	//LockedEffect->bAutoActivate = false;
 }
 
 void AEnemy::Tick(float DeltaTime)

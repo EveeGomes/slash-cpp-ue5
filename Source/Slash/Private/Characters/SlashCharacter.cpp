@@ -42,6 +42,8 @@
 
 #include "Enemy/Enemy.h"
 
+#include "NiagaraComponent.h"
+
 
 void ASlashCharacter::SphereTrace()
 {
@@ -195,7 +197,8 @@ void ASlashCharacter::LockToTarget()
 		bIsEnemy = true;
 		
 		Enemy = Cast<AEnemy>(CombatTarget);
-		if (Enemy) Enemy->ShowLockedEffect();
+		//if (Enemy) Enemy->ShowLockedEffect();
+		LockedEffect->Activate();
 
 		GetCharacterMovement()->bOrientRotationToMovement = false;
 		GetCharacterMovement()->bUseControllerDesiredRotation = true;
@@ -215,7 +218,8 @@ void ASlashCharacter::UnlockFromTarget()
 	CombatTarget = nullptr;
 	bIsEnemy = false;
 
-	if (Enemy) Enemy->HideLockedEffect();
+	//if (Enemy) Enemy->HideLockedEffect();
+	LockedEffect->Deactivate();
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->bUseControllerDesiredRotation = false;
@@ -350,6 +354,10 @@ ASlashCharacter::ASlashCharacter()
 	Eyebrows = CreateDefaultSubobject<UGroomComponent>(TEXT("Eyebrows"));
 	Eyebrows->SetupAttachment(GetMesh());
 	Eyebrows->AttachmentName = FString("head");
+
+	LockedEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("LockedEffect"));
+	LockedEffect->SetupAttachment(GetMesh());
+	LockedEffect->bAutoActivate = false;
 }
 
 void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
