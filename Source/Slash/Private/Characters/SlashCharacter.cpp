@@ -213,7 +213,6 @@ void ASlashCharacter::UnlockFromTarget()
 {
 	bLocked = false;
 	CombatTarget = nullptr;
-	
 	bIsEnemy = false;
 
 	if (Enemy) Enemy->HideLockedEffect();
@@ -278,7 +277,6 @@ void ASlashCharacter::Disarm()
 	PlayEquipMontage(FName("Unequip"));
 	CharacterState = ECharacterState::ECS_Unequipped;
 	ActionState = EActionState::EAS_EquippingWeapon;
-	//bLocked = false;
 	UnlockFromTarget();
 }
 
@@ -373,19 +371,21 @@ void ASlashCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// apparently it's not checking if CombatTarget is valid, because when the enemy dies, it remains locked
 	if (bLocked && Enemy && !Enemy->IsDead()) //CombatTarget)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Yellow, TEXT("bLocked and CombatTarget valid."));
-		// NEED TO CHECK IN THE ABP IF IT NEEDS TO GO TO THE LOCKEDLOCOMOTION!
-		// IT SHOULD ONLY GO IF BLOCKED IS TRUE AND COMBAT TARGET IS ENEMY!!!! <<<<
 		FVector SlashLocation = GetActorLocation();
 		FVector LockedTargetLocation = CombatTarget->GetActorLocation();
 
 		Controller->SetControlRotation(UKismetMathLibrary::FindLookAtRotation(SlashLocation, LockedTargetLocation));
+
+		// Check if
+		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Yellow, FString::Printf(TEXT("%d"), IsOutOfRange()));
+		if (IsOutOfRange()) UnlockFromTarget();
+
 	}
 	else if (Enemy && Enemy->IsDead())
 	{
+		/*GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Emerald, TEXT("IsOutOfRange true"));*/
 		UnlockFromTarget();
 	}
 }
@@ -403,4 +403,19 @@ void ASlashCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* 
 	*  that'll be called from a AM.
 	*/
 	ActionState = EActionState::EAS_HitReaction;
+}
+
+bool ASlashCharacter::IsOutOfRange()
+{
+	if (CombatTarget)
+	{
+		const FVector SlashLocation = GetActorLocation();
+		const FVector LockedTargetLocation = CombatTarget->GetActorLocation();
+
+		float Distance = FVector::Dist(LockedTargetLocation, SlashLocation);
+
+		return Distance > Range;
+	}
+
+	return false;
 }

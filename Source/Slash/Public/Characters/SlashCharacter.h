@@ -156,7 +156,6 @@ public:
 	/** <AActor> */
 	virtual void Tick(float DeltaTime) override;
 
-
 	/** <IHitInterface> */
 	virtual void GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter) override;
 	/** </IHitInterface> */
@@ -175,8 +174,9 @@ public:
 	/** Should Slash knows about enemy? */
 	TObjectPtr<AEnemy> Enemy = nullptr;
 
-	/** 
-	* Add the niagara system component to the this character and set its location
-	*  to the combat target?
-	*/
+	/** Range between Slash and target */
+	UPROPERTY(EditAnywhere)
+	float Range = 1000.f;
+
+	bool IsOutOfRange();
 };

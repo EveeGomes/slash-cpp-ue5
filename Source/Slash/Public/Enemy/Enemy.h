@@ -79,6 +79,7 @@ private:
 	/** Components */
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UMyHealthBarComponent> HealthBarWidget;
+
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UPawnSensingComponent> PawnSensing;
 

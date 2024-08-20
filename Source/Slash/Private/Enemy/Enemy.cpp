@@ -493,8 +493,7 @@ AEnemy::AEnemy()
 
 	LockedEffectWidget = CreateDefaultSubobject<ULockedTargetComponent>(TEXT("LockedEffect"));
 	LockedEffectWidget->SetupAttachment(GetRootComponent());
-	//LockedEffectWidget->SetVisibility(false);
-	//LockedEffectWidget->bAutoActivate = false;
+	LockedEffectWidget->SetWorldLocation(FVector{ GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + 15});
 }
 
 void AEnemy::Tick(float DeltaTime)
