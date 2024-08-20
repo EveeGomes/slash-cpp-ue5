@@ -24,7 +24,16 @@ void USlashAnimInstance::NativeUpdateAnimation(float DeltaTime)
    if (SlashCharacterMovement)
    {
       GroundSpeed = UKismetMathLibrary::VSizeXY(SlashCharacterMovement->Velocity);
+
+      const FVector SlashVelocity = SlashCharacter->GetVelocity();
+      const FRotator SlashRotation = SlashCharacter->GetActorRotation();
+      Direction = CalculateDirection(SlashVelocity, SlashRotation);
+
+      bIsLocked = SlashCharacter->bLocked;
+      bIsEnemy = SlashCharacter->bIsEnemy;
+
       IsFalling = SlashCharacterMovement->IsFalling();
       CharacterState = SlashCharacter->GetCharacterState();
+      ActionState = SlashCharacter->GetActionState();
    }
 }

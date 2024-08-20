@@ -48,6 +48,22 @@ void ABaseCharacter::BeginPlay()
 	
 }
 
+void ABaseCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter)
+{
+	if (IsAlive() && Hitter)
+	{
+		DirectionalHitReact(Hitter->GetActorLocation());
+	}
+	else
+	{
+		// Play death montage using a function that handles the enemy death montage
+		Die();
+	}
+
+	PlayHitSound(ImpactPoint);
+	SpawnHitParticles(ImpactPoint);
+}
+
 void ABaseCharacter::Attack()
 {
 }
@@ -175,6 +191,49 @@ int32 ABaseCharacter::PlayAttackMontage()
 int32 ABaseCharacter::PlayDeathMontage()
 {
 	return PlayRandomMontageSection(DeathMontage, DeathMontageSections);
+}
+
+void ABaseCharacter::StopAttackMontage()
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance)
+	{
+		AnimInstance->Montage_Stop(0.25, AttackMontage);
+	}
+}
+
+FVector ABaseCharacter::GetTranslationWarpTarget()
+{
+	if (CombatTarget == nullptr) return FVector();
+
+	/** 
+	* We need a vector from the CombatTargetLocation to the Location of whoever is attacking (the enemy in this case).
+	* So if we need a vector from A to B, we'll do: B - A.
+	* After doing the subtraction we should normalize it because then we can scale it by the WarpTargetDistance.
+	* 
+	* Now, we can get the actual warp target location by adding TargetToAttacker to the CombatTargetLocation.
+	* That's because CombatTargetLocation is the vector from the origin to the combat target, and if we add 
+	*  TargetToAttacker then the result is the vector from the origin to that space we want (at the combat
+	*  target but pushed toward the enemy by WarpTargetDistance). Then we simply return that value.
+	*/
+	const FVector CombatTargetLocation = CombatTarget->GetActorLocation();
+	const FVector Location = GetActorLocation();
+
+	// TargetToMe
+	FVector TargetToAttacker = (Location - CombatTargetLocation).GetSafeNormal();
+	// After normalizing, scale it:
+	TargetToAttacker *= WarpTargetDistance;
+
+	return CombatTargetLocation + TargetToAttacker;
+}
+
+FVector ABaseCharacter::GetRotationWarpTarget()
+{
+	if (CombatTarget)
+	{
+		return CombatTarget->GetActorLocation();
+	}
+	return FVector();
 }
 
 void ABaseCharacter::AttackEnd()

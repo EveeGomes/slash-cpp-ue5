@@ -28,6 +28,51 @@
 /** For using Animation Montage in Attack() */
 #include "Animation/AnimMontage.h"
 
+/** Pawn Sensing component */
+#include "Perception/PawnSensingComponent.h"
+
+/** Check if it has detected the combat target */
+#include "Slash/DebugMacros.h"
+
+/** To rotate the camera to Combat Tagert */
+#include "Kismet/KismetMathLibrary.h"
+
+/** To use SphereTraceMultiObjects */
+#include "Kismet/KismetSystemLibrary.h"
+
+#include "Enemy/Enemy.h"
+
+void ASlashCharacter::SphereTrace()
+{
+	const FVector SlashLocation = GetActorLocation();
+	FVector CameraFwd = ViewCamera->GetForwardVector(); // a bit different from YT
+	FVector End = (CameraFwd * 500.f) + SlashLocation;
+
+	// Objects to trace against
+	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
+	ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_Pawn)); // WorlDynamic or Pawn?
+
+	TArray<AActor*> ActorsToIgnore;
+	FHitResult HitActor;
+
+	UKismetSystemLibrary::SphereTraceSingleForObjects(
+		this,
+		SlashLocation,
+		End,
+		125.f,
+		ObjectTypes,
+		false,
+		ActorsToIgnore,
+		EDrawDebugTrace::ForDuration,
+		HitActor,
+		true
+	);
+	// add the hit actor to the ActorsToIgnore? Or it's not necessary as this function is called only 
+	//  when TAB is pressed?
+
+	CombatTarget = HitActor.GetActor();
+}
+
 void ASlashCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -48,7 +93,7 @@ void ASlashCharacter::BeginPlay()
 
 void ASlashCharacter::Move(const FInputActionValue& Value)
 {
-	if (ActionState != EActionState::EAS_Unoccupied) return;
+	if (ActionState > EActionState::EAS_Unoccupied) return;
 
 	const FVector2D MovementVector = Value.Get<FVector2D>();
 
@@ -113,6 +158,71 @@ void ASlashCharacter::Attack()
 	}
 }
 
+void ASlashCharacter::LockTarget()
+{
+	// && ActionState != EActionState::EAS_Locked // it's not already locked?
+	if (CanLock())
+	{
+		// Engage lock
+		SphereTrace();
+		LockToTarget();
+	}
+	else
+	{
+		// Disangaged lock
+		UnlockFromTarget();
+		// which ActionState to return to? Unoccupied is the default state.
+		ActionState = EActionState::EAS_Unoccupied;
+	}
+
+	/** 
+	* TODO:
+	* [x] Only allow this function to be called if the pawn is in sight's radius!
+	* [x] Lock camera rotation to the target's movement instead of the mouse
+	* [] Use a widget or niagara system to show it's targeted?
+	* [] Check slash states?
+	*/
+}
+
+void ASlashCharacter::LockToTarget()
+{
+	if (CombatTarget && CombatTarget->ActorHasTag(FName("Enemy")))
+	{
+		// add a state so it can be used in transition rule from unlocked to locked locomotion?
+		ActionState = EActionState::EAS_Locked;
+		bLocked = true;
+		bIsEnemy = true;
+		
+		Enemy = Cast<AEnemy>(CombatTarget);
+		if (Enemy) Enemy->ShowLockedEffect();
+
+		GetCharacterMovement()->bOrientRotationToMovement = false;
+		GetCharacterMovement()->bUseControllerDesiredRotation = true;
+
+		Controller->SetIgnoreLookInput(bLocked);
+	}
+}
+
+bool ASlashCharacter::CanLock()
+{
+	return !bLocked && CharacterState > ECharacterState::ECS_Unequipped;
+}
+
+void ASlashCharacter::UnlockFromTarget()
+{
+	bLocked = false;
+	CombatTarget = nullptr;
+	bIsEnemy = false;
+
+	if (Enemy) Enemy->HideLockedEffect();
+	// should set Enemy to nullptr as well?
+
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->bUseControllerDesiredRotation = false;
+
+	Controller->ResetIgnoreLookInput();
+}
+
 void ASlashCharacter::EquipWeapon(AWeapon* Weapon)
 {
 	if (Weapon)
@@ -131,8 +241,9 @@ void ASlashCharacter::AttackEnd()
 
 bool ASlashCharacter::CanAttack()
 {
-	return ActionState == EActionState::EAS_Unoccupied &&
-	    CharacterState != ECharacterState::ECS_Unequipped;
+	return (ActionState == EActionState::EAS_Unoccupied || 
+			 ActionState == EActionState::EAS_Locked) &&
+			 CharacterState != ECharacterState::ECS_Unequipped;
 }
 
 void ASlashCharacter::PlayEquipMontage(FName SectionName)
@@ -147,15 +258,17 @@ void ASlashCharacter::PlayEquipMontage(FName SectionName)
 
 bool ASlashCharacter::CanDisarm()
 {
-	return ActionState == EActionState::EAS_Unoccupied && 
-		 CharacterState != ECharacterState::ECS_Unequipped;
+	return (ActionState == EActionState::EAS_Unoccupied ||
+			 ActionState == EActionState::EAS_Locked) &&
+			 CharacterState != ECharacterState::ECS_Unequipped;
 }
 
 bool ASlashCharacter::CanArm()
 {
-	return ActionState == EActionState::EAS_Unoccupied &&
-		 CharacterState == ECharacterState::ECS_Unequipped &&
-		 EquippedWeapon; // check if it's not a null pointer (meaning we had gotten a weapon already)
+	return (ActionState == EActionState::EAS_Unoccupied || 
+			 ActionState == EActionState::EAS_Locked) &&
+			 CharacterState == ECharacterState::ECS_Unequipped &&
+			 EquippedWeapon; // check if it's not a null pointer (meaning we had gotten a weapon already)
 }
 
 void ASlashCharacter::Disarm()
@@ -163,6 +276,7 @@ void ASlashCharacter::Disarm()
 	PlayEquipMontage(FName("Unequip"));
 	CharacterState = ECharacterState::ECS_Unequipped;
 	ActionState = EActionState::EAS_EquippingWeapon;
+	UnlockFromTarget();
 }
 
 void ASlashCharacter::Arm()
@@ -193,9 +307,14 @@ void ASlashCharacter::FinishEquipping()
 	ActionState = EActionState::EAS_Unoccupied;
 }
 
+void ASlashCharacter::HitReactEnd()
+{
+	ActionState = EActionState::EAS_Unoccupied;
+}
+
 ASlashCharacter::ASlashCharacter()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	/** Movement */
 	bUseControllerRotationPitch = false;
@@ -215,6 +334,8 @@ ASlashCharacter::ASlashCharacter()
 	/** Spring arm and camera */
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(GetRootComponent());
+	SpringArm->SetRelativeLocation(FVector(0, 0, 100));
+	SpringArm->SetRelativeRotation(FRotator(-20, 0, 0));
 	SpringArm->TargetArmLength = 300.f;
 
 	ViewCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
@@ -241,11 +362,53 @@ void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Jump);
 		EnhancedInputComponent->BindAction(EquipAction, ETriggerEvent::Triggered, this, &ASlashCharacter::EKeyPressed);
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Attack);
+		EnhancedInputComponent->BindAction(LockOnTarget, ETriggerEvent::Started, this, &ASlashCharacter::LockTarget);
 	}
 }
 
-void ASlashCharacter::GetHit_Implementation(const FVector& ImpactPoint)
+void ASlashCharacter::Tick(float DeltaTime)
 {
-	PlayHitSound(ImpactPoint);
-	SpawnHitParticles(ImpactPoint);
+	Super::Tick(DeltaTime);
+
+	if (bLocked && Enemy && !Enemy->IsDead())
+	{
+		FVector SlashLocation = GetActorLocation();
+		FVector LockedTargetLocation = CombatTarget->GetActorLocation();
+
+		Controller->SetControlRotation(UKismetMathLibrary::FindLookAtRotation(SlashLocation, LockedTargetLocation));
+	}
+	if ((Enemy && Enemy->IsDead()) || IsOutOfRange())
+	{
+		UnlockFromTarget();
+	}
+}
+
+void ASlashCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter)
+{
+	Super::GetHit_Implementation(ImpactPoint, Hitter);
+	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	/** 
+	* The player shouldn't be able to attack while playing the Hit Reaction, ie while in HitReaction state!
+	* So when it call Attack() and check CanAttack, the states won't allow the character to attack :)
+	* 
+	* We also need a way to change from HitReaction state. For that we'll use a BlueprintCallable function
+	*  that'll be called from a AM.
+	*/
+	ActionState = EActionState::EAS_HitReaction;
+}
+
+bool ASlashCharacter::IsOutOfRange()
+{
+	if (CombatTarget)
+	{
+		const FVector SlashLocation = GetActorLocation();
+		const FVector LockedTargetLocation = CombatTarget->GetActorLocation();
+
+		float Distance = FVector::Dist(LockedTargetLocation, SlashLocation);
+
+		return Distance > Range;
+	}
+
+	return false;
 }

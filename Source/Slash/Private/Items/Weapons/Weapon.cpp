@@ -155,7 +155,7 @@ void AWeapon::ExecuteGetHit(FHitResult& BoxHit)
       * @UObject* the object to execute this event on
       * @const FVector& the GetHit original parameter
       */
-      HitInterface->Execute_GetHit(BoxHit.GetActor(), BoxHit.ImpactPoint);
+      HitInterface->Execute_GetHit(BoxHit.GetActor(), BoxHit.ImpactPoint, GetOwner());
    }
 }
 

@@ -74,6 +74,10 @@ protected:
 	virtual void BeginPlay() override;
 	/** </AActor> */
 
+	/** <IHitInterface> */
+	virtual void GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter) override;
+	/** </IHitInterface> */
+
 	/** Combat */
 	virtual void Attack();
 	virtual bool CanAttack();
@@ -85,6 +89,7 @@ protected:
 	void SpawnHitParticles(const FVector& ImpactPoint);
 	void DisableCapsule();
 
+	/** Montage */
 	void PlayHitReactMontage(const FName& SectionName);
 	// Choose a section name from AttackMontageSections array
 	virtual int32 PlayAttackMontage();
@@ -95,6 +100,21 @@ protected:
 	*  as well just in case we need it later.
 	*/
 	virtual int32 PlayDeathMontage();
+	void StopAttackMontage();
+
+	/** 
+	* The enemy will stand a little before from the combat target location, allowing some sort of
+	*  distance between the warp target location and the combat target.
+	*/
+	UFUNCTION(BlueprintCallable)
+	FVector GetTranslationWarpTarget();
+
+	/** 
+	* This function doesn't return a rotator because we need the location the enemy is going to
+	*  rotate to face! Therefore if it's a location we'll need an FVector.
+	*/
+	UFUNCTION(BlueprintCallable)
+	FVector GetRotationWarpTarget();
 
 	UFUNCTION(BlueprintCallable)
 	virtual void AttackEnd();
@@ -110,6 +130,14 @@ protected:
 	/** Our custom Attribute Component */
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UAttributeComponent> Attributes;
+
+	// Pointer to store what has hit the enemy
+	UPROPERTY(BlueprintReadOnly, Category = "Combat")
+	TObjectPtr<AActor> CombatTarget;
+
+	// Enemy goes to the warp target, but stays x units away (75 by default)
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	double WarpTargetDistance = 75.f;
 
 public:
 	ABaseCharacter();

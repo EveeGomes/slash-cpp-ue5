@@ -20,6 +20,8 @@ class UGroomComponent;
 class AItem;
 class UAnimMontage;
 class AWeapon;
+class UPawnSensingComponent;
+class AEnemy;
 
 UCLASS()
 class SLASH_API ASlashCharacter : public ABaseCharacter
@@ -27,6 +29,14 @@ class SLASH_API ASlashCharacter : public ABaseCharacter
 	GENERATED_BODY()
 
 private:
+
+	/** 
+	* Create a Sphere box trace for objects function that uses the character location and the direction
+	*  to which the camera is facing. So it'll detect enemies that are in front of this character!
+	* This will be called in response to lock the enemy, ie bLocked = true
+	*/
+	void SphereTrace();
+
 	/** 
 	* Components
 	*/
@@ -41,6 +51,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UGroomComponent> Eyebrows;
+
+	//UPROPERTY(VisibleAnywhere)
+	//TObjectPtr<UPawnSensingComponent> PawnSensing;
 
 	/** 
 	* Items
@@ -71,6 +84,13 @@ protected:
 	virtual void Jump() override;
 	void EKeyPressed();
 	virtual void Attack() override;
+	void LockTarget();
+
+	void LockToTarget();
+
+	bool CanLock();
+
+	void UnlockFromTarget();
 
 	/** Combat */
 	void EquipWeapon(AWeapon* Weapon);
@@ -94,6 +114,9 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void FinishEquipping();
+
+	UFUNCTION(BlueprintCallable)
+	void HitReactEnd();
 
 	/** Fix Jump animation after doing IK */
 	//UPROPERTY(BlueprintReadOnly)
@@ -122,12 +145,19 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputAction> AttackAction;
 
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> LockOnTarget;
+
 public:
+
 	ASlashCharacter();
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	
+	/** <AActor> */
+	virtual void Tick(float DeltaTime) override;
 
 	/** <IHitInterface> */
-	virtual void GetHit_Implementation(const FVector& ImpactPoint) override;
+	virtual void GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter) override;
 	/** </IHitInterface> */
 
 	/** 
@@ -135,4 +165,18 @@ public:
 	*/
 	FORCEINLINE void SetOverlappingItem(AItem* Item) { OverlappingItem = Item; }
 	FORCEINLINE ECharacterState GetCharacterState() const { return CharacterState; }
+	FORCEINLINE EActionState GetActionState() const { return ActionState; }
+
+	/** Used in LockTarget and in SlashAnimInstance */
+	bool bLocked = false;
+	bool bIsEnemy = false;
+
+	/** Should Slash knows about enemy? */
+	TObjectPtr<AEnemy> Enemy = nullptr;
+
+	/** Range between Slash and target */
+	UPROPERTY(EditAnywhere)
+	float Range = 1000.f;
+
+	bool IsOutOfRange();
 };

@@ -22,6 +22,10 @@
 /** Attach the weapon in BeginPlay() */
 #include "Items/Weapons/Weapon.h"
 
+#include "NiagaraComponent.h"
+
+#include "HUD/LockedTargetComponent.h"
+
 void AEnemy::InitializeEnemy()
 {
 	/** Move the enemy for the first time here (in BeginPlay) */
@@ -29,6 +33,7 @@ void AEnemy::InitializeEnemy()
 	MoveToTarget(PatrolTarget);
 	HideHealthBar();
 	SpawnDefaultWeapon();
+	HideLockedEffect();
 }
 
 bool AEnemy::InTargetRange(AActor* Target, double Radius)
@@ -208,12 +213,12 @@ void AEnemy::PawnSeen(APawn* SeenPawn)
 {
 	/**
 	* Create a local bool in order to refactor a code where we can join if statements,
-	*  like in this case where we don't want to continue unless SeenPawn->ActorHasTag(FName("SlashCharacter")) returns true
-	*  and then EnemyState != EEnemyState::EES_Attacking returns true.
-	* The bool name should describe what's gonna happen if both conditions are true. In the bottom line, we want to chase
-	*  the target should the conditions return true!
-	* EnemyState < EEnemyState::EES_Attacking we'll be checking if it's less than Attacking or Engaged, since we shouldn't
-	*  be in either state.
+	*  like in this case where we don't want to continue unless SeenPawn->ActorHasTag(FName("SlashCharacter")) 
+	*  returns true and then EnemyState != EEnemyState::EES_Attacking returns true.
+	* The bool name should describe what's gonna happen if both conditions are true. In the bottom line, 
+	*  we want to chase the target should the conditions return true!
+	* EnemyState < EEnemyState::EES_Attacking we'll be checking if it's less than Attacking or Engaged, 
+	*  since we shouldn't be in either state.
 	* Now we just check a single condition using bShouldChaseTarget.
 	*/
 	const bool bShouldChaseTarget =
@@ -271,6 +276,16 @@ bool AEnemy::IsAttacking()
 bool AEnemy::IsDead()
 {
 	return EnemyState == EEnemyState::EES_Dead;
+}
+
+void AEnemy::ShowLockedEffect()
+{
+	if (LockedEffectWidget) LockedEffectWidget->SetVisibility(true);
+}
+
+void AEnemy::HideLockedEffect()
+{
+	if (LockedEffectWidget) LockedEffectWidget->SetVisibility(false);
 }
 
 bool AEnemy::IsEngaged()
@@ -349,6 +364,7 @@ void AEnemy::Die()
 	HideHealthBar();
 	DisableCapsule();
 	SetLifeSpan(DeathLifeSpan);
+	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 int32 AEnemy::PlayDeathMontage()
@@ -474,6 +490,10 @@ AEnemy::AEnemy()
 	PawnSensing = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensing"));
 	PawnSensing->SightRadius = 4000.f;
 	PawnSensing->SetPeripheralVisionAngle(45.f);
+
+	LockedEffectWidget = CreateDefaultSubobject<ULockedTargetComponent>(TEXT("LockedEffect"));
+	LockedEffectWidget->SetupAttachment(GetRootComponent());
+	LockedEffectWidget->SetWorldLocation(FVector{ GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + 15});
 }
 
 void AEnemy::Tick(float DeltaTime)
@@ -505,7 +525,15 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 {
 	HandleDamage(DamageAmount);
 	CombatTarget = EventInstigator->GetPawn();
-	ChaseTarget();
+
+	if (IsInsideAttackRadius())
+	{
+		EnemyState = EEnemyState::EES_Attacking;
+	}
+	else if (IsOutsideAttackRadius())
+	{
+		ChaseTarget();
+	}
 
 	return DamageAmount;
 }
@@ -518,23 +546,13 @@ void AEnemy::Destroyed()
 	}
 }
 
-void AEnemy::GetHit_Implementation(const FVector& ImpactPoint)
+void AEnemy::GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter)
 {
-	ShowHealthBar();
-	/** 
-	* Since we'll need to check Attributes in both children classes, we create a non-virtual function
-	*  IsAlive() for that. 
-	*/
-	if (IsAlive())
-	{
-		DirectionalHitReact(ImpactPoint);
-	}
-	else
-	{
-		// Play death montage using a function that handles the enemy death montage
-		Die();
-	}
+	Super::GetHit_Implementation(ImpactPoint, Hitter);
+	if (!IsDead()) ShowHealthBar();
+	ClearPatrolTimer();
+	ClearAttackTimer();
+	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	PlayHitSound(ImpactPoint);
-	SpawnHitParticles(ImpactPoint);
+	StopAttackMontage();
 }

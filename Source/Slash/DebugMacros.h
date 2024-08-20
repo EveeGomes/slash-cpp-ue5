@@ -3,7 +3,7 @@
 
 #define DRAW_SPHERE(Location) if (GetWorld()) \
    { \
-      DrawDebugSphere(GetWorld(), Location, 25.f, 12, FColor::Red); \
+      DrawDebugSphere(GetWorld(), Location, 25.f, 12, FColor::Red, false, 3.f); \
    }
 
 #define DRAW_SPHERE_COLOR(Location, Color) if (GetWorld()) \

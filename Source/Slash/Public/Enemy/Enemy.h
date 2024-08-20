@@ -19,6 +19,8 @@ class UAnimMontage;
 class UMyHealthBarComponent;
 class UPawnSensingComponent;
 class AWeapon;
+class UNiagaraComponent;
+class ULockedTargetComponent;
 
 UCLASS()
 class SLASH_API AEnemy : public ABaseCharacter
@@ -57,7 +59,6 @@ private:
 	/** Checking enemy states */
 	bool IsChasing();
 	bool IsAttacking();
-	bool IsDead();
 	bool IsEngaged();
 
 	/** Idle Patrol Animation */
@@ -78,16 +79,13 @@ private:
 	/** Components */
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UMyHealthBarComponent> HealthBarWidget;
+
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UPawnSensingComponent> PawnSensing;
 
 	// Spawn a weapon
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AWeapon> WeaponClass;
-
-	// Pointer to store what has hit the enemy
-	UPROPERTY() // ensures the pointer is set to null
-	TObjectPtr<AActor> CombatTarget;
 
 	// Threshold to check Distance To Target
 	UPROPERTY(EditAnywhere)
@@ -164,6 +162,10 @@ protected:
 	UPROPERTY(BlueprintReadOnly) // This specifier only works for non-private variables!
 	EEnemyState EnemyState = EEnemyState::EES_Patrolling;
 
+	/** Locked effects */
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<ULockedTargetComponent> LockedEffectWidget;
+
 public:
 	AEnemy();
 
@@ -188,6 +190,11 @@ public:
 	/** </AActor> */
 
 	/** <IHitInterface> */
-	virtual void GetHit_Implementation(const FVector& ImpactPoint) override;
+	virtual void GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter) override;
 	/** </IHitInterface> */
+
+	bool IsDead();
+
+	void ShowLockedEffect();
+	void HideLockedEffect();
 };
