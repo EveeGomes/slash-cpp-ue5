@@ -151,10 +151,19 @@ protected:
 public:
 
 	ASlashCharacter();
+	/** <APawn> */
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	
+	/** </APawn> */
+
 	/** <AActor> */
 	virtual void Tick(float DeltaTime) override;
+	virtual float TakeDamage(
+		float DamageAmount,
+		struct FDamageEvent const& DamageEvent,
+		class AController* EventInstigator,
+		AActor* DamageCauser
+	) override;
+	/** </AActor> */
 
 	/** <IHitInterface> */
 	virtual void GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter) override;
