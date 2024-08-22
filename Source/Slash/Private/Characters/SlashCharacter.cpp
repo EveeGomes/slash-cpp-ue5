@@ -42,10 +42,40 @@
 
 #include "Enemy/Enemy.h"
 
-/** Used in BeginPlay() to access and modify the HUD */
+/** Used in InitializeSlashOverlay() to access and modify the HUD */
 #include "HUD/SlashHUD.h"
 #include "HUD/SlashOverlay.h"
 #include "Components/AttributeComponent.h"
+
+void ASlashCharacter::InitializeSlashOverlay(APlayerController* PlayerController)
+{
+	ASlashHUD* SlashHUD = Cast<ASlashHUD>(PlayerController->GetHUD());
+	if (SlashHUD)
+	{
+		SlashOverlay = SlashHUD->GetSlashOverlay();
+		if (SlashOverlay && Attributes)
+		{
+			SlashOverlay->SetHealthPercent(Attributes->GetHealthPercent());
+			// hardcoding until we add it to Attributes
+			SlashOverlay->SetStaminaPercent(1.f);
+			SlashOverlay->SetGold(0);
+			SlashOverlay->SetSouls(0);
+		}
+	}
+}
+
+void ASlashCharacter::SetHUDHealth()
+{
+	if (SlashOverlay && Attributes)
+	{
+		SlashOverlay->SetHealthPercent(Attributes->GetHealthPercent());
+	}
+}
+
+bool ASlashCharacter::CanJump()
+{
+	return ActionState <= EActionState::EAS_Unoccupied;
+}
 
 void ASlashCharacter::SphereTrace()
 {
@@ -100,23 +130,6 @@ void ASlashCharacter::BeginPlay()
 
 }
 
-void ASlashCharacter::InitializeSlashOverlay(APlayerController* PlayerController)
-{
-	ASlashHUD* SlashHUD = Cast<ASlashHUD>(PlayerController->GetHUD());
-	if (SlashHUD)
-	{
-		SlashOverlay = SlashHUD->GetSlashOverlay();
-		if (SlashOverlay && Attributes)
-		{
-			SlashOverlay->SetHealthPercent(Attributes->GetHealthPercent());
-			// hardcoding until we add it to Attributes
-			SlashOverlay->SetStaminaPercent(1.f);
-			SlashOverlay->SetGold(0);
-			SlashOverlay->SetSouls(0);
-		}
-	}
-}
-
 void ASlashCharacter::Move(const FInputActionValue& Value)
 {
 	if (ActionState > EActionState::EAS_Unoccupied) return;
@@ -143,14 +156,10 @@ void ASlashCharacter::Look(const FInputActionValue& Value)
 
 void ASlashCharacter::Jump()
 {
-	if (ActionState == EActionState::EAS_Attacking) return;
-	Super::Jump();
-
-	//if (bCanJump)
-	//{
-	//	Super::Jump();
-	//	bCanJump = false;
-	//}
+	if (CanJump())
+	{
+		Super::Jump();
+	}
 }
 
 void ASlashCharacter::EKeyPressed()
@@ -412,6 +421,8 @@ void ASlashCharacter::Tick(float DeltaTime)
 float ASlashCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	HandleDamage(DamageAmount);
+	SetHUDHealth();
+
 	return DamageAmount;
 }
 

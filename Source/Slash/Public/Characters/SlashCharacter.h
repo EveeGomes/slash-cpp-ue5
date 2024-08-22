@@ -30,6 +30,8 @@ class SLASH_API ASlashCharacter : public ABaseCharacter
 	GENERATED_BODY()
 
 private:
+	void InitializeSlashOverlay(APlayerController* PlayerController);
+	void SetHUDHealth();
 
 	/** 
 	* Create a Sphere box trace for objects function that uses the character location and the direction
@@ -37,6 +39,8 @@ private:
 	* This will be called in response to lock the enemy, ie bLocked = true
 	*/
 	void SphereTrace();
+
+	bool CanJump();
 
 	/** 
 	* Components
@@ -82,16 +86,14 @@ private:
 protected:
 	virtual void BeginPlay() override;
 
-	void InitializeSlashOverlay(APlayerController* PlayerController);
-
 	/** Callbacks for input */
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	virtual void Jump() override;
+
 	void EKeyPressed();
 	virtual void Attack() override;
 	void LockTarget();
-
 	void LockToTarget();
 
 	bool CanLock();
@@ -169,6 +171,7 @@ public:
 		class AController* EventInstigator,
 		AActor* DamageCauser
 	) override;
+
 	/** </AActor> */
 
 	/** <IHitInterface> */
