@@ -149,4 +149,6 @@ public:
 	ABaseCharacter();
 	virtual void Tick(float DeltaTime) override;
 
+	/** Getters and Setters */
+	FORCEINLINE TEnumAsByte<EDeathPose> GetDeathPose() const { return DeathPose; }
 };
