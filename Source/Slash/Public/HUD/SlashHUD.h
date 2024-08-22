@@ -20,4 +20,10 @@ class SLASH_API ASlashHUD : public AHUD
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Slash")
 	TSubclassOf<USlashOverlay> SlashOverlayClass;
+
+	UPROPERTY()
+	TObjectPtr<USlashOverlay> SlashOverlay;
+
+protected:
+	virtual void BeginPlay() override;
 };
