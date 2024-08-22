@@ -23,10 +23,16 @@ void USlashOverlay::SetStaminaPercent(float Percent)
 
 void USlashOverlay::SetGold(int32 Gold)
 {
-   if (GoldText) GoldText->SetText(FText::FromString(FString::Printf(TEXT("%d"), Gold)));
+   if (GoldText)
+   {
+      GoldText->SetText(FText::FromString(FString::Printf(TEXT("%d"), Gold)));
+   }
 }
 
 void USlashOverlay::SetSouls(int32 Souls)
 {
-   if (SoulsText) SoulsText->SetText(FText::FromString(FString::Printf(TEXT("%d"), Souls)));
+   if (SoulsText)
+   {
+      SoulsText->SetText(FText::FromString(FString::Printf(TEXT("%d"), Souls)));
+   }
 }

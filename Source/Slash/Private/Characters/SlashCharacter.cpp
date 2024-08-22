@@ -42,6 +42,11 @@
 
 #include "Enemy/Enemy.h"
 
+/** Used in BeginPlay() to access and modify the HUD */
+#include "HUD/SlashHUD.h"
+#include "HUD/SlashOverlay.h"
+#include "Components/AttributeComponent.h"
+
 void ASlashCharacter::SphereTrace()
 {
 	const FVector SlashLocation = GetActorLocation();
@@ -77,11 +82,30 @@ void ASlashCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
+	APlayerController* PlayerController = Cast<APlayerController>(GetController()); //Controller);
+	if (PlayerController)
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
 			Subsystem->AddMappingContext(SlashContext, 0);
+		}
+
+		ASlashHUD* SlashHUD = Cast<ASlashHUD>(PlayerController->GetHUD());
+		if (SlashHUD)
+		{
+			USlashOverlay* SlashOverlay = SlashHUD->GetSlashOverlay();
+			if (SlashOverlay && Attributes)
+			{
+				/** 
+				* The @Percent is in the form of an actual fraction between 0 and 1. That's because
+				*  the Percent variable on ProgressBars is normalized between 0 and 1.
+				*/
+				SlashOverlay->SetHealthPercent(Attributes->GetHealthPercent());
+				// hardcoding until we add it to Attributes
+				SlashOverlay->SetStaminaPercent(1.f);
+				SlashOverlay->SetGold(0);
+				SlashOverlay->SetSouls(0);
+			}
 		}
 	}
 
@@ -89,6 +113,22 @@ void ASlashCharacter::BeginPlay()
 	* Use the Tags variable from the Character and Add method to add a tag which can get any name we want.
 	*/
 	Tags.Add(FName("EngageableTarget"));
+
+	/** 
+	* In order to get access to the Hud currently used by the game, we have to get it through the
+	*  player controller.
+	* The Character class has a variable Controller which we can get it from GetController, but that
+	*  variable can't get the hud. So we need to cast it to a PlayerController. That's possible because
+	*  our Character is actually possessed by a PlayerController, but GetController returns a Controller;
+	*  ie although GetController returns a AController ptr, that ptr points to a PlayerController object.
+	* All the above has already been done when we added the mapping context.
+	* 
+	* As for the GetHUD() returning a ptr to AHUD, we have the same situation as in PlayerController 
+	*  and Controller. Although it returns a AHUD ptr, it points to a SlashHUD object therefore we can
+	*  cast!
+	* Then, we can get access to the SlashOverlay widget since SlashHUD has a pointer variable of that
+	*  type. Since it's private, we need a getter to have access to it.
+	*/
 }
 
 void ASlashCharacter::Move(const FInputActionValue& Value)
