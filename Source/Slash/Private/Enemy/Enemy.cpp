@@ -368,10 +368,11 @@ void AEnemy::Die()
 
 void AEnemy::Attack()
 {
+	Super::Attack();
+	if (CombatTarget == nullptr) return;
+
 	/** Set the state to Engaged as it plays the attack montage */
 	EnemyState = EEnemyState::EES_Engaged;
-	Super::Attack();
-
 	PlayAttackMontage();
 }
 

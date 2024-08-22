@@ -66,6 +66,10 @@ void ABaseCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* H
 
 void ABaseCharacter::Attack()
 {
+	if (CombatTarget && CombatTarget->ActorHasTag(FName("Dead")))
+	{
+		CombatTarget = nullptr;
+	}
 }
 
 bool ABaseCharacter::CanAttack()
@@ -80,6 +84,12 @@ bool ABaseCharacter::IsAlive()
 
 void ABaseCharacter::Die()
 {
+	/** 
+	* As soon as BaseCharacter dies, it'll have a Dead tag.
+	* That way in Attack we can check before attacking whether the other character is alive or not.
+	* If it's alive, CombatTarget should be set to null.
+	*/
+	Tags.Add(FName("Dead"));
 	PlayDeathMontage();
 }
 
