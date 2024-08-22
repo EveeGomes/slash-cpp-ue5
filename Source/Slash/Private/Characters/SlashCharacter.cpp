@@ -286,6 +286,13 @@ bool ASlashCharacter::CanAttack()
 			 CharacterState != ECharacterState::ECS_Unequipped;
 }
 
+void ASlashCharacter::Die()
+{
+	Super::Die();
+
+	ActionState = EActionState::EAS_Dead;
+}
+
 void ASlashCharacter::PlayEquipMontage(FName SectionName)
 {
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();

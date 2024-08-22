@@ -155,9 +155,6 @@ protected:
 	/** </ABaseCharacter> */
 
 	/** States */
-	UPROPERTY(BlueprintReadOnly) // Only access what the variable is. No need to expose to the details panel either
-	TEnumAsByte<EDeathPose> DeathPose;
-
 	UPROPERTY(BlueprintReadOnly) // This specifier only works for non-private variables!
 	EEnemyState EnemyState = EEnemyState::EES_Patrolling;
 

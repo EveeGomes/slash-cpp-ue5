@@ -106,6 +106,7 @@ protected:
 	void EquipWeapon(AWeapon* Weapon);
 	virtual void AttackEnd() override;
 	virtual bool CanAttack() override;
+	virtual void Die() override;
 
 	/** Equip / Unequip */
 	void PlayEquipMontage(FName SectionName);
