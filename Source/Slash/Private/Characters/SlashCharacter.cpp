@@ -443,14 +443,19 @@ void ASlashCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* 
 	Super::GetHit_Implementation(ImpactPoint, Hitter);
 	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	/** 
+	// Only change the state if the character isn't dead
+	if (Attributes && Attributes->GetHealthPercent() > 0.f)
+	{
+	/**
 	* The player shouldn't be able to attack while playing the Hit Reaction, ie while in HitReaction state!
 	* So when it call Attack() and check CanAttack, the states won't allow the character to attack :)
-	* 
+	*
 	* We also need a way to change from HitReaction state. For that we'll use a BlueprintCallable function
 	*  that'll be called from a AM.
 	*/
-	ActionState = EActionState::EAS_HitReaction;
+		ActionState = EActionState::EAS_HitReaction;
+	}
+	
 }
 
 bool ASlashCharacter::IsOutOfRange()
