@@ -147,7 +147,6 @@ protected:
 
 	/** <ABaseCharacter> */
 	virtual void Die() override;
-	virtual int32 PlayDeathMontage() override;
 	/** Attack */
 	virtual void Attack() override;
 	virtual bool CanAttack() override;

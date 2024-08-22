@@ -13,6 +13,9 @@
 #include "GameFramework/Character.h"
 #include "Interfaces/HitInterface.h"
 
+/** Use DeathPose states */
+#include "Characters/CharacterTypes.h"
+
 #include "BaseCharacter.generated.h"
 
 /** Forward declaration */
@@ -138,6 +141,9 @@ protected:
 	// Enemy goes to the warp target, but stays x units away (75 by default)
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	double WarpTargetDistance = 75.f;
+
+	UPROPERTY(BlueprintReadOnly) // Only access what the variable is. No need to expose to the details panel either
+	TEnumAsByte<EDeathPose> DeathPose;
 
 public:
 	ABaseCharacter();
