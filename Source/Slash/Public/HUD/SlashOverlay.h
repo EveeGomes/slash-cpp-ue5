@@ -27,7 +27,7 @@ private:
 	TObjectPtr<UProgressBar> StaminaProgressBar;
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UTextBlock> CoinText;
+	TObjectPtr<UTextBlock> GoldText; // change to GoldText in WBP too!!!!!!
 	
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> SoulsText;
@@ -36,4 +36,6 @@ public:
 	/** Setters and Getters */
 	void SetHealthPercent(float Percent);
 	void SetStaminaPercent(float Percent);
+	void SetGold(int32 Gold);
+	void SetSouls(int32 Souls);
 };
