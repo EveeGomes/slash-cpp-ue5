@@ -80,6 +80,7 @@ bool ABaseCharacter::IsAlive()
 
 void ABaseCharacter::Die()
 {
+	PlayDeathMontage();
 }
 
 void ABaseCharacter::DirectionalHitReact(const FVector& ImpactPoint)

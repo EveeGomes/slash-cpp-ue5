@@ -356,10 +356,9 @@ void AEnemy::BeginPlay()
 
 void AEnemy::Die()
 {
-	// although it's not a scoped enum anymore we can still reference it with the enum name
+	Super::Die();
+
 	EnemyState = EEnemyState::EES_Dead;
-	PlayDeathMontage();
-	// avoid attacking again if the attack timer is over or running by clearing out the attack timer
 	ClearAttackTimer();
 	HideHealthBar();
 	DisableCapsule();
