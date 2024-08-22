@@ -221,7 +221,7 @@ void ASlashCharacter::LockTarget()
 
 void ASlashCharacter::LockToTarget()
 {
-	if (CombatTarget && CombatTarget->ActorHasTag(FName("Enemy")))
+	if (IsTargetEnemy())
 	{
 		// add a state so it can be used in transition rule from unlocked to locked locomotion?
 		ActionState = EActionState::EAS_Locked;
@@ -236,6 +236,11 @@ void ASlashCharacter::LockToTarget()
 
 		Controller->SetIgnoreLookInput(bLocked);
 	}
+}
+
+bool ASlashCharacter::IsTargetEnemy()
+{
+	return CombatTarget && CombatTarget->ActorHasTag(FName("Enemy"));
 }
 
 bool ASlashCharacter::CanLock()

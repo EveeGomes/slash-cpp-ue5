@@ -96,6 +96,8 @@ protected:
 	void LockTarget();
 	void LockToTarget();
 
+	bool IsTargetEnemy();
+
 	bool CanLock();
 
 	void UnlockFromTarget();
