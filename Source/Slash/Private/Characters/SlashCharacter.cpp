@@ -291,7 +291,7 @@ void ASlashCharacter::Die()
 	Super::Die();
 
 	ActionState = EActionState::EAS_Dead;
-	DisableMeshCollision();
+	DisableMeshAndCapsuleCollision();
 }
 
 void ASlashCharacter::PlayEquipMontage(FName SectionName)
