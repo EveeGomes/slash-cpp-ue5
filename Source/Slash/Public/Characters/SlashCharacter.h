@@ -22,6 +22,7 @@ class UAnimMontage;
 class AWeapon;
 class UPawnSensingComponent;
 class AEnemy;
+class USlashOverlay;
 
 UCLASS()
 class SLASH_API ASlashCharacter : public ABaseCharacter
@@ -75,8 +76,13 @@ private:
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	EActionState ActionState = EActionState::EAS_Unoccupied;
 
+	UPROPERTY()
+	TObjectPtr<USlashOverlay> SlashOverlay;
+
 protected:
 	virtual void BeginPlay() override;
+
+	void InitializeSlashOverlay(APlayerController* PlayerController);
 
 	/** Callbacks for input */
 	void Move(const FInputActionValue& Value);
