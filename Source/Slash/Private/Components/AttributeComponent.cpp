@@ -65,3 +65,7 @@ void UAttributeComponent::AddGold(int32 AmountOfGold)
 	Gold += AmountOfGold;
 }
 
+void UAttributeComponent::AddHealth(int32 AmountOfHealth)
+{
+	Health += AmountOfHealth;
+}

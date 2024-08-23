@@ -23,10 +23,12 @@ public:
 	bool IsAlive();
 	void AddSouls(int32 NumberOfSouls);
 	void AddGold(int32 AmountOfGold);
+	void AddHealth(int32 AmountOfHealth);
 
 	/** Getters and Setters */
 	float GetHealthPercent();
 	float GetStaminaPercent();
+	FORCEINLINE float GetHealth() const { return Health; } // not really needed?
 	FORCEINLINE int32 GetGold() const { return Gold; }
 	FORCEINLINE int32 GetSouls() const { return Souls; }
 	FORCEINLINE float GetDodgeCost() const { return DodgeCost; }

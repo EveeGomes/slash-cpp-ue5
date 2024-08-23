@@ -50,6 +50,7 @@
 /** Items to pick up */
 #include "Items/Soul.h"
 #include "Items/Treasure.h"
+#include "Items/Health.h"
 
 void ASlashCharacter::InitializeSlashOverlay(APlayerController* PlayerController)
 {
@@ -59,7 +60,7 @@ void ASlashCharacter::InitializeSlashOverlay(APlayerController* PlayerController
 		SlashOverlay = SlashHUD->GetSlashOverlay();
 		if (SlashOverlay && Attributes)
 		{
-			SlashOverlay->SetHealthBarPercent(Attributes->GetHealthPercent());
+			SetHUDHealth();
 			// hardcoding until we add it to Attributes
 			SlashOverlay->SetStaminaBarPercent(1.f);
 			SlashOverlay->SetGold(0);
@@ -70,10 +71,20 @@ void ASlashCharacter::InitializeSlashOverlay(APlayerController* PlayerController
 
 void ASlashCharacter::SetHUDHealth()
 {
-	if (SlashOverlay && Attributes)
-	{
-		SlashOverlay->SetHealthBarPercent(Attributes->GetHealthPercent());
-	}
+	//if (SlashOverlay && Attributes) // the functions that calls this one already checks Attributes && SlashOverlay
+	//{
+	//	
+	//}
+	SlashOverlay->SetHealthBarPercent(Attributes->GetHealthPercent());
+}
+
+void ASlashCharacter::SetHUDStamina()
+{
+	//if (Attributes && SlashOverlay) // the functions that calls this one already checks Attributes && SlashOverlay
+	//{
+	//	SlashOverlay->SetStaminaBarPercent(Attributes->GetStaminaPercent());
+	//}
+	SlashOverlay->SetStaminaBarPercent(Attributes->GetStaminaPercent());
 }
 
 bool ASlashCharacter::CanJump()
@@ -168,7 +179,7 @@ void ASlashCharacter::Jump()
 
 void ASlashCharacter::Dodge()
 {
-	if (CanDodge() && !HasEnoughStamina()) return;
+	if (!CanDodge() || !HasEnoughStamina()) return;
 
 	PlayDodgeMontage();
 	ActionState = EActionState::EAS_Dodge;
@@ -176,7 +187,7 @@ void ASlashCharacter::Dodge()
 	{
 		Attributes->UseStamina(Attributes->GetDodgeCost());
 		// Update the HUD
-		SlashOverlay->SetStaminaBarPercent(Attributes->GetStaminaPercent());
+		SetHUDStamina();
 	}
 }
 
@@ -457,7 +468,7 @@ void ASlashCharacter::Tick(float DeltaTime)
 	if (Attributes && SlashOverlay)
 	{
 		Attributes->RegenStamina(DeltaTime);
-		SlashOverlay->SetStaminaBarPercent(Attributes->GetStaminaPercent());
+		SetHUDStamina();
 	}
 	if (bLocked && Enemy && !Enemy->IsDead())
 	{
@@ -475,7 +486,10 @@ void ASlashCharacter::Tick(float DeltaTime)
 float ASlashCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	HandleDamage(DamageAmount);
-	SetHUDHealth();
+	if (Attributes && SlashOverlay)
+	{
+		SetHUDHealth();
+	}
 
 	return DamageAmount;
 }
@@ -520,6 +534,19 @@ void ASlashCharacter::AddGold(ATreasure* Treasure)
 	{
 		Attributes->AddGold(Treasure->GetGold());
 		SlashOverlay->SetGold(Attributes->GetGold());
+	}
+}
+
+void ASlashCharacter::AddHealth(AHealth* Health)
+{
+	UE_LOG(LogTemp, Warning, TEXT("ASlashCharacter::AddHealth"));
+
+	if (Attributes && SlashOverlay) // should check Health too?
+	{
+		// Add to attributes
+		Attributes->AddHealth(Health->GetHealth());
+		// Update HUD
+		SetHUDHealth();
 	}
 }
 

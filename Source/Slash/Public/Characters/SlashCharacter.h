@@ -21,6 +21,7 @@ class UGroomComponent;
 class AItem;
 class ASoul;
 class ATreasure;
+class AHealth;
 class UAnimMontage;
 class AWeapon;
 class UPawnSensingComponent;
@@ -35,6 +36,7 @@ class SLASH_API ASlashCharacter : public ABaseCharacter, public IPickupInterface
 private:
 	void InitializeSlashOverlay(APlayerController* PlayerController);
 	void SetHUDHealth();
+	void SetHUDStamina();
 
 	/** 
 	* Create a Sphere box trace for objects function that uses the character location and the direction
@@ -94,8 +96,6 @@ protected:
 	void Look(const FInputActionValue& Value);
 	virtual void Jump() override;
 	void Dodge();
-
-
 
 	void EKeyPressed();
 	virtual void Attack() override;
@@ -197,6 +197,7 @@ public:
 	virtual void SetOverlappingItem(AItem* Item) override;
 	virtual void AddSouls(ASoul* Soul) override;
 	virtual void AddGold(ATreasure* Treasure) override;
+	virtual void AddHealth(AHealth* Health) override;
 	/** </IPickupInterface> */
 	
 	/** 
