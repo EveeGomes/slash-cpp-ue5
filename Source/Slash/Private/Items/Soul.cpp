@@ -3,7 +3,6 @@
 
 #include "Items/Soul.h"
 #include "Interfaces/PickupInterface.h"
-#include "NiagaraFunctionLibrary.h"
 
 void ASoul::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
@@ -11,14 +10,6 @@ void ASoul::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 	if (PickupInterface)
 	{
 		PickupInterface->AddSouls(this);
-	}
-	if (PickupEffect)
-	{
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
-			this,
-			PickupEffect,
-			GetActorLocation()
-		);
 	}
 
 	// Destroy the soul after being picked up

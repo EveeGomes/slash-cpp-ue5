@@ -5,6 +5,7 @@
 #include "Slash/DebugMacros.h"
 #include "Components/SphereComponent.h"
 #include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Interfaces/PickupInterface.h"
 
 // Sets default values
@@ -68,6 +69,18 @@ void AItem::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor*
 	if (PickupInterface)
 	{
 		PickupInterface->SetOverlappingItem(nullptr);
+	}
+}
+
+void AItem::SpawnPickupSystem()
+{
+	if (PickupEffect)
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+			this,
+			PickupEffect,
+			GetActorLocation()
+		);
 	}
 }
 

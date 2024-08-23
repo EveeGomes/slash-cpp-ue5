@@ -17,8 +17,7 @@ class SLASH_API ASoul : public AItem
 {
 	GENERATED_BODY()
 private:
-	UPROPERTY(EditAnywhere)
-	TObjectPtr<UNiagaraSystem> PickupEffect;
+
 
 protected:
 

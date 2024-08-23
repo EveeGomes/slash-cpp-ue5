@@ -20,9 +20,13 @@ class SLASH_API AItem : public AActor
 {
 	GENERATED_BODY()
 	
-public:	
-	// Sets default values for this actor's properties
-	AItem();
+private:
+	// Variable used to add DeltaTime to it every frame
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	float RunningTime;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UNiagaraSystem> PickupEffect;
 
 protected:
 	// Called when the game starts or when spawned
@@ -68,16 +72,16 @@ protected:
 		int32 OtherBodyIndex
 	);
 
+	virtual void SpawnPickupSystem();
+
 	/** Niagara system component */
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<class UNiagaraComponent> ItemEffect;
 
 public:	
+	// Sets default values for this actor's properties
+	AItem();
+	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-private:
-	// Variable used to add DeltaTime to it every frame
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	float RunningTime;
 };
