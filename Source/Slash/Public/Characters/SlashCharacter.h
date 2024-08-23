@@ -109,6 +109,7 @@ protected:
 	/** Combat */
 	void EquipWeapon(AWeapon* Weapon);
 	virtual void AttackEnd() override;
+	virtual void DodgeEnd() override;
 	virtual bool CanAttack() override;
 	virtual void Die() override;
 

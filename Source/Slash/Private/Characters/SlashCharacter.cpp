@@ -168,7 +168,9 @@ void ASlashCharacter::Jump()
 
 void ASlashCharacter::Dodge()
 {
+	if (ActionState > EActionState::EAS_Unoccupied) return;
 	PlayDodgeMontage();
+	ActionState = EActionState::EAS_Dodge;
 }
 
 void ASlashCharacter::EKeyPressed()
@@ -285,6 +287,13 @@ void ASlashCharacter::EquipWeapon(AWeapon* Weapon)
 
 void ASlashCharacter::AttackEnd()
 {
+	ActionState = EActionState::EAS_Unoccupied;
+}
+
+void ASlashCharacter::DodgeEnd()
+{
+	Super::DodgeEnd();
+
 	ActionState = EActionState::EAS_Unoccupied;
 }
 

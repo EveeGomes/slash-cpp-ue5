@@ -126,6 +126,9 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	virtual void AttackEnd();
 
+	UFUNCTION(BlueprintCallable)
+	virtual void DodgeEnd();
+
 	/** Called in response to an Anim notify. The ABP calls this function to enable/disable collision on our weapon */
 	UFUNCTION(BlueprintCallable)
 	void SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
