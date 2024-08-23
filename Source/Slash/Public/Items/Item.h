@@ -70,7 +70,7 @@ protected:
 
 	/** Niagara system component */
 	UPROPERTY(EditAnywhere)
-	TObjectPtr<class UNiagaraComponent> EmbersEffect;
+	TObjectPtr<class UNiagaraComponent> ItemEffect;
 
 public:	
 	// Called every frame

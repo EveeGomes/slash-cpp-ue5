@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 
 #include "BaseCharacter.h"
+#include "Interfaces/PickupInterface.h"
 
 #include "InputActionValue.h"
 #include "CharacterTypes.h"
@@ -25,7 +26,7 @@ class AEnemy;
 class USlashOverlay;
 
 UCLASS()
-class SLASH_API ASlashCharacter : public ABaseCharacter
+class SLASH_API ASlashCharacter : public ABaseCharacter, public IPickupInterface
 {
 	GENERATED_BODY()
 
@@ -181,10 +182,13 @@ public:
 	virtual void GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter) override;
 	/** </IHitInterface> */
 
+	/** <IPickupInterface> */
+	virtual void SetOverlappingItem(AItem* Item) override;
+	/** </IPickupInterface> */
+	
 	/** 
 	* Getters and Setters
 	*/
-	FORCEINLINE void SetOverlappingItem(AItem* Item) { OverlappingItem = Item; }
 	FORCEINLINE ECharacterState GetCharacterState() const { return CharacterState; }
 	FORCEINLINE EActionState GetActionState() const { return ActionState; }
 

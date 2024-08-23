@@ -459,6 +459,11 @@ void ASlashCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* 
 	
 }
 
+void ASlashCharacter::SetOverlappingItem(AItem* Item)
+{
+	OverlappingItem = Item;
+}
+
 bool ASlashCharacter::IsOutOfRange()
 {
 	if (CombatTarget)
