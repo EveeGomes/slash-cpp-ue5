@@ -19,7 +19,6 @@ private:
 	int32 Souls;
 
 protected:
-
 	virtual void OnSphereOverlap(
 		UPrimitiveComponent* OverlappedComponent,
 		AActor* OtherActor,
@@ -28,7 +27,8 @@ protected:
 		bool bFromSweep,
 		const FHitResult& SweepResult
 	) override;
-public:
 
+public:
 	FORCEINLINE int32 GetSouls() const { return Souls; }
+	FORCEINLINE void SetSouls(int32 NumberOfSouls) { Souls = NumberOfSouls; }
 };

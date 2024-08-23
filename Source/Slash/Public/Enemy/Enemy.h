@@ -19,6 +19,7 @@ class UAnimMontage;
 class UMyHealthBarComponent;
 class UPawnSensingComponent;
 class AWeapon;
+class ASoul;
 class UNiagaraComponent;
 class ULockedTargetComponent;
 
@@ -140,6 +141,10 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	float DeathLifeSpan = 4.f;
 
+	/** To spawn a soul when enemy dies. The amount for each enemy is set in BP in their Attributes component */
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	TSubclassOf<ASoul> SoulClass;
+
 protected:
 	/** <AActor> */
 	virtual void BeginPlay() override;
@@ -147,6 +152,7 @@ protected:
 
 	/** <ABaseCharacter> */
 	virtual void Die() override;
+	void SpawnSoul();
 	/** Attack */
 	virtual void Attack() override;
 	virtual bool CanAttack() override;
