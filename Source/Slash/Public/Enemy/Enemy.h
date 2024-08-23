@@ -152,7 +152,7 @@ protected:
 
 	/** <ABaseCharacter> */
 	virtual void Die() override;
-	void SpawnSoul();
+	
 	/** Attack */
 	virtual void Attack() override;
 	virtual bool CanAttack() override;
@@ -160,6 +160,7 @@ protected:
 	virtual void HandleDamage(float DamageAmount) override;
 	/** </ABaseCharacter> */
 
+	void SpawnSoul();
 	/** States */
 	UPROPERTY(BlueprintReadOnly) // This specifier only works for non-private variables!
 	EEnemyState EnemyState = EEnemyState::EES_Patrolling;

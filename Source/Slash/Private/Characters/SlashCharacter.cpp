@@ -539,8 +539,6 @@ void ASlashCharacter::AddGold(ATreasure* Treasure)
 
 void ASlashCharacter::AddHealth(AHealth* Health)
 {
-	UE_LOG(LogTemp, Warning, TEXT("ASlashCharacter::AddHealth"));
-
 	if (Attributes && SlashOverlay) // should check Health too?
 	{
 		// Add to attributes

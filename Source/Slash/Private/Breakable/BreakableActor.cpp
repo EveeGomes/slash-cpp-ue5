@@ -8,6 +8,7 @@
 
 /** Used in GetHit_Implementation */
 #include "Items/Treasure.h"
+#include "Items/Health.h"
 
 // Sets default values
 ABreakableActor::ABreakableActor()
@@ -44,6 +45,28 @@ void ABreakableActor::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+
+void ABreakableActor::SpawnTreasure(UWorld* World, FVector Location)
+{
+	if (World && TreasureClasses.Num() > 0)
+	{
+		const int32 Selection = FMath::RandRange(0, TreasureClasses.Num() - 1);
+		World->SpawnActor<ATreasure>(TreasureClasses[Selection], Location, GetActorRotation());
+	}
+}
+
+void ABreakableActor::SpawnHealth(UWorld* World, FVector Location)
+{
+	//UWorld* World = GetWorld();
+	if (World && HealthClass)
+	{
+		AHealth* SpawnedHealth = World->SpawnActor<AHealth>(HealthClass, Location, GetActorRotation());
+		if (SpawnedHealth)
+		{
+			SpawnedHealth->SetHealth(HealthAmount);
+		}
+	}
 }
 
 // Called every frame
@@ -85,17 +108,19 @@ void ABreakableActor::GetHit_Implementation(const FVector& ImpactPoint, AActor* 
 	* 
 	* Then, we can do the spawn logic here:
 	*/
-	
-	UWorld* World = GetWorld();
-	if (World && TreasureClasses.Num() > 0)
-	{
-		// For the location param we use the location of the breakable actor and rise it up by 75 units
-		FVector Location = GetActorLocation();
-		Location.Z += 75.f;
 
-		// Get a random number from the size of the array so it can spawn different and random treasures
-		const int32 Selection = FMath::RandRange(0, TreasureClasses.Num() - 1);
-		World->SpawnActor<ATreasure>(TreasureClasses[Selection], Location, GetActorRotation());
+	UWorld* World = GetWorld();
+
+	bool RandomSpawnHealth = FMath::RandBool();
+	FVector Location = GetActorLocation();
+	Location.Z += 75.f;
+
+	if (RandomSpawnHealth)
+	{
+		SpawnHealth(World, Location);
+	}
+	else
+	{
+		SpawnTreasure(World, Location);
 	}
 }
-
