@@ -172,10 +172,10 @@ protected:
 	TObjectPtr<UInputAction> DodgeIA;
 
 public:
-
 	ASlashCharacter();
 	/** <APawn> */
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
 	/** </APawn> */
 
 	/** <AActor> */

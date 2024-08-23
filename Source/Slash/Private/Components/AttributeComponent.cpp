@@ -6,23 +6,22 @@
 // Sets default values for this component's properties
 UAttributeComponent::UAttributeComponent()
 {
-	PrimaryComponentTick.bCanEverTick = true;
-
-
+	PrimaryComponentTick.bCanEverTick = false;
 }
 
 // Called when the game starts
 void UAttributeComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-
 }
 
 void UAttributeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+}
 
+void UAttributeComponent::RegenStamina(float DeltaTime)
+{
 	// Regenerate stamina: Multiply StaminaRegenRate by DeltaTime so we'll have exactly eight points per second
 	Stamina = FMath::Clamp(Stamina + StaminaRegenRate * DeltaTime, 0.f, MaxStamina);
 }

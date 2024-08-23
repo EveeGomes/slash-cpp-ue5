@@ -454,6 +454,11 @@ void ASlashCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (Attributes && SlashOverlay)
+	{
+		Attributes->RegenStamina(DeltaTime);
+		SlashOverlay->SetStaminaBarPercent(Attributes->GetStaminaPercent());
+	}
 	if (bLocked && Enemy && !Enemy->IsDead())
 	{
 		FVector SlashLocation = GetActorLocation();

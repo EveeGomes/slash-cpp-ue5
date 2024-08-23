@@ -17,6 +17,7 @@ public:
 	UAttributeComponent();
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	void RegenStamina(float DeltaTime);
 	void ReceiveDamage(float Damage);
 	void UseStamina(float StaminaCost);
 	bool IsAlive();
