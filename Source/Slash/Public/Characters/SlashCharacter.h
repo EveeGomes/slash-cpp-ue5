@@ -95,6 +95,8 @@ protected:
 	virtual void Jump() override;
 	void Dodge();
 
+
+
 	void EKeyPressed();
 	virtual void Attack() override;
 	void LockTarget();
@@ -112,6 +114,8 @@ protected:
 	virtual void DodgeEnd() override;
 	virtual bool CanAttack() override;
 	virtual void Die() override;
+	bool HasEnoughStamina();
+	bool CanDodge();
 
 	/** Equip / Unequip */
 	void PlayEquipMontage(FName SectionName);

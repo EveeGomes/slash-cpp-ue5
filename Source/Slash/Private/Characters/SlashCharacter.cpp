@@ -59,9 +59,9 @@ void ASlashCharacter::InitializeSlashOverlay(APlayerController* PlayerController
 		SlashOverlay = SlashHUD->GetSlashOverlay();
 		if (SlashOverlay && Attributes)
 		{
-			SlashOverlay->SetHealthPercent(Attributes->GetHealthPercent());
+			SlashOverlay->SetHealthBarPercent(Attributes->GetHealthPercent());
 			// hardcoding until we add it to Attributes
-			SlashOverlay->SetStaminaPercent(1.f);
+			SlashOverlay->SetStaminaBarPercent(1.f);
 			SlashOverlay->SetGold(0);
 			SlashOverlay->SetSouls(0);
 		}
@@ -72,7 +72,7 @@ void ASlashCharacter::SetHUDHealth()
 {
 	if (SlashOverlay && Attributes)
 	{
-		SlashOverlay->SetHealthPercent(Attributes->GetHealthPercent());
+		SlashOverlay->SetHealthBarPercent(Attributes->GetHealthPercent());
 	}
 }
 
@@ -168,9 +168,16 @@ void ASlashCharacter::Jump()
 
 void ASlashCharacter::Dodge()
 {
-	if (ActionState > EActionState::EAS_Unoccupied) return;
+	if (CanDodge() && !HasEnoughStamina()) return;
+
 	PlayDodgeMontage();
 	ActionState = EActionState::EAS_Dodge;
+	if (Attributes && SlashOverlay)
+	{
+		Attributes->UseStamina(Attributes->GetDodgeCost());
+		// Update the HUD
+		SlashOverlay->SetStaminaBarPercent(Attributes->GetStaminaPercent());
+	}
 }
 
 void ASlashCharacter::EKeyPressed()
@@ -310,6 +317,16 @@ void ASlashCharacter::Die()
 
 	ActionState = EActionState::EAS_Dead;
 	DisableMeshAndCapsuleCollision();
+}
+
+bool ASlashCharacter::HasEnoughStamina()
+{
+	return Attributes && Attributes->GetStamina() > Attributes->GetDodgeCost();
+}
+
+bool ASlashCharacter::CanDodge()
+{
+	return ActionState <= EActionState::EAS_Unoccupied;
 }
 
 void ASlashCharacter::PlayEquipMontage(FName SectionName)

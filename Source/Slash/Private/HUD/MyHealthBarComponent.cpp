@@ -9,7 +9,7 @@
 /** Access SetPercent */
 #include "Components/ProgressBar.h"
 
-void UMyHealthBarComponent::SetHealthPercent(float Percent)
+void UMyHealthBarComponent::SetHealthBarPercent(float Percent)
 {
    /** 
    * Like it was before, as this function will be called many times, the cast would also happened many many many times!

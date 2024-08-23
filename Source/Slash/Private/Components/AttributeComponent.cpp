@@ -23,6 +23,8 @@ void UAttributeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	// Regenerate stamina: Multiply StaminaRegenRate by DeltaTime so we'll have exactly eight points per second
+	Stamina = FMath::Clamp(Stamina + StaminaRegenRate * DeltaTime, 0.f, MaxStamina);
 }
 
 void UAttributeComponent::ReceiveDamage(float Damage)

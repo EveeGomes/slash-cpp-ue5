@@ -34,8 +34,8 @@ private:
 
 public:
 	/** Setters and Getters */
-	void SetHealthPercent(float Percent);
-	void SetStaminaPercent(float Percent);
+	void SetHealthBarPercent(float Percent);
+	void SetStaminaBarPercent(float Percent);
 	void SetGold(int32 Gold);
 	void SetSouls(int32 Souls);
 };

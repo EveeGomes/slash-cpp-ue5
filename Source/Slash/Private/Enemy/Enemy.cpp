@@ -439,7 +439,7 @@ void AEnemy::HandleDamage(float DamageAmount)
 	Super::HandleDamage(DamageAmount);
 	if (Attributes && HealthBarWidget)
 	{
-		HealthBarWidget->SetHealthPercent(Attributes->GetHealthPercent());
+		HealthBarWidget->SetHealthBarPercent(Attributes->GetHealthPercent());
 	}
 }
 
