@@ -7,6 +7,7 @@
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Interfaces/PickupInterface.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AItem::AItem()
@@ -79,6 +80,18 @@ void AItem::SpawnPickupSystem()
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
 			this,
 			PickupEffect,
+			GetActorLocation()
+		);
+	}
+}
+
+void AItem::SpawnPickupSound()
+{
+	if (PickupSound)
+	{
+		UGameplayStatics::SpawnSoundAtLocation(
+			this,
+			PickupSound,
 			GetActorLocation()
 		);
 	}

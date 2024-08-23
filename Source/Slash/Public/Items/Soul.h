@@ -10,8 +10,6 @@
  * 
  */
 
-class UNiagaraSystem;
-
 UCLASS()
 class SLASH_API ASoul : public AItem
 {

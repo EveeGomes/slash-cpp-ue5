@@ -8,6 +8,9 @@
 
 /** Forward declaration */
 class USphereComponent;
+class UNiagaraComponent;
+class UNiagaraSystem;
+
 
 enum class EItemState : uint8
 {
@@ -40,12 +43,12 @@ protected:
 	float RotationRate = 100.f;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	UStaticMeshComponent* ItemMesh;
+	TObjectPtr<UStaticMeshComponent> ItemMesh;
 
 	EItemState ItemState = EItemState::EIS_Hovering;
 
 	UPROPERTY(VisibleAnywhere)
-	USphereComponent* Sphere;
+	TObjectPtr<USphereComponent> Sphere;
 
 	UFUNCTION(BlueprintPure)
 	float TransformedSin();
@@ -73,10 +76,14 @@ protected:
 	);
 
 	virtual void SpawnPickupSystem();
+	virtual void SpawnPickupSound();
 
 	/** Niagara system component */
 	UPROPERTY(EditAnywhere)
-	TObjectPtr<class UNiagaraComponent> ItemEffect;
+	TObjectPtr<UNiagaraComponent> ItemEffect;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<USoundBase> PickupSound;
 
 public:	
 	// Sets default values for this actor's properties

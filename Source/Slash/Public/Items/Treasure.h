@@ -25,9 +25,6 @@ protected:
 	) override;
 
 private:
-	UPROPERTY(EditAnywhere, Category = "Sounds")
-	TObjectPtr<USoundBase> PickupSound;
-
 	// Use to set a gold amount to a treasure
 	UPROPERTY(EditAnywhere, Category = "Treasure Properties")
 	int32 Gold;

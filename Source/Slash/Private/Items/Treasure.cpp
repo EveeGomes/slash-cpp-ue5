@@ -6,8 +6,6 @@
 /** For casting AActor pointer in OnSphereOverlap */
 #include "Characters/SlashCharacter.h"
 
-/** For playing a USoundBase */
-#include "Kismet/GameplayStatics.h"
 
 void ATreasure::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
@@ -21,17 +19,7 @@ void ATreasure::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor
    ASlashCharacter* SlashCharacter = Cast<ASlashCharacter>(OtherActor);
    if (SlashCharacter)
    {
-      // Play a sound before destroying it
-      if (PickupSound)
-      {
-         UGameplayStatics::PlaySoundAtLocation(
-            this,
-            PickupSound,
-            GetActorLocation()
-         );
-      }
-      // Destroy the pick up object
+      SpawnPickupSound();
       Destroy();
    }
-
 }
