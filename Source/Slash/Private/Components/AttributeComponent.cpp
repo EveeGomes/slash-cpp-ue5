@@ -19,7 +19,6 @@ void UAttributeComponent::BeginPlay()
 
 }
 
-
 void UAttributeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
@@ -42,5 +41,16 @@ float UAttributeComponent::GetHealthPercent()
 bool UAttributeComponent::IsAlive()
 {
 	return Health > 0.f;
+}
+
+void UAttributeComponent::AddSouls(int32 NumberOfSouls)
+{
+	/** Since we still don't have a max number of souls (or gold), we don't need to clamp for now */
+	Souls += NumberOfSouls;
+}
+
+void UAttributeComponent::AddGold(int32 AmountOfGold)
+{
+	Gold += AmountOfGold;
 }
 

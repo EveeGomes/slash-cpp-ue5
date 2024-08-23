@@ -13,6 +13,12 @@ UCLASS()
 class SLASH_API ATreasure : public AItem
 {
 	GENERATED_BODY()
+
+private:
+	// Use to set a gold amount to a treasure
+	UPROPERTY(EditAnywhere, Category = "Treasure Properties")
+	int32 Gold;
+
 protected:
 	// Children classes don't need to have UFUNCTION() as it's already inherited!
 	virtual void OnSphereOverlap(
@@ -24,8 +30,6 @@ protected:
 		const FHitResult& SweepResult
 	) override;
 
-private:
-	// Use to set a gold amount to a treasure
-	UPROPERTY(EditAnywhere, Category = "Treasure Properties")
-	int32 Gold;
+public:
+	FORCEINLINE int32 GetGold() const { return Gold; }
 };

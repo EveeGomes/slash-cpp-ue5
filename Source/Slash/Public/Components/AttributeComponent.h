@@ -17,12 +17,15 @@ public:
 	UAttributeComponent();
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	void ReceiveDamage(float Damage);
+	bool IsAlive();
+	void AddSouls(int32 NumberOfSouls);
+	void AddGold(int32 AmountOfGold);
 
 	/** Getters and Setters */
-	void ReceiveDamage(float Damage);
 	float GetHealthPercent();
-
-	bool IsAlive();
+	FORCEINLINE int32 GetGold() const { return Gold; }
+	FORCEINLINE int32 GetSouls() const { return Souls; }
 
 protected:
 	// Called when the game starts
@@ -35,4 +38,10 @@ private:
 	
 	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
 	float MaxHealth;
+
+	UPROPERTY(VisibleAnywhere, Category = "Actor Attributes")
+	int32 Gold;
+
+	UPROPERTY(VisibleAnywhere, Category = "Actor Attributes")
+	int32 Souls;
 };
