@@ -20,6 +20,7 @@ class USpringArmComponent;
 class UGroomComponent;
 class AItem;
 class ASoul;
+class ATreasure;
 class UAnimMontage;
 class AWeapon;
 class UPawnSensingComponent;
@@ -186,6 +187,7 @@ public:
 	/** <IPickupInterface> */
 	virtual void SetOverlappingItem(AItem* Item) override;
 	virtual void AddSouls(ASoul* Soul) override;
+	virtual void AddGold(ATreasure* Treasure) override;
 	/** </IPickupInterface> */
 	
 	/** 

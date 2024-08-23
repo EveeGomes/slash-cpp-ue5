@@ -47,6 +47,10 @@
 #include "HUD/SlashOverlay.h"
 #include "Components/AttributeComponent.h"
 
+/** Items to pick up */
+#include "Items/Soul.h"
+#include "Items/Treasure.h"
+
 void ASlashCharacter::InitializeSlashOverlay(APlayerController* PlayerController)
 {
 	ASlashHUD* SlashHUD = Cast<ASlashHUD>(PlayerController->GetHUD());
@@ -466,7 +470,18 @@ void ASlashCharacter::SetOverlappingItem(AItem* Item)
 
 void ASlashCharacter::AddSouls(ASoul* Soul)
 {
-	UE_LOG(LogTemp, Warning, TEXT("ASlashCharacter::AddSouls"));
+	if (Attributes)
+	{
+		Attributes->AddSouls(Soul->GetSouls());
+	}
+}
+
+void ASlashCharacter::AddGold(ATreasure* Treasure)
+{
+	if (Attributes)
+	{
+		Attributes->AddGold(Treasure->GetGold());
+	}
 }
 
 bool ASlashCharacter::IsOutOfRange()
