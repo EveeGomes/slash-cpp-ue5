@@ -464,6 +464,11 @@ void ASlashCharacter::SetOverlappingItem(AItem* Item)
 	OverlappingItem = Item;
 }
 
+void ASlashCharacter::AddSouls(ASoul* Soul)
+{
+	UE_LOG(LogTemp, Warning, TEXT("ASlashCharacter::AddSouls"));
+}
+
 bool ASlashCharacter::IsOutOfRange()
 {
 	if (CombatTarget)
