@@ -168,7 +168,7 @@ void ASlashCharacter::Jump()
 
 void ASlashCharacter::Dodge()
 {
-
+	PlayDodgeMontage();
 }
 
 void ASlashCharacter::EKeyPressed()
