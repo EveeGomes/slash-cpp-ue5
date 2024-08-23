@@ -470,17 +470,19 @@ void ASlashCharacter::SetOverlappingItem(AItem* Item)
 
 void ASlashCharacter::AddSouls(ASoul* Soul)
 {
-	if (Attributes)
+	if (Attributes && SlashOverlay)
 	{
 		Attributes->AddSouls(Soul->GetSouls());
+		SlashOverlay->SetSouls(Attributes->GetSouls());
 	}
 }
 
 void ASlashCharacter::AddGold(ATreasure* Treasure)
 {
-	if (Attributes)
+	if (Attributes && SlashOverlay)
 	{
 		Attributes->AddGold(Treasure->GetGold());
+		SlashOverlay->SetGold(Attributes->GetGold());
 	}
 }
 
