@@ -380,11 +380,11 @@ void AEnemy::SpawnSoul()
 	UWorld* World = GetWorld();
 	if (World && SoulClass && Attributes)
 	{
-		const FVector SpawnLocation = GetActorLocation() + FVector{ 0.f, 0.f, 75.f };
-		ASoul* SpawnSoul = World->SpawnActor<ASoul>(SoulClass, SpawnLocation, GetActorRotation());
-		if (SpawnSoul)
+		/*const FVector SpawnLocation = GetActorLocation() + FVector{ 0.f, 0.f, 50.f };*/
+		ASoul* SpawnedSoul = World->SpawnActor<ASoul>(SoulClass, GetActorLocation(), GetActorRotation());
+		if (SpawnedSoul)
 		{
-			SpawnSoul->SetSouls(Attributes->GetSouls());
+			SpawnedSoul->SetSouls(Attributes->GetSouls());
 		}
 	}
 }
