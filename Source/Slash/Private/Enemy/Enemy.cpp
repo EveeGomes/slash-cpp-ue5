@@ -81,7 +81,7 @@ void AEnemy::CheckPatrolTarget()
 		// Also check if it's not in IdlePatrol state already? This prevents bugs for spamming setting the same state
 		if (EnemyState == EEnemyState::EES_Patrolling) 
 		{
-			EnemyState = EEnemyState::EES_IdlePatrol;
+			EnemyState = EEnemyState::EES_IdlePatrol; // but the raptor doesn't have that... so it never get's out of this state
 		}
 
 		const float WaitTime = FMath::RandRange(PatrolWaitMin, PatrolWaitMax);
@@ -109,7 +109,7 @@ void AEnemy::MoveToTarget(AActor* Target)
 
 	FAIMoveRequest MoveRequest;
 	MoveRequest.SetGoalActor(Target);
-	MoveRequest.SetAcceptanceRadius(50.f);
+	MoveRequest.SetAcceptanceRadius(AcceptanceRadius);
 	EnemyController->MoveTo(MoveRequest);
 }
 
@@ -486,7 +486,7 @@ void AEnemy::Tick(float DeltaTime)
 	if (IsDead()) return;
 
 	// Idle Patrol
-	if (IsIdlePatrolling())
+	if (IsIdlePatrolling()) // only Paladin has IdlePatrolling...
 	{
 		PlayIdlePatrolMontage(IdlePatrolSectionName());
 	}
