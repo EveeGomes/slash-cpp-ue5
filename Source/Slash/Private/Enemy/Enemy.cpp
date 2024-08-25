@@ -21,6 +21,7 @@
 
 /** Attach the weapon in BeginPlay() */
 #include "Items/Weapons/Weapon.h"
+#include "Items/Soul.h"
 
 #include "NiagaraComponent.h"
 
@@ -365,6 +366,13 @@ void AEnemy::Die()
 	DisableCapsule();
 	SetLifeSpan(DeathLifeSpan);
 	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	/**
+	* To spawn an actor, we use a UWorld function.
+	* Then, use the returned value from SpawnActor() (a soul object), to set its souls value equal to the souls in the enemy's
+	*  Attribute component after we've spawned it.
+	*/
+	SpawnSoul();
 }
 
 void AEnemy::Attack()
@@ -417,7 +425,21 @@ void AEnemy::HandleDamage(float DamageAmount)
 	Super::HandleDamage(DamageAmount);
 	if (Attributes && HealthBarWidget)
 	{
-		HealthBarWidget->SetHealthPercent(Attributes->GetHealthPercent());
+		HealthBarWidget->SetHealthBarPercent(Attributes->GetHealthPercent());
+	}
+}
+
+void AEnemy::SpawnSoul()
+{
+	UWorld* World = GetWorld();
+	if (World && SoulClass && Attributes)
+	{
+		/*const FVector SpawnLocation = GetActorLocation() + FVector{ 0.f, 0.f, 50.f };*/
+		ASoul* SpawnedSoul = World->SpawnActor<ASoul>(SoulClass, GetActorLocation(), GetActorRotation());
+		if (SpawnedSoul)
+		{
+			SpawnedSoul->SetSouls(Attributes->GetSouls());
+		}
 	}
 }
 

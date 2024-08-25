@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 
 #include "BaseCharacter.h"
+#include "Interfaces/PickupInterface.h"
 
 #include "InputActionValue.h"
 #include "CharacterTypes.h"
@@ -18,6 +19,9 @@ class UCameraComponent;
 class USpringArmComponent;
 class UGroomComponent;
 class AItem;
+class ASoul;
+class ATreasure;
+class AHealth;
 class UAnimMontage;
 class AWeapon;
 class UPawnSensingComponent;
@@ -25,13 +29,14 @@ class AEnemy;
 class USlashOverlay;
 
 UCLASS()
-class SLASH_API ASlashCharacter : public ABaseCharacter
+class SLASH_API ASlashCharacter : public ABaseCharacter, public IPickupInterface
 {
 	GENERATED_BODY()
 
 private:
 	void InitializeSlashOverlay(APlayerController* PlayerController);
 	void SetHUDHealth();
+	void SetHUDStamina();
 
 	/** 
 	* Create a Sphere box trace for objects function that uses the character location and the direction
@@ -90,6 +95,7 @@ protected:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	virtual void Jump() override;
+	void Dodge();
 
 	void EKeyPressed();
 	virtual void Attack() override;
@@ -105,8 +111,11 @@ protected:
 	/** Combat */
 	void EquipWeapon(AWeapon* Weapon);
 	virtual void AttackEnd() override;
+	virtual void DodgeEnd() override;
 	virtual bool CanAttack() override;
 	virtual void Die() override;
+	bool HasEnoughStamina();
+	bool CanDodge();
 
 	/** Equip / Unequip */
 	void PlayEquipMontage(FName SectionName);
@@ -159,11 +168,14 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputAction> LockOnTarget;
 
-public:
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> DodgeIA;
 
+public:
 	ASlashCharacter();
 	/** <APawn> */
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
 	/** </APawn> */
 
 	/** <AActor> */
@@ -181,10 +193,16 @@ public:
 	virtual void GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter) override;
 	/** </IHitInterface> */
 
+	/** <IPickupInterface> */
+	virtual void SetOverlappingItem(AItem* Item) override;
+	virtual void AddSouls(ASoul* Soul) override;
+	virtual void AddGold(ATreasure* Treasure) override;
+	virtual void AddHealth(AHealth* Health) override;
+	/** </IPickupInterface> */
+	
 	/** 
 	* Getters and Setters
 	*/
-	FORCEINLINE void SetOverlappingItem(AItem* Item) { OverlappingItem = Item; }
 	FORCEINLINE ECharacterState GetCharacterState() const { return CharacterState; }
 	FORCEINLINE EActionState GetActionState() const { return ActionState; }
 

@@ -62,7 +62,6 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	TArray<FName> DeathMontageSections;
 
-
 	UPROPERTY(EditDefaultsOnly, Category = "Combat")
 	TObjectPtr<UAnimMontage> AttackMontage;
 
@@ -71,6 +70,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Combat")
 	TObjectPtr<UAnimMontage> DeathMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	TObjectPtr<UAnimMontage> DodgeMontage;
 
 protected:
 	/** <AActor> */
@@ -104,6 +106,7 @@ protected:
 	*  as well just in case we need it later.
 	*/
 	virtual int32 PlayDeathMontage();
+	virtual void PlayDodgeMontage();
 	void StopAttackMontage();
 
 	/** 
@@ -122,6 +125,9 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	virtual void AttackEnd();
+
+	UFUNCTION(BlueprintCallable)
+	virtual void DodgeEnd();
 
 	/** Called in response to an Anim notify. The ABP calls this function to enable/disable collision on our weapon */
 	UFUNCTION(BlueprintCallable)

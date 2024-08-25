@@ -47,6 +47,11 @@
 #include "HUD/SlashOverlay.h"
 #include "Components/AttributeComponent.h"
 
+/** Items to pick up */
+#include "Items/Soul.h"
+#include "Items/Treasure.h"
+#include "Items/Health.h"
+
 void ASlashCharacter::InitializeSlashOverlay(APlayerController* PlayerController)
 {
 	ASlashHUD* SlashHUD = Cast<ASlashHUD>(PlayerController->GetHUD());
@@ -55,9 +60,9 @@ void ASlashCharacter::InitializeSlashOverlay(APlayerController* PlayerController
 		SlashOverlay = SlashHUD->GetSlashOverlay();
 		if (SlashOverlay && Attributes)
 		{
-			SlashOverlay->SetHealthPercent(Attributes->GetHealthPercent());
+			SetHUDHealth();
 			// hardcoding until we add it to Attributes
-			SlashOverlay->SetStaminaPercent(1.f);
+			SlashOverlay->SetStaminaBarPercent(1.f);
 			SlashOverlay->SetGold(0);
 			SlashOverlay->SetSouls(0);
 		}
@@ -66,10 +71,20 @@ void ASlashCharacter::InitializeSlashOverlay(APlayerController* PlayerController
 
 void ASlashCharacter::SetHUDHealth()
 {
-	if (SlashOverlay && Attributes)
-	{
-		SlashOverlay->SetHealthPercent(Attributes->GetHealthPercent());
-	}
+	//if (SlashOverlay && Attributes) // the functions that calls this one already checks Attributes && SlashOverlay
+	//{
+	//	
+	//}
+	SlashOverlay->SetHealthBarPercent(Attributes->GetHealthPercent());
+}
+
+void ASlashCharacter::SetHUDStamina()
+{
+	//if (Attributes && SlashOverlay) // the functions that calls this one already checks Attributes && SlashOverlay
+	//{
+	//	SlashOverlay->SetStaminaBarPercent(Attributes->GetStaminaPercent());
+	//}
+	SlashOverlay->SetStaminaBarPercent(Attributes->GetStaminaPercent());
 }
 
 bool ASlashCharacter::CanJump()
@@ -159,6 +174,20 @@ void ASlashCharacter::Jump()
 	if (CanJump())
 	{
 		Super::Jump();
+	}
+}
+
+void ASlashCharacter::Dodge()
+{
+	if (!CanDodge() || !HasEnoughStamina()) return;
+
+	PlayDodgeMontage();
+	ActionState = EActionState::EAS_Dodge;
+	if (Attributes && SlashOverlay)
+	{
+		Attributes->UseStamina(Attributes->GetDodgeCost());
+		// Update the HUD
+		SetHUDStamina();
 	}
 }
 
@@ -279,6 +308,13 @@ void ASlashCharacter::AttackEnd()
 	ActionState = EActionState::EAS_Unoccupied;
 }
 
+void ASlashCharacter::DodgeEnd()
+{
+	Super::DodgeEnd();
+
+	ActionState = EActionState::EAS_Unoccupied;
+}
+
 bool ASlashCharacter::CanAttack()
 {
 	return (ActionState == EActionState::EAS_Unoccupied || 
@@ -292,6 +328,16 @@ void ASlashCharacter::Die()
 
 	ActionState = EActionState::EAS_Dead;
 	DisableMeshAndCapsuleCollision();
+}
+
+bool ASlashCharacter::HasEnoughStamina()
+{
+	return Attributes && Attributes->GetStamina() > Attributes->GetDodgeCost();
+}
+
+bool ASlashCharacter::CanDodge()
+{
+	return ActionState <= EActionState::EAS_Unoccupied;
 }
 
 void ASlashCharacter::PlayEquipMontage(FName SectionName)
@@ -411,6 +457,7 @@ void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 		EnhancedInputComponent->BindAction(EquipAction, ETriggerEvent::Triggered, this, &ASlashCharacter::EKeyPressed);
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Attack);
 		EnhancedInputComponent->BindAction(LockOnTarget, ETriggerEvent::Started, this, &ASlashCharacter::LockTarget);
+		EnhancedInputComponent->BindAction(DodgeIA, ETriggerEvent::Started, this, &ASlashCharacter::Dodge);
 	}
 }
 
@@ -418,6 +465,11 @@ void ASlashCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (Attributes && SlashOverlay)
+	{
+		Attributes->RegenStamina(DeltaTime);
+		SetHUDStamina();
+	}
 	if (bLocked && Enemy && !Enemy->IsDead())
 	{
 		FVector SlashLocation = GetActorLocation();
@@ -434,7 +486,10 @@ void ASlashCharacter::Tick(float DeltaTime)
 float ASlashCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	HandleDamage(DamageAmount);
-	SetHUDHealth();
+	if (Attributes && SlashOverlay)
+	{
+		SetHUDHealth();
+	}
 
 	return DamageAmount;
 }
@@ -457,6 +512,40 @@ void ASlashCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* 
 		ActionState = EActionState::EAS_HitReaction;
 	}
 	
+}
+
+void ASlashCharacter::SetOverlappingItem(AItem* Item)
+{
+	OverlappingItem = Item;
+}
+
+void ASlashCharacter::AddSouls(ASoul* Soul)
+{
+	if (Attributes && SlashOverlay)
+	{
+		Attributes->AddSouls(Soul->GetSouls());
+		SlashOverlay->SetSouls(Attributes->GetSouls());
+	}
+}
+
+void ASlashCharacter::AddGold(ATreasure* Treasure)
+{
+	if (Attributes && SlashOverlay)
+	{
+		Attributes->AddGold(Treasure->GetGold());
+		SlashOverlay->SetGold(Attributes->GetGold());
+	}
+}
+
+void ASlashCharacter::AddHealth(AHealth* Health)
+{
+	if (Attributes && SlashOverlay) // should check Health too?
+	{
+		// Add to attributes
+		Attributes->AddHealth(Health->GetHealth());
+		// Update HUD
+		SetHUDHealth();
+	}
 }
 
 bool ASlashCharacter::IsOutOfRange()

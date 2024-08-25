@@ -4,23 +4,21 @@
 
 #include "CoreMinimal.h"
 #include "Items/Item.h"
-#include "Treasure.generated.h"
+#include "Soul.generated.h"
 
 /**
- * All we need to do in this class is override the OnSphereOverlap function from Item class.
+ * 
  */
+
 UCLASS()
-class SLASH_API ATreasure : public AItem
+class SLASH_API ASoul : public AItem
 {
 	GENERATED_BODY()
-
 private:
-	// Use to set a gold amount to a treasure
-	UPROPERTY(EditAnywhere, Category = "Treasure Properties")
-	int32 Gold;
+	UPROPERTY(EditAnywhere, Category = "Soul Properties")
+	int32 Souls;
 
 protected:
-	// Children classes don't need to have UFUNCTION() as it's already inherited!
 	virtual void OnSphereOverlap(
 		UPrimitiveComponent* OverlappedComponent,
 		AActor* OtherActor,
@@ -31,5 +29,6 @@ protected:
 	) override;
 
 public:
-	FORCEINLINE int32 GetGold() const { return Gold; }
+	FORCEINLINE int32 GetSouls() const { return Souls; }
+	FORCEINLINE void SetSouls(int32 NumberOfSouls) { Souls = NumberOfSouls; }
 };

@@ -5,7 +5,7 @@
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 
-void USlashOverlay::SetHealthPercent(float Percent)
+void USlashOverlay::SetHealthBarPercent(float Percent)
 {
    if (HealthProgressBar)
    {
@@ -13,7 +13,7 @@ void USlashOverlay::SetHealthPercent(float Percent)
    }
 }
 
-void USlashOverlay::SetStaminaPercent(float Percent)
+void USlashOverlay::SetStaminaBarPercent(float Percent)
 {
    if (StaminaProgressBar)
    {
