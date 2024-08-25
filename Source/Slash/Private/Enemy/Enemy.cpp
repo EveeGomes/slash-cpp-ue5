@@ -303,6 +303,11 @@ void AEnemy::PlayIdlePatrolMontage(const FName& SectionName)
 		AnimInstance->Montage_Play(IdlePatrolMontage);
 		AnimInstance->Montage_JumpToSection(SectionName, IdlePatrolMontage);
 	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("PlayIdlePatrolMontage else"));
+		FinishIdlePatrol();
+	}
 }
 
 FName& AEnemy::IdlePatrolSectionName()
