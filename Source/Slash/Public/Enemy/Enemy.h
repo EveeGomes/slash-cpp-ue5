@@ -90,15 +90,15 @@ private:
 
 	// Threshold to check Distance To Target
 	UPROPERTY(EditAnywhere, Category = "Combat")
-	double CombatRadius = 1000.f;
+	double CombatRadius = 1000;
 
 	// Threshold to start attacking the player
 	UPROPERTY(EditAnywhere, Category = "Combat")
-	double AttackRadius = 200.f;
+	double AttackRadius = 200;
 
 	// Threshold to start attacking the player
 	UPROPERTY(EditAnywhere, Category = "Combat")
-	double AcceptanceRadius = 50.f;
+	float AcceptanceRadius = 50.f;
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	float ChasingSpeed = 300.f;

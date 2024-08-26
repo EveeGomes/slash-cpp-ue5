@@ -27,6 +27,9 @@
 
 #include "HUD/LockedTargetComponent.h"
 
+#include "Slash/DebugMacros.h"
+
+
 void AEnemy::InitializeEnemy()
 {
 	/** Move the enemy for the first time here (in BeginPlay) */
@@ -40,15 +43,32 @@ void AEnemy::InitializeEnemy()
 bool AEnemy::InTargetRange(AActor* Target, double Radius)
 {
 	// Return false in case Target is invalid so in Tick we can remove some other validations
-	if (Target == nullptr) return false;
+	if (Target == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Target is null in InTargetRange()"));
+		return false;
+	}
+	UE_LOG(LogTemp, Warning, TEXT("Target is valid in InTargetRange()"));
+
+	const FString TargetName = Target->GetActorNameOrLabel();
+	//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Yellow, FString::Printf(TEXT("%s"), &TargetName));
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *TargetName);
+	//UE_LOG(LogTemp, Warning, TEXT("Target isn't null in InTargetRange()")); // ok
 
 	const double DistanceToTarget = (Target->GetActorLocation() - GetActorLocation()).Size();
+	DRAW_SPHERE_SingleFrame(GetActorLocation());
+	DRAW_SPHERE_SingleFrame(Target->GetActorLocation());
 
+
+	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Yellow, FString::Printf(TEXT("%d"), DistanceToTarget <= Radius)); // false
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("Distance %f, radius %f"), DistanceToTarget, Radius));
+	// had to change patrol radius to 800 in BP_Raptor
 	return DistanceToTarget <= Radius;
 }
 
 AActor* AEnemy::ChoosePatrolTarget() 
 {
+	UE_LOG(LogTemp, Warning, TEXT("ChoosePatrolTarget()"));
 	/** Have an array filled with all patrol targets except the one we currently have. */
 	TArray<AActor*> ValidTargets;
 	for (AActor* Target : PatrolTargets)
@@ -62,6 +82,7 @@ AActor* AEnemy::ChoosePatrolTarget()
 	// select one of the patrol target at random, and return our patrol target
 	if (ValidTargets.Num() > 0)
 	{
+		//UE_LOG(LogTemp, Warning, TEXT("ValidTargets.Num() > 0")); // ok
 		const int32 TargetSelection = FMath::RandRange(0, ValidTargets.Num() - 1);
 		return ValidTargets[TargetSelection];
 	}
@@ -70,28 +91,30 @@ AActor* AEnemy::ChoosePatrolTarget()
 }
 
 // Set to EAS_IdlePatrol
-void AEnemy::CheckPatrolTarget()
+void AEnemy::CheckPatrolTarget() // EEnemyState::EES_Patrolling
 {
 	EnemyVelocity = UKismetMathLibrary::VSizeXY(GetCharacterMovement()->Velocity);
 
-	if (InTargetRange(PatrolTarget, PatrolRadius))
+	if (InTargetRange(PatrolTarget, PatrolRadius)) // sometimes returns false
 	{
 		PatrolTarget = ChoosePatrolTarget();
 
 		// Also check if it's not in IdlePatrol state already? This prevents bugs for spamming setting the same state
 		if (EnemyState == EEnemyState::EES_Patrolling) 
 		{
-			EnemyState = EEnemyState::EES_IdlePatrol; // but the raptor doesn't have that... so it never get's out of this state
+			UE_LOG(LogTemp, Warning, TEXT("Patrolling -> IdlePatrol"));
+			EnemyState = EEnemyState::EES_IdlePatrol;
 		}
 
 		const float WaitTime = FMath::RandRange(PatrolWaitMin, PatrolWaitMax);
-		GetWorldTimerManager().SetTimer(PatrolTimer, this, &AEnemy::PatrolTimerFinished, WaitTime);
+		GetWorldTimerManager().SetTimer(PatrolTimer, this, &AEnemy::PatrolTimerFinished, WaitTime); // BP_Raptor never calls this
 	}
 }
 
 /** When the timer has elapsed, call MoveToTarget */
 void AEnemy::PatrolTimerFinished()
 {	
+	UE_LOG(LogTemp, Warning, TEXT("PatrolTimerFinished()")); // plays this but not MoveToTarget?
 	MoveToTarget(PatrolTarget);
 }
 
@@ -107,10 +130,13 @@ void AEnemy::MoveToTarget(AActor* Target)
 {
 	if (EnemyController == nullptr || Target == nullptr) return; // this removes the need for the next if statement
 
+	UE_LOG(LogTemp, Warning, TEXT("MoveToTarget() Target not null"));
 	FAIMoveRequest MoveRequest;
 	MoveRequest.SetGoalActor(Target);
 	MoveRequest.SetAcceptanceRadius(AcceptanceRadius);
 	EnemyController->MoveTo(MoveRequest);
+	
+	if (MoveRequest.IsValid()) UE_LOG(LogTemp, Warning, TEXT("MoveResques is valid"));
 }
 
 void AEnemy::SpawnDefaultWeapon()
@@ -303,11 +329,11 @@ void AEnemy::PlayIdlePatrolMontage(const FName& SectionName)
 		AnimInstance->Montage_Play(IdlePatrolMontage);
 		AnimInstance->Montage_JumpToSection(SectionName, IdlePatrolMontage);
 	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("PlayIdlePatrolMontage else"));
-		FinishIdlePatrol();
-	}
+	//else
+	//{
+	//	UE_LOG(LogTemp, Warning, TEXT("PlayIdlePatrolMontage else"));
+	//	FinishIdlePatrol();
+	//}
 }
 
 FName& AEnemy::IdlePatrolSectionName()
@@ -493,7 +519,19 @@ void AEnemy::Tick(float DeltaTime)
 	// Idle Patrol
 	if (IsIdlePatrolling()) // only Paladin has IdlePatrolling...
 	{
-		PlayIdlePatrolMontage(IdlePatrolSectionName());
+		UE_LOG(LogTemp, Warning, TEXT("IsIdlePatrolling() true"));
+		// if (IdlePatrolMontage == nullptr) FinishIdlePatrol();
+		if (IdlePatrolMontage != nullptr)
+		{
+
+			PlayIdlePatrolMontage(IdlePatrolSectionName());
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("IdlePatrolMontage is null. Else in tick"));
+			FinishIdlePatrol();
+		}
+		
 	}
 
 	if (EnemyState > EEnemyState::EES_Patrolling)
@@ -502,6 +540,7 @@ void AEnemy::Tick(float DeltaTime)
 	}
 	else
 	{
+		//UE_LOG(LogTemp, Warning, TEXT("EnemyState < EEnemyState::EES_Patrolling")); // ok
 		CheckPatrolTarget(); // Set to EAS_IdlePatrol
 	}
 }

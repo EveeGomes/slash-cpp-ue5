@@ -286,6 +286,8 @@ void ASlashCharacter::UnlockFromTarget()
 	if (Enemy) Enemy->HideLockedEffect();
 	// should set Enemy to nullptr as well?
 
+	//ViewCamera->bUsePawnControlRotation = true;
+
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->bUseControllerDesiredRotation = false;
 
@@ -476,6 +478,11 @@ void ASlashCharacter::Tick(float DeltaTime)
 		FVector LockedTargetLocation = CombatTarget->GetActorLocation();
 
 		Controller->SetControlRotation(UKismetMathLibrary::FindLookAtRotation(SlashLocation, LockedTargetLocation));
+		
+		//SpringArm->SetRelativeRotation(UKismetMathLibrary::FindLookAtRotation(SlashLocation, LockedTargetLocation));
+		//SpringArm->SocketOffset = LockedTargetLocation;
+		//ViewCamera->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(ViewCamera->GetComponentLocation(), LockedTargetLocation));
+		//ViewCamera->bUsePawnControlRotation = false;
 	}
 	if ((Enemy && Enemy->IsDead()) || IsOutOfRange())
 	{
