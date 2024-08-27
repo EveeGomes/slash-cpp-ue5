@@ -155,7 +155,7 @@ protected:
 	/** </AActor> */
 
 	/** <ABaseCharacter> */
-	virtual void Die() override;
+	virtual void Die_Implementation() override;
 	
 	/** Attack */
 	virtual void Attack() override;

@@ -57,7 +57,7 @@ void ABaseCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* H
 	else
 	{
 		// Play death montage using a function that handles the enemy death montage
-		Die();
+		Die(); // call Die() or Die_Implementation() ?
 	}
 
 	PlayHitSound(ImpactPoint);
@@ -82,7 +82,7 @@ bool ABaseCharacter::IsAlive()
 	return Attributes && Attributes->IsAlive();
 }
 
-void ABaseCharacter::Die()
+void ABaseCharacter::Die_Implementation()
 {
 	/** 
 	* As soon as BaseCharacter dies, it'll have a Dead tag.
