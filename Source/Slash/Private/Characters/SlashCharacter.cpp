@@ -196,6 +196,16 @@ void ASlashCharacter::EKeyPressed()
 	AWeapon* OverlappingWeapon = Cast<AWeapon>(OverlappingItem);
 	if (OverlappingWeapon)
 	{
+		/** 
+		* Destroy current weapon if trying to equip/get another weapon when overlapping with it.
+		* As we might be unequipped but with a weapon on our back, we need to destroy it but also return to equipped state!
+		* That change to equipped state happens in EquipWeapon already.
+		*/
+		if (EquippedWeapon)
+		{
+			EquippedWeapon->Destroy();
+		}
+
 		EquipWeapon(OverlappingWeapon);
 	}
 	else
