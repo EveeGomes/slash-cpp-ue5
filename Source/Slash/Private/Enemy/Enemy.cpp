@@ -45,14 +45,14 @@ bool AEnemy::InTargetRange(AActor* Target, double Radius)
 	// Return false in case Target is invalid so in Tick we can remove some other validations
 	if (Target == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Target is null in InTargetRange()"));
+		//UE_LOG(LogTemp, Warning, TEXT("Target is null in InTargetRange()"));
 		return false;
 	}
-	UE_LOG(LogTemp, Warning, TEXT("Target is valid in InTargetRange()"));
+	//UE_LOG(LogTemp, Warning, TEXT("Target is valid in InTargetRange()"));
 
-	const FString TargetName = Target->GetActorNameOrLabel();
-	//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Yellow, FString::Printf(TEXT("%s"), &TargetName));
-	UE_LOG(LogTemp, Warning, TEXT("%s"), *TargetName);
+	//const FString TargetName = Target->GetActorNameOrLabel();
+	////GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Yellow, FString::Printf(TEXT("%s"), *TargetName));
+	//UE_LOG(LogTemp, Warning, TEXT("%s"), *TargetName);
 	//UE_LOG(LogTemp, Warning, TEXT("Target isn't null in InTargetRange()")); // ok
 
 	const double DistanceToTarget = (Target->GetActorLocation() - GetActorLocation()).Size();
@@ -61,14 +61,14 @@ bool AEnemy::InTargetRange(AActor* Target, double Radius)
 
 
 	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Yellow, FString::Printf(TEXT("%d"), DistanceToTarget <= Radius)); // false
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("Distance %f, radius %f"), DistanceToTarget, Radius));
+	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("Distance %f, radius %f"), DistanceToTarget, Radius));
 	// had to change patrol radius to 800 in BP_Raptor
 	return DistanceToTarget <= Radius;
 }
 
 AActor* AEnemy::ChoosePatrolTarget() 
 {
-	UE_LOG(LogTemp, Warning, TEXT("ChoosePatrolTarget()"));
+	/*UE_LOG(LogTemp, Warning, TEXT("ChoosePatrolTarget()"));*/
 	/** Have an array filled with all patrol targets except the one we currently have. */
 	TArray<AActor*> ValidTargets;
 	for (AActor* Target : PatrolTargets)
@@ -102,7 +102,7 @@ void AEnemy::CheckPatrolTarget() // EEnemyState::EES_Patrolling
 		// Also check if it's not in IdlePatrol state already? This prevents bugs for spamming setting the same state
 		if (EnemyState == EEnemyState::EES_Patrolling) 
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Patrolling -> IdlePatrol"));
+			//UE_LOG(LogTemp, Warning, TEXT("Patrolling -> IdlePatrol"));
 			EnemyState = EEnemyState::EES_IdlePatrol;
 		}
 
@@ -114,7 +114,7 @@ void AEnemy::CheckPatrolTarget() // EEnemyState::EES_Patrolling
 /** When the timer has elapsed, call MoveToTarget */
 void AEnemy::PatrolTimerFinished()
 {	
-	UE_LOG(LogTemp, Warning, TEXT("PatrolTimerFinished()")); // plays this but not MoveToTarget?
+	//UE_LOG(LogTemp, Warning, TEXT("PatrolTimerFinished()")); // plays this but not MoveToTarget?
 	MoveToTarget(PatrolTarget);
 }
 
@@ -184,6 +184,7 @@ void AEnemy::CheckCombatTarget()
 	}
 	else if (IsOutsideAttackRadius() && !IsChasing())
 	{
+		UE_LOG(LogTemp, Warning, TEXT("IsOutsideAttackRadius() && !IsChasing()"));
 		/** 
 		* We shall clear the attack timer here as well to avoid calling the attack while chasing the target.
 		* Then, we check if it's not engaged and only then, the enemy can chase the target.
@@ -283,6 +284,8 @@ bool AEnemy::IsOutsideAttackRadius()
 
 bool AEnemy::IsInsideAttackRadius()
 {
+	UE_LOG(LogTemp, Warning, TEXT("IsInsideAttackRadius(): %d"), InTargetRange(CombatTarget, AttackRadius));
+	UE_LOG(LogTemp, Warning, TEXT("EnemyState: %d"), EnemyState);
 	return InTargetRange(CombatTarget, AttackRadius);
 }
 
@@ -293,6 +296,7 @@ bool AEnemy::IsIdlePatrolling()
 
 bool AEnemy::IsChasing()
 {
+	UE_LOG(LogTemp, Warning, TEXT("IsChasing(): %d"), EnemyState == EEnemyState::EES_Chasing);
 	return EnemyState == EEnemyState::EES_Chasing;
 }
 
@@ -329,11 +333,6 @@ void AEnemy::PlayIdlePatrolMontage(const FName& SectionName)
 		AnimInstance->Montage_Play(IdlePatrolMontage);
 		AnimInstance->Montage_JumpToSection(SectionName, IdlePatrolMontage);
 	}
-	//else
-	//{
-	//	UE_LOG(LogTemp, Warning, TEXT("PlayIdlePatrolMontage else"));
-	//	FinishIdlePatrol();
-	//}
 }
 
 FName& AEnemy::IdlePatrolSectionName()
