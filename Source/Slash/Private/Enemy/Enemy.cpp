@@ -575,10 +575,12 @@ void AEnemy::GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter)
 	* The raptor will remain in the same place, not triggering the chasing mode to go after the player and attack again.
 	* To fix that (for the Raptor and any other enemy) we gotta check if it's still in the attack radius and then start the
 	*  attack timer again!
+	* Also, we gotta make sure the enemy isn't dead! Otherwise it would raise up and start attacking again after the timer
+	*  is finished lol.
 	*/
 
 	if (IsInsideAttackRadius())
 	{
-		StartAttackTimer();
+		if (!IsDead()) StartAttackTimer();
 	}
 }
