@@ -284,8 +284,6 @@ bool AEnemy::IsOutsideAttackRadius()
 
 bool AEnemy::IsInsideAttackRadius()
 {
-	UE_LOG(LogTemp, Warning, TEXT("IsInsideAttackRadius(): %d"), InTargetRange(CombatTarget, AttackRadius));
-	UE_LOG(LogTemp, Warning, TEXT("EnemyState: %d"), EnemyState);
 	return InTargetRange(CombatTarget, AttackRadius);
 }
 
@@ -296,7 +294,6 @@ bool AEnemy::IsIdlePatrolling()
 
 bool AEnemy::IsChasing()
 {
-	UE_LOG(LogTemp, Warning, TEXT("IsChasing(): %d"), EnemyState == EEnemyState::EES_Chasing);
 	return EnemyState == EEnemyState::EES_Chasing;
 }
 
@@ -518,19 +515,14 @@ void AEnemy::Tick(float DeltaTime)
 	// Idle Patrol
 	if (IsIdlePatrolling()) // only Paladin has IdlePatrolling...
 	{
-		UE_LOG(LogTemp, Warning, TEXT("IsIdlePatrolling() true"));
-		// if (IdlePatrolMontage == nullptr) FinishIdlePatrol();
 		if (IdlePatrolMontage != nullptr)
 		{
-
 			PlayIdlePatrolMontage(IdlePatrolSectionName());
 		}
 		else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("IdlePatrolMontage is null. Else in tick"));
 			FinishIdlePatrol();
 		}
-		
 	}
 
 	if (EnemyState > EEnemyState::EES_Patrolling)
@@ -539,7 +531,6 @@ void AEnemy::Tick(float DeltaTime)
 	}
 	else
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("EnemyState < EEnemyState::EES_Patrolling")); // ok
 		CheckPatrolTarget(); // Set to EAS_IdlePatrol
 	}
 }
@@ -578,4 +569,16 @@ void AEnemy::GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter)
 	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	StopAttackMontage();
+	/** 
+	* The Raptor hit react animation doesn't have root motion like the paladin so it won't move and go outside the attack
+	*  radius (which puts the paladin into Chasing mode and then it chases the player character to then attack).
+	* The raptor will remain in the same place, not triggering the chasing mode to go after the player and attack again.
+	* To fix that (for the Raptor and any other enemy) we gotta check if it's still in the attack radius and then start the
+	*  attack timer again!
+	*/
+
+	if (IsInsideAttackRadius())
+	{
+		StartAttackTimer();
+	}
 }
