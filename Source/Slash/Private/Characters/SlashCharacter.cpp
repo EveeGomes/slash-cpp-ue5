@@ -238,7 +238,7 @@ void ASlashCharacter::LockTarget()
 	if (CanLock())
 	{
 		// Engage lock
-		SphereTrace();
+		SphereTrace(); // CombatTarget set to enemy
 		LockToTarget();
 	}
 	else
@@ -293,8 +293,11 @@ void ASlashCharacter::UnlockFromTarget()
 	CombatTarget = nullptr;
 	bIsEnemy = false;
 
-	if (Enemy) Enemy->HideLockedEffect();
-	// should set Enemy to nullptr as well?
+	if (Enemy)
+	{
+		Enemy->HideLockedEffect();
+		Enemy = nullptr;
+	}
 
 	//ViewCamera->bUsePawnControlRotation = true;
 

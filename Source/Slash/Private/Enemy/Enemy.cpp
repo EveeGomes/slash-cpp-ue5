@@ -27,8 +27,6 @@
 
 #include "HUD/LockedTargetComponent.h"
 
-#include "Slash/DebugMacros.h"
-
 
 void AEnemy::InitializeEnemy()
 {
@@ -45,30 +43,16 @@ bool AEnemy::InTargetRange(AActor* Target, double Radius)
 	// Return false in case Target is invalid so in Tick we can remove some other validations
 	if (Target == nullptr)
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("Target is null in InTargetRange()"));
 		return false;
 	}
-	//UE_LOG(LogTemp, Warning, TEXT("Target is valid in InTargetRange()"));
-
-	//const FString TargetName = Target->GetActorNameOrLabel();
-	////GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Yellow, FString::Printf(TEXT("%s"), *TargetName));
-	//UE_LOG(LogTemp, Warning, TEXT("%s"), *TargetName);
-	//UE_LOG(LogTemp, Warning, TEXT("Target isn't null in InTargetRange()")); // ok
 
 	const double DistanceToTarget = (Target->GetActorLocation() - GetActorLocation()).Size();
-	DRAW_SPHERE_SingleFrame(GetActorLocation());
-	DRAW_SPHERE_SingleFrame(Target->GetActorLocation());
 
-
-	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Yellow, FString::Printf(TEXT("%d"), DistanceToTarget <= Radius)); // false
-	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("Distance %f, radius %f"), DistanceToTarget, Radius));
-	// had to change patrol radius to 800 in BP_Raptor
 	return DistanceToTarget <= Radius;
 }
 
 AActor* AEnemy::ChoosePatrolTarget() 
 {
-	/*UE_LOG(LogTemp, Warning, TEXT("ChoosePatrolTarget()"));*/
 	/** Have an array filled with all patrol targets except the one we currently have. */
 	TArray<AActor*> ValidTargets;
 	for (AActor* Target : PatrolTargets)
@@ -82,7 +66,6 @@ AActor* AEnemy::ChoosePatrolTarget()
 	// select one of the patrol target at random, and return our patrol target
 	if (ValidTargets.Num() > 0)
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("ValidTargets.Num() > 0")); // ok
 		const int32 TargetSelection = FMath::RandRange(0, ValidTargets.Num() - 1);
 		return ValidTargets[TargetSelection];
 	}
@@ -102,19 +85,17 @@ void AEnemy::CheckPatrolTarget() // EEnemyState::EES_Patrolling
 		// Also check if it's not in IdlePatrol state already? This prevents bugs for spamming setting the same state
 		if (EnemyState == EEnemyState::EES_Patrolling) 
 		{
-			//UE_LOG(LogTemp, Warning, TEXT("Patrolling -> IdlePatrol"));
 			EnemyState = EEnemyState::EES_IdlePatrol;
 		}
 
 		const float WaitTime = FMath::RandRange(PatrolWaitMin, PatrolWaitMax);
-		GetWorldTimerManager().SetTimer(PatrolTimer, this, &AEnemy::PatrolTimerFinished, WaitTime); // BP_Raptor never calls this
+		GetWorldTimerManager().SetTimer(PatrolTimer, this, &AEnemy::PatrolTimerFinished, WaitTime);
 	}
 }
 
 /** When the timer has elapsed, call MoveToTarget */
 void AEnemy::PatrolTimerFinished()
 {	
-	//UE_LOG(LogTemp, Warning, TEXT("PatrolTimerFinished()")); // plays this but not MoveToTarget?
 	MoveToTarget(PatrolTarget);
 }
 
@@ -128,15 +109,12 @@ void AEnemy::StartPatrolling()
 
 void AEnemy::MoveToTarget(AActor* Target)
 {
-	if (EnemyController == nullptr || Target == nullptr) return; // this removes the need for the next if statement
+	if (EnemyController == nullptr || Target == nullptr) return;
 
-	UE_LOG(LogTemp, Warning, TEXT("MoveToTarget() Target not null"));
 	FAIMoveRequest MoveRequest;
 	MoveRequest.SetGoalActor(Target);
 	MoveRequest.SetAcceptanceRadius(AcceptanceRadius);
 	EnemyController->MoveTo(MoveRequest);
-	
-	if (MoveRequest.IsValid()) UE_LOG(LogTemp, Warning, TEXT("MoveResques is valid"));
 }
 
 void AEnemy::SpawnDefaultWeapon()
@@ -184,7 +162,6 @@ void AEnemy::CheckCombatTarget()
 	}
 	else if (IsOutsideAttackRadius() && !IsChasing())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("IsOutsideAttackRadius() && !IsChasing()"));
 		/** 
 		* We shall clear the attack timer here as well to avoid calling the attack while chasing the target.
 		* Then, we check if it's not engaged and only then, the enemy can chase the target.
@@ -393,6 +370,7 @@ void AEnemy::Die_Implementation()
 	DisableCapsule();
 	SetLifeSpan(DeathLifeSpan);
 	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
+	CombatTarget = nullptr;
 
 	/**
 	* To spawn an actor, we use a UWorld function.

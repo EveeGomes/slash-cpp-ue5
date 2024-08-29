@@ -233,7 +233,10 @@ void ABaseCharacter::StopAttackMontage()
 
 FVector ABaseCharacter::GetTranslationWarpTarget()
 {
-	if (CombatTarget == nullptr) return FVector();
+	if (CombatTarget == nullptr)
+	{
+		return FVector();
+	}
 
 	/** 
 	* We need a vector from the CombatTargetLocation to the Location of whoever is attacking (the enemy in this case).
