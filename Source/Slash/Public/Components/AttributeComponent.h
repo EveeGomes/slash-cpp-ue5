@@ -32,7 +32,9 @@ public:
 	FORCEINLINE int32 GetGold() const { return Gold; }
 	FORCEINLINE int32 GetSouls() const { return Souls; }
 	FORCEINLINE float GetDodgeCost() const { return DodgeCost; }
+	FORCEINLINE float GetSpeedUpCost() const { return SpeedUpCost; }
 	FORCEINLINE float GetStamina() const { return Stamina; }
+	FORCEINLINE float GetMaxStamina() const { return MaxStamina; }
 
 protected:
 	// Called when the game starts
@@ -61,6 +63,9 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
 	float DodgeCost = 14.f;
+
+	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
+	float SpeedUpCost = 8.f;
 
 	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
 	float StaminaRegenRate = 8.f;

@@ -88,6 +88,8 @@ private:
 	UPROPERTY()
 	TObjectPtr<USlashOverlay> SlashOverlay;
 
+	double SlashVelocity = 0.0;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -96,6 +98,8 @@ protected:
 	void Look(const FInputActionValue& Value);
 	virtual void Jump() override;
 	void Dodge();
+	void SpeedUp(const FInputActionValue& Value);
+	void EndSpeedUp(const FInputActionValue& Value);
 
 	void EKeyPressed();
 	void LeftButtonAttack();
@@ -182,6 +186,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputAction> DodgeIA;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> SpeedUpAction;
 
 public:
 	ASlashCharacter();

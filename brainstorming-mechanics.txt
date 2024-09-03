@@ -1,7 +1,7 @@
-[] Add attacks to keys: 
-[] 1 - attack "down"? - special? -> how to direct the attack animation?
-[] 2 - attack "up"? - special?
-[] left mouse button - normal attack
+[x] Add attacks to keys: 
+[x] 1 - attack "down"? - special? -> how to direct the attack animation?
+[x] 2 - attack "up"? - special?
+[x] left mouse button - normal attack
 
 In SlashCharacter, when Attack() is triggered by clicking the left mouse button, it calls the PlayAttackMontage() which then calls PlayRandomMontageSection(). That last receives the AttackMontage set in BP and the AttackMontageSections which is an array of FNames, also set/added in BP.
 Would it be possible to in the Binding function to the IA, say Attack(), instead of calling PlayAttackMontage() without params, it turn into PlayAttackMontage(const FName& SectionName), then, instead of calling PlayRandomMontageSection() it would call PlayMontageSection(UAnimMontage* Montage, const FName& SectionName) passing the AttackMontage and the SectionName.

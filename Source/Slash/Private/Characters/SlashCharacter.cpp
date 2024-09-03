@@ -52,6 +52,9 @@
 #include "Items/Treasure.h"
 #include "Items/Health.h"
 
+/** Used in SpeedUp */
+#include "Kismet/KismetMathLibrary.h"
+
 void ASlashCharacter::InitializeSlashOverlay(APlayerController* PlayerController)
 {
 	ASlashHUD* SlashHUD = Cast<ASlashHUD>(PlayerController->GetHUD());
@@ -189,6 +192,30 @@ void ASlashCharacter::Dodge()
 		// Update the HUD
 		SetHUDStamina();
 	}
+}
+
+void ASlashCharacter::SpeedUp(const FInputActionValue& Value)
+{
+	if (Attributes && Attributes->GetStamina() < Attributes->GetMaxStamina() * .10)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 600;
+		return;
+	}
+
+	const float Speeding = Value.Get<float>();
+	UE_LOG(LogTemp, Warning, TEXT("%f"), Speeding); // 1.0
+
+	GetCharacterMovement()->MaxWalkSpeed = 1200;
+	if (Attributes && SlashOverlay)
+	{
+		Attributes->UseStamina(Attributes->GetSpeedUpCost());
+		SetHUDStamina();
+	}
+}
+
+void ASlashCharacter::EndSpeedUp(const FInputActionValue& Value)
+{
+	GetCharacterMovement()->MaxWalkSpeed = 600;
 }
 
 void ASlashCharacter::EKeyPressed()
@@ -509,6 +536,8 @@ void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 		EnhancedInputComponent->BindAction(ThreeKeyAttackAction, ETriggerEvent::Triggered, this, &ASlashCharacter::ThreeKeyAttack);
 		EnhancedInputComponent->BindAction(LockOnTarget, ETriggerEvent::Started, this, &ASlashCharacter::LockTarget);
 		EnhancedInputComponent->BindAction(DodgeIA, ETriggerEvent::Started, this, &ASlashCharacter::Dodge);
+		EnhancedInputComponent->BindAction(SpeedUpAction, ETriggerEvent::Triggered, this, &ASlashCharacter::SpeedUp);
+		EnhancedInputComponent->BindAction(SpeedUpAction, ETriggerEvent::Completed, this, &ASlashCharacter::EndSpeedUp);
 	}
 }
 
