@@ -98,7 +98,9 @@ protected:
 	void Dodge();
 
 	void EKeyPressed();
-	virtual void Attack() override;
+	void LeftButtonAttack();
+	void OneKeyAttack();
+	void TwoKeyAttack();
 	void LockTarget();
 	void LockToTarget();
 
@@ -163,7 +165,13 @@ protected:
 	TObjectPtr<UInputAction> EquipAction;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
-	TObjectPtr<UInputAction> AttackAction;
+	TObjectPtr<UInputAction> LeftAttackAction;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> OneKeyAttackAction;
+	
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> TwoKeyAttackAction;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputAction> LockOnTarget;

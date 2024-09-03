@@ -221,7 +221,29 @@ void ASlashCharacter::EKeyPressed()
 	}
 }
 
-void ASlashCharacter::Attack()
+void ASlashCharacter::LeftButtonAttack()
+{
+	Super::Attack();
+
+	if (CanAttack())
+	{
+		PlayAttackMontage();
+		ActionState = EActionState::EAS_Attacking;
+	}
+}
+
+void ASlashCharacter::OneKeyAttack()
+{
+	Super::Attack();
+
+	if (CanAttack())
+	{
+		PlayAttackMontage();
+		ActionState = EActionState::EAS_Attacking;
+	}
+}
+
+void ASlashCharacter::TwoKeyAttack()
 {
 	Super::Attack();
 
@@ -470,7 +492,9 @@ void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Look);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Jump);
 		EnhancedInputComponent->BindAction(EquipAction, ETriggerEvent::Triggered, this, &ASlashCharacter::EKeyPressed);
-		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Attack);
+		EnhancedInputComponent->BindAction(LeftAttackAction, ETriggerEvent::Triggered, this, &ASlashCharacter::LeftButtonAttack);
+		EnhancedInputComponent->BindAction(OneKeyAttackAction, ETriggerEvent::Triggered, this, &ASlashCharacter::OneKeyAttack);
+		EnhancedInputComponent->BindAction(TwoKeyAttackAction, ETriggerEvent::Triggered, this, &ASlashCharacter::TwoKeyAttack);
 		EnhancedInputComponent->BindAction(LockOnTarget, ETriggerEvent::Started, this, &ASlashCharacter::LockTarget);
 		EnhancedInputComponent->BindAction(DodgeIA, ETriggerEvent::Started, this, &ASlashCharacter::Dodge);
 	}
