@@ -101,6 +101,7 @@ protected:
 	void LeftButtonAttack();
 	void OneKeyAttack();
 	void TwoKeyAttack();
+	void ThreeKeyAttack();
 	void LockTarget();
 	void LockToTarget();
 
@@ -172,6 +173,9 @@ protected:
 	
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputAction> TwoKeyAttackAction;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> ThreeKeyAttackAction;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputAction> LockOnTarget;
