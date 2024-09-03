@@ -200,6 +200,11 @@ void ABaseCharacter::PlayHitReactMontage(const FName& SectionName)
 	}
 }
 
+void ABaseCharacter::PlaySingleAttackMontage(const FName& SectionName)
+{
+	PlayMontageSection(AttackMontage, SectionName);
+}
+
 int32 ABaseCharacter::PlayAttackMontage()
 {
 	return PlayRandomMontageSection(AttackMontage, AttackMontageSections);

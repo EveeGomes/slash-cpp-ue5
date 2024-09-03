@@ -227,7 +227,7 @@ void ASlashCharacter::LeftButtonAttack()
 
 	if (CanAttack())
 	{
-		PlayAttackMontage();
+		PlaySingleAttackMontage(FName("Attack3"));
 		ActionState = EActionState::EAS_Attacking;
 	}
 }
@@ -238,7 +238,7 @@ void ASlashCharacter::OneKeyAttack()
 
 	if (CanAttack())
 	{
-		PlayAttackMontage();
+		PlaySingleAttackMontage(FName("Attack1"));
 		ActionState = EActionState::EAS_Attacking;
 	}
 }
@@ -249,7 +249,7 @@ void ASlashCharacter::TwoKeyAttack()
 
 	if (CanAttack())
 	{
-		PlayAttackMontage();
+		PlaySingleAttackMontage(FName("Attack2"));
 		ActionState = EActionState::EAS_Attacking;
 	}
 }
