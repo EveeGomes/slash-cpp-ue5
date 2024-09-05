@@ -99,6 +99,7 @@ protected:
 	virtual void Jump() override;
 	void Dodge();
 	void SpeedUp(const FInputActionValue& Value);
+	void SetMaxWalkSpeed(const int32 Speed);
 	void EndSpeedUp(const FInputActionValue& Value);
 
 	void EKeyPressed();

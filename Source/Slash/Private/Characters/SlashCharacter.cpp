@@ -198,11 +198,11 @@ void ASlashCharacter::SpeedUp(const FInputActionValue& Value)
 {
 	if (Attributes && Attributes->GetStamina() < Attributes->GetMaxStamina() * .10)
 	{
-		GetCharacterMovement()->MaxWalkSpeed = 600;
+		SetMaxWalkSpeed(600);
 		return;
 	}
 
-	GetCharacterMovement()->MaxWalkSpeed = 1200;
+	SetMaxWalkSpeed(1200);
 	if (Attributes && SlashOverlay)
 	{
 		Attributes->UseStamina(Attributes->GetSpeedUpCost());
@@ -210,9 +210,14 @@ void ASlashCharacter::SpeedUp(const FInputActionValue& Value)
 	}
 }
 
+void ASlashCharacter::SetMaxWalkSpeed(const int32 Speed)
+{
+	GetCharacterMovement()->MaxWalkSpeed = Speed;
+}
+
 void ASlashCharacter::EndSpeedUp(const FInputActionValue& Value)
 {
-	GetCharacterMovement()->MaxWalkSpeed = 600;
+	SetMaxWalkSpeed(600);
 }
 
 void ASlashCharacter::EKeyPressed()
