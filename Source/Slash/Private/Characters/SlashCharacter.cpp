@@ -51,6 +51,7 @@
 #include "Items/Soul.h"
 #include "Items/Treasure.h"
 #include "Items/Health.h"
+#include "Items/Book.h"
 
 /** Used in SpeedUp */
 #include "Kismet/KismetMathLibrary.h"
@@ -606,7 +607,7 @@ void ASlashCharacter::SetOverlappingItem(AItem* Item)
 	OverlappingItem = Item;
 }
 
-void ASlashCharacter::AddSouls(ASoul* Soul)
+void ASlashCharacter::AddSouls(ASoul* Soul) // Override from IPickupInterface; it'll be called from Soul class when it's picked up
 {
 	if (Attributes && SlashOverlay)
 	{
@@ -632,6 +633,14 @@ void ASlashCharacter::AddHealth(AHealth* Health)
 		Attributes->AddHealth(Health->GetHealth());
 		// Update HUD
 		SetHUDHealth();
+	}
+}
+
+void ASlashCharacter::AddBook(ABook* Book)
+{
+	if (SlashOverlay)
+	{
+		SlashOverlay->SetBooks(Book->GetBooks());
 	}
 }
 

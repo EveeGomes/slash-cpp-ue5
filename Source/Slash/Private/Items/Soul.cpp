@@ -41,7 +41,7 @@ void ASoul::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 	IPickupInterface* PickupInterface = Cast<IPickupInterface>(OtherActor);
 	if (PickupInterface)
 	{
-		PickupInterface->AddSouls(this);
+		PickupInterface->AddSouls(this); // because each enemy has their own number of souls, each soul object has different amount of Souls
 
 		SpawnPickupSystem();
 		SpawnPickupSound();

@@ -22,6 +22,7 @@ class AItem;
 class ASoul;
 class ATreasure;
 class AHealth;
+class ABook;
 class UAnimMontage;
 class AWeapon;
 class UPawnSensingComponent;
@@ -218,6 +219,7 @@ public:
 	virtual void AddSouls(ASoul* Soul) override;
 	virtual void AddGold(ATreasure* Treasure) override;
 	virtual void AddHealth(AHealth* Health) override;
+	virtual void AddBook(ABook* Book) override;
 	/** </IPickupInterface> */
 	
 	/** 

@@ -36,3 +36,11 @@ void USlashOverlay::SetSouls(int32 Souls)
       SoulsText->SetText(FText::FromString(FString::Printf(TEXT("%d"), Souls)));
    }
 }
+
+void USlashOverlay::SetBooks(int32 Books)
+{
+   if (BooksText)
+   {
+      BooksText->SetText(FText::FromString(FString::Printf(TEXT("%d"), Books)));
+   }
+}
