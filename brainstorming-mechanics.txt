@@ -12,8 +12,12 @@ PlayAttackMontage() calls PlayRandomMontageSection(AttackMontage, AttackMontageS
 	PlayRandomMontageSection(UAnimMontage* Montage, const TArray<FName>& SectionNames)
 
 
-[] Add a collectable item to the HUD? A special treasure? As if it would be goal of the game?
+[] Add a collectable item to the HUD? A special treasure? As if it would be the goal for the game to end?
+- 
 
-[] Add a key to increase the character's speed momentaneous? But it would also take some stamina like the dodge skill?
+
+[x] Add an input key to increase the character's speed momentaneous? But it would also take some stamina like the dodge skill?
 - while pressing shift, would increase the speed, but also consume stamina
+
+To increase a character's speed, I should actually add to its acceleration, right? -> not really
 

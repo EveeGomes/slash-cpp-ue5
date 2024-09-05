@@ -202,9 +202,6 @@ void ASlashCharacter::SpeedUp(const FInputActionValue& Value)
 		return;
 	}
 
-	const float Speeding = Value.Get<float>();
-	UE_LOG(LogTemp, Warning, TEXT("%f"), Speeding); // 1.0
-
 	GetCharacterMovement()->MaxWalkSpeed = 1200;
 	if (Attributes && SlashOverlay)
 	{
