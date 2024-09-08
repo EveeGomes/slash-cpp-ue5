@@ -12,7 +12,9 @@ PlayAttackMontage() calls PlayRandomMontageSection(AttackMontage, AttackMontageS
 	PlayRandomMontageSection(UAnimMontage* Montage, const TArray<FName>& SectionNames)
 
 
-[] Add a collectable item to the HUD? A special treasure? As if it would be the goal for the game to end?
+[x] Add a collectable item to the HUD? A special treasure? As if it would be the goal for the game to end?
+- it must be an Item
+- its text block should be a variable in SlashOverlay so it can be manipulated in C++
 - 
 
 

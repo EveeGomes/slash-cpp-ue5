@@ -96,7 +96,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	double AttackRadius = 200;
 
-	// Threshold to start attacking the player
+	// Threshold to reach the target
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	float AcceptanceRadius = 50.f;
 
@@ -166,7 +166,7 @@ protected:
 
 	void SpawnSoul();
 	/** States */
-	UPROPERTY(BlueprintReadOnly) // This specifier only works for non-private variables!
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly) // This specifier only works for non-private variables!
 	EEnemyState EnemyState = EEnemyState::EES_Patrolling;
 
 	/** Locked effects */
