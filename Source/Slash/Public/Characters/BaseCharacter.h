@@ -87,7 +87,8 @@ protected:
 	virtual void Attack();
 	virtual bool CanAttack();
 	bool IsAlive();
-	virtual void Die();
+	UFUNCTION(BlueprintNativeEvent)
+	void Die();
 	void DirectionalHitReact(const FVector& ImpactPoint);
 	virtual void HandleDamage(float DamageAmount);
 	void PlayHitSound(const FVector& ImpactPoint);
@@ -99,6 +100,7 @@ protected:
 	void PlayHitReactMontage(const FName& SectionName);
 	// Choose a section name from AttackMontageSections array
 	virtual int32 PlayAttackMontage();
+	void PlaySingleAttackMontage(const FName& SectionName);
 	/** 
 	* The return value we'll use in the transition to a Death pose in ABP.
 	* We'll override this function in the enemy class so it can use return value (the index).

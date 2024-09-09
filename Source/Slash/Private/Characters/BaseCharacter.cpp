@@ -57,7 +57,7 @@ void ABaseCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* H
 	else
 	{
 		// Play death montage using a function that handles the enemy death montage
-		Die();
+		Die(); // call Die() or Die_Implementation() ?
 	}
 
 	PlayHitSound(ImpactPoint);
@@ -82,7 +82,7 @@ bool ABaseCharacter::IsAlive()
 	return Attributes && Attributes->IsAlive();
 }
 
-void ABaseCharacter::Die()
+void ABaseCharacter::Die_Implementation()
 {
 	/** 
 	* As soon as BaseCharacter dies, it'll have a Dead tag.
@@ -200,6 +200,11 @@ void ABaseCharacter::PlayHitReactMontage(const FName& SectionName)
 	}
 }
 
+void ABaseCharacter::PlaySingleAttackMontage(const FName& SectionName)
+{
+	PlayMontageSection(AttackMontage, SectionName);
+}
+
 int32 ABaseCharacter::PlayAttackMontage()
 {
 	return PlayRandomMontageSection(AttackMontage, AttackMontageSections);
@@ -233,7 +238,10 @@ void ABaseCharacter::StopAttackMontage()
 
 FVector ABaseCharacter::GetTranslationWarpTarget()
 {
-	if (CombatTarget == nullptr) return FVector();
+	if (CombatTarget == nullptr)
+	{
+		return FVector();
+	}
 
 	/** 
 	* We need a vector from the CombatTargetLocation to the Location of whoever is attacking (the enemy in this case).

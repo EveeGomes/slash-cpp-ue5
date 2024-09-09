@@ -22,6 +22,7 @@ class AItem;
 class ASoul;
 class ATreasure;
 class AHealth;
+class ABook;
 class UAnimMontage;
 class AWeapon;
 class UPawnSensingComponent;
@@ -88,6 +89,8 @@ private:
 	UPROPERTY()
 	TObjectPtr<USlashOverlay> SlashOverlay;
 
+	double SlashVelocity = 0.0;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -96,9 +99,15 @@ protected:
 	void Look(const FInputActionValue& Value);
 	virtual void Jump() override;
 	void Dodge();
+	void SpeedUp(const FInputActionValue& Value);
+	void SetMaxWalkSpeed(const int32 Speed);
+	void EndSpeedUp(const FInputActionValue& Value);
 
 	void EKeyPressed();
-	virtual void Attack() override;
+	void LeftButtonAttack();
+	void OneKeyAttack();
+	void TwoKeyAttack();
+	void ThreeKeyAttack();
 	void LockTarget();
 	void LockToTarget();
 
@@ -113,7 +122,7 @@ protected:
 	virtual void AttackEnd() override;
 	virtual void DodgeEnd() override;
 	virtual bool CanAttack() override;
-	virtual void Die() override;
+	virtual void Die_Implementation() override;
 	bool HasEnoughStamina();
 	bool CanDodge();
 
@@ -163,13 +172,25 @@ protected:
 	TObjectPtr<UInputAction> EquipAction;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
-	TObjectPtr<UInputAction> AttackAction;
+	TObjectPtr<UInputAction> LeftAttackAction;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> OneKeyAttackAction;
+	
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> TwoKeyAttackAction;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> ThreeKeyAttackAction;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputAction> LockOnTarget;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputAction> DodgeIA;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> SpeedUpAction;
 
 public:
 	ASlashCharacter();
@@ -198,6 +219,7 @@ public:
 	virtual void AddSouls(ASoul* Soul) override;
 	virtual void AddGold(ATreasure* Treasure) override;
 	virtual void AddHealth(AHealth* Health) override;
+	virtual void AddBook(ABook* Book) override;
 	/** </IPickupInterface> */
 	
 	/** 

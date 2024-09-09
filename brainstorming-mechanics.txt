@@ -1,0 +1,25 @@
+[x] Add attacks to keys: 
+[x] 1 - attack "down"? - special? -> how to direct the attack animation?
+[x] 2 - attack "up"? - special?
+[x] left mouse button - normal attack
+
+In SlashCharacter, when Attack() is triggered by clicking the left mouse button, it calls the PlayAttackMontage() which then calls PlayRandomMontageSection(). That last receives the AttackMontage set in BP and the AttackMontageSections which is an array of FNames, also set/added in BP.
+Would it be possible to in the Binding function to the IA, say Attack(), instead of calling PlayAttackMontage() without params, it turn into PlayAttackMontage(const FName& SectionName), then, instead of calling PlayRandomMontageSection() it would call PlayMontageSection(UAnimMontage* Montage, const FName& SectionName) passing the AttackMontage and the SectionName.
+Transform into void? It was int32 (why int32? -> to use in ABP, see PlayDeathMontage in BaseCharacter.h)
+Had to create another function since PlayAttackMontage could not have params because Enemy also calls it! 
+
+PlayAttackMontage() calls PlayRandomMontageSection(AttackMontage, AttackMontageSections) and returns an int32.
+	PlayRandomMontageSection(UAnimMontage* Montage, const TArray<FName>& SectionNames)
+
+
+[x] Add a collectable item to the HUD? A special treasure? As if it would be the goal for the game to end?
+- it must be an Item
+- its text block should be a variable in SlashOverlay so it can be manipulated in C++
+- 
+
+
+[x] Add an input key to increase the character's speed momentaneous? But it would also take some stamina like the dodge skill?
+- while pressing shift, would increase the speed, but also consume stamina
+
+To increase a character's speed, I should actually add to its acceleration, right? -> not really
+

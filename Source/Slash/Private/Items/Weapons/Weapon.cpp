@@ -164,8 +164,13 @@ void AWeapon::BoxTrace(FHitResult& BoxHit)
    const FVector Start = TraceStart->GetComponentLocation();
    const FVector End = TraceEnd->GetComponentLocation();
 
+   /** 
+   * The raptor is getting hit by its own weapon, so we gotta add as the actor to ignore the owner of the weapon.
+   * That way we won't get a box trace hi on the raptor mesh itself.
+   */
    TArray<AActor*> ActorsToIgnore;
    ActorsToIgnore.Add(this);
+   ActorsToIgnore.Add(GetOwner());
 
    for (AActor* Actor : IgnoreActors)
    {

@@ -51,6 +51,10 @@
 #include "Items/Soul.h"
 #include "Items/Treasure.h"
 #include "Items/Health.h"
+#include "Items/Book.h"
+
+/** Used in SpeedUp */
+#include "Kismet/KismetMathLibrary.h"
 
 void ASlashCharacter::InitializeSlashOverlay(APlayerController* PlayerController)
 {
@@ -191,11 +195,47 @@ void ASlashCharacter::Dodge()
 	}
 }
 
+void ASlashCharacter::SpeedUp(const FInputActionValue& Value)
+{
+	if (Attributes && Attributes->GetStamina() < Attributes->GetMaxStamina() * .10)
+	{
+		SetMaxWalkSpeed(600);
+		return;
+	}
+
+	SetMaxWalkSpeed(1200);
+	if (Attributes && SlashOverlay)
+	{
+		Attributes->UseStamina(Attributes->GetSpeedUpCost());
+		SetHUDStamina();
+	}
+}
+
+void ASlashCharacter::SetMaxWalkSpeed(const int32 Speed)
+{
+	GetCharacterMovement()->MaxWalkSpeed = Speed;
+}
+
+void ASlashCharacter::EndSpeedUp(const FInputActionValue& Value)
+{
+	SetMaxWalkSpeed(600);
+}
+
 void ASlashCharacter::EKeyPressed()
 {
 	AWeapon* OverlappingWeapon = Cast<AWeapon>(OverlappingItem);
 	if (OverlappingWeapon)
 	{
+		/** 
+		* Destroy current weapon if trying to equip/get another weapon when overlapping with it.
+		* As we might be unequipped but with a weapon on our back, we need to destroy it but also return to equipped state!
+		* That change to equipped state happens in EquipWeapon already.
+		*/
+		if (EquippedWeapon)
+		{
+			EquippedWeapon->Destroy();
+		}
+
 		EquipWeapon(OverlappingWeapon);
 	}
 	else
@@ -211,13 +251,46 @@ void ASlashCharacter::EKeyPressed()
 	}
 }
 
-void ASlashCharacter::Attack()
+void ASlashCharacter::LeftButtonAttack()
 {
 	Super::Attack();
 
 	if (CanAttack())
 	{
-		PlayAttackMontage();
+		PlaySingleAttackMontage(FName("ClickAttack"));
+		ActionState = EActionState::EAS_Attacking;
+	}
+}
+
+void ASlashCharacter::OneKeyAttack()
+{
+	Super::Attack();
+
+	if (CanAttack())
+	{
+		PlaySingleAttackMontage(FName("Attack1"));
+		ActionState = EActionState::EAS_Attacking;
+	}
+}
+
+void ASlashCharacter::TwoKeyAttack()
+{
+	Super::Attack();
+
+	if (CanAttack())
+	{
+		PlaySingleAttackMontage(FName("Attack2"));
+		ActionState = EActionState::EAS_Attacking;
+	}
+}
+
+void ASlashCharacter::ThreeKeyAttack()
+{
+	Super::Attack();
+
+	if (CanAttack())
+	{
+		PlaySingleAttackMontage(FName("Attack3"));
 		ActionState = EActionState::EAS_Attacking;
 	}
 }
@@ -228,7 +301,7 @@ void ASlashCharacter::LockTarget()
 	if (CanLock())
 	{
 		// Engage lock
-		SphereTrace();
+		SphereTrace(); // CombatTarget set to enemy
 		LockToTarget();
 	}
 	else
@@ -283,8 +356,13 @@ void ASlashCharacter::UnlockFromTarget()
 	CombatTarget = nullptr;
 	bIsEnemy = false;
 
-	if (Enemy) Enemy->HideLockedEffect();
-	// should set Enemy to nullptr as well?
+	if (Enemy)
+	{
+		Enemy->HideLockedEffect();
+		Enemy = nullptr;
+	}
+
+	//ViewCamera->bUsePawnControlRotation = true;
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->bUseControllerDesiredRotation = false;
@@ -322,9 +400,9 @@ bool ASlashCharacter::CanAttack()
 			 CharacterState != ECharacterState::ECS_Unequipped;
 }
 
-void ASlashCharacter::Die()
+void ASlashCharacter::Die_Implementation()
 {
-	Super::Die();
+	Super::Die_Implementation();
 
 	ActionState = EActionState::EAS_Dead;
 	DisableMeshAndCapsuleCollision();
@@ -455,9 +533,14 @@ void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Look);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Jump);
 		EnhancedInputComponent->BindAction(EquipAction, ETriggerEvent::Triggered, this, &ASlashCharacter::EKeyPressed);
-		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Attack);
+		EnhancedInputComponent->BindAction(LeftAttackAction, ETriggerEvent::Triggered, this, &ASlashCharacter::LeftButtonAttack);
+		EnhancedInputComponent->BindAction(OneKeyAttackAction, ETriggerEvent::Triggered, this, &ASlashCharacter::OneKeyAttack);
+		EnhancedInputComponent->BindAction(TwoKeyAttackAction, ETriggerEvent::Triggered, this, &ASlashCharacter::TwoKeyAttack);
+		EnhancedInputComponent->BindAction(ThreeKeyAttackAction, ETriggerEvent::Triggered, this, &ASlashCharacter::ThreeKeyAttack);
 		EnhancedInputComponent->BindAction(LockOnTarget, ETriggerEvent::Started, this, &ASlashCharacter::LockTarget);
 		EnhancedInputComponent->BindAction(DodgeIA, ETriggerEvent::Started, this, &ASlashCharacter::Dodge);
+		EnhancedInputComponent->BindAction(SpeedUpAction, ETriggerEvent::Triggered, this, &ASlashCharacter::SpeedUp);
+		EnhancedInputComponent->BindAction(SpeedUpAction, ETriggerEvent::Completed, this, &ASlashCharacter::EndSpeedUp);
 	}
 }
 
@@ -476,6 +559,11 @@ void ASlashCharacter::Tick(float DeltaTime)
 		FVector LockedTargetLocation = CombatTarget->GetActorLocation();
 
 		Controller->SetControlRotation(UKismetMathLibrary::FindLookAtRotation(SlashLocation, LockedTargetLocation));
+		
+		//SpringArm->SetRelativeRotation(UKismetMathLibrary::FindLookAtRotation(SlashLocation, LockedTargetLocation));
+		//SpringArm->SocketOffset = LockedTargetLocation;
+		//ViewCamera->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(ViewCamera->GetComponentLocation(), LockedTargetLocation));
+		//ViewCamera->bUsePawnControlRotation = false;
 	}
 	if ((Enemy && Enemy->IsDead()) || IsOutOfRange())
 	{
@@ -519,7 +607,7 @@ void ASlashCharacter::SetOverlappingItem(AItem* Item)
 	OverlappingItem = Item;
 }
 
-void ASlashCharacter::AddSouls(ASoul* Soul)
+void ASlashCharacter::AddSouls(ASoul* Soul) // Override from IPickupInterface; it'll be called from Soul class when it's picked up
 {
 	if (Attributes && SlashOverlay)
 	{
@@ -545,6 +633,14 @@ void ASlashCharacter::AddHealth(AHealth* Health)
 		Attributes->AddHealth(Health->GetHealth());
 		// Update HUD
 		SetHUDHealth();
+	}
+}
+
+void ASlashCharacter::AddBook(ABook* Book)
+{
+	if (SlashOverlay)
+	{
+		SlashOverlay->SetBooks(Book->GetBooks());
 	}
 }
 

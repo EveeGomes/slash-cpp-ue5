@@ -32,10 +32,14 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> SoulsText;
 
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> BooksText;
+
 public:
 	/** Setters and Getters */
 	void SetHealthBarPercent(float Percent);
 	void SetStaminaBarPercent(float Percent);
 	void SetGold(int32 Gold);
 	void SetSouls(int32 Souls);
+	void SetBooks(int32 Books);
 };

@@ -85,16 +85,20 @@ private:
 	TObjectPtr<UPawnSensingComponent> PawnSensing;
 
 	// Spawn a weapon
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Combat")
 	TSubclassOf<AWeapon> WeaponClass;
 
 	// Threshold to check Distance To Target
-	UPROPERTY(EditAnywhere)
-	double CombatRadius = 1000.f;
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	double CombatRadius = 1000;
 
 	// Threshold to start attacking the player
-	UPROPERTY(EditAnywhere)
-	double AttackRadius = 200.f;
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	double AttackRadius = 200;
+
+	// Threshold to reach the target
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	float AcceptanceRadius = 50.f;
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	float ChasingSpeed = 300.f;
@@ -151,7 +155,7 @@ protected:
 	/** </AActor> */
 
 	/** <ABaseCharacter> */
-	virtual void Die() override;
+	virtual void Die_Implementation() override;
 	
 	/** Attack */
 	virtual void Attack() override;
@@ -162,7 +166,7 @@ protected:
 
 	void SpawnSoul();
 	/** States */
-	UPROPERTY(BlueprintReadOnly) // This specifier only works for non-private variables!
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly) // This specifier only works for non-private variables!
 	EEnemyState EnemyState = EEnemyState::EES_Patrolling;
 
 	/** Locked effects */

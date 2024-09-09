@@ -27,6 +27,7 @@
 
 #include "HUD/LockedTargetComponent.h"
 
+
 void AEnemy::InitializeEnemy()
 {
 	/** Move the enemy for the first time here (in BeginPlay) */
@@ -40,7 +41,10 @@ void AEnemy::InitializeEnemy()
 bool AEnemy::InTargetRange(AActor* Target, double Radius)
 {
 	// Return false in case Target is invalid so in Tick we can remove some other validations
-	if (Target == nullptr) return false;
+	if (Target == nullptr)
+	{
+		return false;
+	}
 
 	const double DistanceToTarget = (Target->GetActorLocation() - GetActorLocation()).Size();
 
@@ -70,11 +74,11 @@ AActor* AEnemy::ChoosePatrolTarget()
 }
 
 // Set to EAS_IdlePatrol
-void AEnemy::CheckPatrolTarget()
+void AEnemy::CheckPatrolTarget() // EEnemyState::EES_Patrolling
 {
 	EnemyVelocity = UKismetMathLibrary::VSizeXY(GetCharacterMovement()->Velocity);
 
-	if (InTargetRange(PatrolTarget, PatrolRadius))
+	if (InTargetRange(PatrolTarget, PatrolRadius)) // sometimes returns false
 	{
 		PatrolTarget = ChoosePatrolTarget();
 
@@ -105,11 +109,11 @@ void AEnemy::StartPatrolling()
 
 void AEnemy::MoveToTarget(AActor* Target)
 {
-	if (EnemyController == nullptr || Target == nullptr) return; // this removes the need for the next if statement
+	if (EnemyController == nullptr || Target == nullptr) return;
 
 	FAIMoveRequest MoveRequest;
 	MoveRequest.SetGoalActor(Target);
-	MoveRequest.SetAcceptanceRadius(50.f);
+	MoveRequest.SetAcceptanceRadius(AcceptanceRadius);
 	EnemyController->MoveTo(MoveRequest);
 }
 
@@ -119,7 +123,7 @@ void AEnemy::SpawnDefaultWeapon()
 	if (World && WeaponClass)
 	{
 		AWeapon* DefaultWeapon = World->SpawnActor<AWeapon>(WeaponClass);
-		DefaultWeapon->Equip(GetMesh(), FName("RightHandSocket"), this, this);
+		DefaultWeapon->Equip(GetMesh(), FName("WeaponSocket"), this, this);
 		EquippedWeapon = DefaultWeapon;
 	}
 }
@@ -356,9 +360,9 @@ void AEnemy::BeginPlay()
 	Tags.Add(FName("Enemy"));
 }
 
-void AEnemy::Die()
+void AEnemy::Die_Implementation()
 {
-	Super::Die();
+	Super::Die_Implementation();
 
 	EnemyState = EEnemyState::EES_Dead;
 	ClearAttackTimer();
@@ -366,6 +370,7 @@ void AEnemy::Die()
 	DisableCapsule();
 	SetLifeSpan(DeathLifeSpan);
 	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
+	CombatTarget = nullptr;
 
 	/**
 	* To spawn an actor, we use a UWorld function.
@@ -434,11 +439,13 @@ void AEnemy::SpawnSoul()
 	UWorld* World = GetWorld();
 	if (World && SoulClass && Attributes)
 	{
-		/*const FVector SpawnLocation = GetActorLocation() + FVector{ 0.f, 0.f, 50.f };*/
-		ASoul* SpawnedSoul = World->SpawnActor<ASoul>(SoulClass, GetActorLocation(), GetActorRotation());
+		const FVector SpawnLocation = GetActorLocation() + FVector{ 0.f, 0.f, 125.f };
+		ASoul* SpawnedSoul = World->SpawnActor<ASoul>(SoulClass, SpawnLocation, GetActorRotation());
 		if (SpawnedSoul)
 		{
 			SpawnedSoul->SetSouls(Attributes->GetSouls());
+			/** Set the owner to later ignore it during the line trace avoiding collision with it */
+			SpawnedSoul->SetOwner(this);
 		}
 	}
 }
@@ -486,9 +493,16 @@ void AEnemy::Tick(float DeltaTime)
 	if (IsDead()) return;
 
 	// Idle Patrol
-	if (IsIdlePatrolling())
+	if (IsIdlePatrolling()) // only Paladin has IdlePatrolling...
 	{
-		PlayIdlePatrolMontage(IdlePatrolSectionName());
+		if (IdlePatrolMontage != nullptr)
+		{
+			PlayIdlePatrolMontage(IdlePatrolSectionName());
+		}
+		else
+		{
+			FinishIdlePatrol();
+		}
 	}
 
 	if (EnemyState > EEnemyState::EES_Patrolling)
@@ -535,4 +549,18 @@ void AEnemy::GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter)
 	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	StopAttackMontage();
+	/** 
+	* The Raptor hit react animation doesn't have root motion like the paladin so it won't move and go outside the attack
+	*  radius (which puts the paladin into Chasing mode and then it chases the player character to then attack).
+	* The raptor will remain in the same place, not triggering the chasing mode to go after the player and attack again.
+	* To fix that (for the Raptor and any other enemy) we gotta check if it's still in the attack radius and then start the
+	*  attack timer again!
+	* Also, we gotta make sure the enemy isn't dead! Otherwise it would raise up and start attacking again after the timer
+	*  is finished lol.
+	*/
+
+	if (IsInsideAttackRadius())
+	{
+		if (!IsDead()) StartAttackTimer();
+	}
 }
