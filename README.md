@@ -11,7 +11,6 @@ Project delevoped using Unreal Engine version 5.2 during the Unreal Engine 5 C++
   - [Animation Montage and Animation Blueprint](#animation-montage-and-animation-blueprint)
   - [Motion Warping](#motion-warping)
   - [Enemy Behavior](#enemy-behavior)
-    - [Bugs](#bugs)
   - [Lock On Target](#lock-on-target)
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
@@ -72,33 +71,151 @@ GIF/VIDEO
 
 The enemy class was the longest to develop, meaning there was a lot to learn and implement. The AI behavior was implemented with methods using states to check what was the current state in order to play a certain animation or to choose another one; we also make use of the navigation .
 
-
-#### 🐞 Bugs  
+#### 🐞 Bugs
 
 I've spent a good amount of time trying to debug an issue when we implemented a second enemy, a Raptor. The bug really annoyed me because even though this new enemy was a child of the Enemy C++ class, the first enemy created, BP_Paladin, would not have the bug.
 It happens that the Raptor stopped patrolling after some time doing it. So I've used debug spheres, placing in the Raptor's location and the next patrol target to figure out what was wrong. I checked it stopped choosing the next patrol target out of the patrol targets array.
 
 After long hours trying the issue, the solution was in finding the best Capsule Componenet shape. I've noticed that tweaking both Capsule Radius and Capsule Half Height, the enemy would finally choose the next patrol target to move to. That also happened when I later added another enemy, BP_Vampire which was even bigger than the Raptor, but that time I knew all I had to do was adjust the Capsule Componenet shape.
 
-🎥 Check the video below where I demonstrate the bug and use debug sphere to show the location of the raptor as the patrol targets:  
+🎥 Check the video below where I demonstrate the bug and use debug sphere to show the location of the raptor as the patrol targets:
 
-[![Raptor patrolling bug](https://img.youtube.com/vi/bsPqVMfWcHY/0.jpg)](https://www.youtube.com/watch?v=bsPqVMfWcHY)  
+[![Raptor patrolling bug](https://img.youtube.com/vi/bsPqVMfWcHY/0.jpg)](https://www.youtube.com/watch?v=bsPqVMfWcHY)
 
+🐞🐞
 
-🐞  
 Another bug that costed me days to find a solution was the navigation mesh. It all started when I was trying to get rid of some gaps in the NavMesh Bounds Volume and tried to change some parameters in Project Settings and Editor Preferences 🥲.  
 After trying some solutions found in forums and YouTube videos, I got some help from a Discord channel and found out that all I had to do was adjust the Agent Max Slope and Agent Max Step Height values in the RecastNavMesh-Default actor.  
 However, Agent Max Step Height was too high and I've encoutered another issue while editing the open world level: the NavMesh showed some weird patterns which I found out later it was caused by a property, in the geometry blueprint I used to populate the world, under Collision > Advanced: Can Ever Affect Navigation. I could find that property when selecting one of the Instanced Static Mesh that composes the geometry blueprint. By setting it to false, the NavMesh would not be affected anymore by that geometry and I could also set a much lower value to the Agent Max Step Height. Also, edit the Landscape also helped (specially smoothing the surface).
 
-![alt text](./Screenshots/nav-mesh-gaps.png)  
+![alt text](./Screenshots/nav-mesh-gaps.png)
 
-![alt text](./Screenshots/nav-mesh-weird-pattern.png)  
+![alt text](./Screenshots/nav-mesh-weird-pattern.png)
 
-![alt text](./Screenshots/nav-mesh.png)  
+![alt text](./Screenshots/nav-mesh.png)
 
-
-![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)  
+![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
 ### Lock On Target
 
-I've implemented the Lock on target mechanic as part of the course challenges along the sections. To accomplish this I used 
+I've implemented the Lock on target mechanic as part of the course challenges along the sections. To accomplish this I have a sphere trace method which uses a Kismet System Library function: SphereTraceSingleForObjects to set the a variable CombatTarget to the actor hit.  
+I'll check whether that actor is an Enemy by setting a tag to the Enemy during initialization and checking it in the LockToTarget method. To lock the camera to the enemy, I'll set the controller rotation from the player character to the target (using FindLookAtRotation). I also disable Look input by calling SetIgnoreLookInput from the Controller in LockToTarget.  
+Those methods are triggered when the player presses TAB. To unlock, the player should also press TAB, so the function bound to that key will be called and check whether it's already locked or not to proceed with the correct action.  
+You can check the code below:
+
+```cpp
+void ASlashCharacter::SphereTrace()
+{
+	const FVector SlashLocation = GetActorLocation();
+	FVector CameraFwd = ViewCamera->GetForwardVector();
+	FVector End = (CameraFwd * 500.f) + SlashLocation;
+
+	// Objects to trace against
+	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
+	ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_Pawn));
+
+	TArray<AActor*> ActorsToIgnore;
+	FHitResult HitActor;
+
+	UKismetSystemLibrary::SphereTraceSingleForObjects(
+		this,
+		SlashLocation,
+		End,
+		125.f,
+		ObjectTypes,
+		false,
+		ActorsToIgnore,
+		EDrawDebugTrace::ForDuration,
+		HitActor,
+		true
+	);
+
+	CombatTarget = HitActor.GetActor();
+}
+
+void ASlashCharacter::LockTarget()
+{
+	if (CanLock())
+	{
+		// Engage lock
+		SphereTrace(); // CombatTarget set to enemy
+		LockToTarget();
+	}
+	else
+	{
+		// Disangaged lock
+		UnlockFromTarget(); // Enemy set to nullptr
+		ActionState = EActionState::EAS_Unoccupied;
+	}
+}
+
+bool ASlashCharacter::CanLock()
+{
+	return !bLocked && CharacterState > ECharacterState::ECS_Unequipped;
+}
+
+bool ASlashCharacter::IsTargetEnemy()
+{
+	return CombatTarget && CombatTarget->ActorHasTag(FName("Enemy"));
+}
+
+void ASlashCharacter::LockToTarget()
+{
+	if (IsTargetEnemy())
+	{
+		// add a state so it can be used in transition rule from unlocked to locked locomotion
+		ActionState = EActionState::EAS_Locked;
+		bLocked = true;
+		bIsEnemy = true;
+		
+		Enemy = Cast<AEnemy>(CombatTarget);
+		if (Enemy) Enemy->ShowLockedEffect();
+
+		GetCharacterMovement()->bOrientRotationToMovement = false;
+		GetCharacterMovement()->bUseControllerDesiredRotation = true;
+
+		Controller->SetIgnoreLookInput(bLocked);
+	}
+}
+
+void ASlashCharacter::UnlockFromTarget()
+{
+	bLocked = false;
+	CombatTarget = nullptr;
+	bIsEnemy = false;
+
+	if (Enemy)
+	{
+		Enemy->HideLockedEffect();
+		Enemy = nullptr;
+	}
+
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->bUseControllerDesiredRotation = false;
+
+	Controller->ResetIgnoreLookInput();
+}
+
+void ASlashCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (Attributes && SlashOverlay)
+	{
+		Attributes->RegenStamina(DeltaTime);
+		SetHUDStamina();
+	}
+	if (bLocked && Enemy && !Enemy->IsDead())
+	{
+		FVector SlashLocation = GetActorLocation();
+		FVector LockedTargetLocation = CombatTarget->GetActorLocation();
+
+		Controller->SetControlRotation(UKismetMathLibrary::FindLookAtRotation(SlashLocation, LockedTargetLocation));
+	}
+	if ((Enemy && Enemy->IsDead()) || IsOutOfRange())
+	{
+		UnlockFromTarget();
+	}
+}
+
+```

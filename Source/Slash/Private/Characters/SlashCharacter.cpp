@@ -295,7 +295,6 @@ void ASlashCharacter::ThreeKeyAttack()
 
 void ASlashCharacter::LockTarget()
 {
-	// && ActionState != EActionState::EAS_Locked // it's not already locked?
 	if (CanLock())
 	{
 		// Engage lock
@@ -305,25 +304,16 @@ void ASlashCharacter::LockTarget()
 	else
 	{
 		// Disangaged lock
-		UnlockFromTarget();
-		// which ActionState to return to? Unoccupied is the default state.
+		UnlockFromTarget(); // Enemy set to nullptr
 		ActionState = EActionState::EAS_Unoccupied;
 	}
-
-	/** 
-	* TODO:
-	* [x] Only allow this function to be called if the pawn is in sight's radius!
-	* [x] Lock camera rotation to the target's movement instead of the mouse
-	* [] Use a widget or niagara system to show it's targeted?
-	* [] Check slash states?
-	*/
 }
 
 void ASlashCharacter::LockToTarget()
 {
 	if (IsTargetEnemy())
 	{
-		// add a state so it can be used in transition rule from unlocked to locked locomotion?
+		// add a state so it can be used in transition rule from unlocked to locked locomotion
 		ActionState = EActionState::EAS_Locked;
 		bLocked = true;
 		bIsEnemy = true;
@@ -359,8 +349,6 @@ void ASlashCharacter::UnlockFromTarget()
 		Enemy->HideLockedEffect();
 		Enemy = nullptr;
 	}
-
-	//ViewCamera->bUsePawnControlRotation = true;
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->bUseControllerDesiredRotation = false;
