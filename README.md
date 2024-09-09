@@ -80,6 +80,6 @@ After long hours trying the issue, the solution was in finding the best Capsule 
 
 [![Raptor patrolling bug](https://img.youtube.com/vi/EvelineGeorgia/0.jpg)](https://www.youtube.com/watch?v=bsPqVMfWcHY&ab_channel=EvelineGeorgia)
 
-<iframe width="560" height="315" src="https://www.youtube.com/watch?v=bsPqVMfWcHY&ab_channel=EvelineGeorgia" frameborder="0" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/bsPqVMfWcHY?si=qmmmzDw5bsE7Devo" frameborder="0" allowfullscreen></iframe>
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
