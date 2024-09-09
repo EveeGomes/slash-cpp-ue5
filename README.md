@@ -71,6 +71,13 @@ For this project, motion warping is used when a character has a valid combat tar
 
 GIF/VIDEO
 
-The enemy class was the longest to develop, meaning there was a lot to learn and implement. In this project the AI behavior was implemented with methods using states to check what was the current state in order to play a certain animation or to choose another.
+The enemy class was the longest to develop, meaning there was a lot to learn and implement. The AI behavior was implemented with methods using states to check what was the current state in order to play a certain animation or to choose another one; we also make use of the navigation .
+
+I've spent a good amount of time trying to debug an issue when we implemented a second enemy, a Raptor. The bug really annoyed me because even though this new enemy was a child of the Enemy C++ class, the first enemy created, BP_Paladin, would not have the bug.
+It happens that the Raptor stopped patrolling after some time doing it. So I've used debug spheres, placing in the Raptor's location and the next patrol target to figure out what was wrong. I checked it stopped choosing the next patrol target out of the patrol targets array.
+
+After long hours trying the issue, the solution was in finding the best Capsule Componenet shape. I've noticed that tweaking both Capsule Radius and Capsule Half Height, the enemy would finally choose the next patrol target to move to. That also happened when I later added another enemy, BP_Vampire which was even bigger than the Raptor, but that time I knew all I had to do was adjust the Capsule Componenet shape.
+
+[![Raptor patrolling bug](https://img.youtube.com/vi/EvelineGeorgia/0.jpg)](https://www.youtube.com/watch?v=bsPqVMfWcHY&ab_channel=EvelineGeorgia)
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
