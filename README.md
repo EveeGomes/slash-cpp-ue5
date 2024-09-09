@@ -78,8 +78,6 @@ It happens that the Raptor stopped patrolling after some time doing it. So I've 
 
 After long hours trying the issue, the solution was in finding the best Capsule Componenet shape. I've noticed that tweaking both Capsule Radius and Capsule Half Height, the enemy would finally choose the next patrol target to move to. That also happened when I later added another enemy, BP_Vampire which was even bigger than the Raptor, but that time I knew all I had to do was adjust the Capsule Componenet shape.
 
-[![Raptor patrolling bug](https://img.youtube.com/vi/EvelineGeorgia/0.jpg)](https://www.youtube.com/watch?v=bsPqVMfWcHY&ab_channel=EvelineGeorgia)
-
-<iframe width="560" height="315" src="https://www.youtube.com/embed/bsPqVMfWcHY?si=JZ8-jwHO8SdSi4-N" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+[![Raptor patrolling bug](https://img.youtube.com/vi/bsPqVMfWcHY&ab_channel=EvelineGeorgia/0.jpg)](https://www.youtube.com/watch?v=bsPqVMfWcHY&ab_channel=EvelineGeorgia)
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
