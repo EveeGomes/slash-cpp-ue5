@@ -27,9 +27,6 @@
 
 #include "HUD/LockedTargetComponent.h"
 
-#include "Slash/DebugMacros.h"
-
-
 void AEnemy::InitializeEnemy()
 {
 	/** Move the enemy for the first time here (in BeginPlay) */
@@ -49,9 +46,6 @@ bool AEnemy::InTargetRange(AActor* Target, double Radius)
 	}
 
 	const double DistanceToTarget = (Target->GetActorLocation() - GetActorLocation()).Size();
-
-	DRAW_SPHERE_SingleFrame(GetActorLocation());
-	DRAW_SPHERE_SingleFrame(Target->GetActorLocation());
 
 	return DistanceToTarget <= Radius;
 }

@@ -99,12 +99,12 @@ bool ASlashCharacter::CanJump()
 void ASlashCharacter::SphereTrace()
 {
 	const FVector SlashLocation = GetActorLocation();
-	FVector CameraFwd = ViewCamera->GetForwardVector(); // a bit different from YT
+	FVector CameraFwd = ViewCamera->GetForwardVector();
 	FVector End = (CameraFwd * 500.f) + SlashLocation;
 
 	// Objects to trace against
 	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
-	ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_Pawn)); // WorlDynamic or Pawn?
+	ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_Pawn));
 
 	TArray<AActor*> ActorsToIgnore;
 	FHitResult HitActor;
@@ -121,8 +121,6 @@ void ASlashCharacter::SphereTrace()
 		HitActor,
 		true
 	);
-	// add the hit actor to the ActorsToIgnore? Or it's not necessary as this function is called only 
-	//  when TAB is pressed?
 
 	CombatTarget = HitActor.GetActor();
 }

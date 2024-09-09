@@ -1,6 +1,4 @@
-# Slash
-
-# Project Title
+# UE5/C++ Slash Project
 
 Project delevoped using Unreal Engine version 5.2 during the Unreal Engine 5 C++ The Ultimate Game Developer Course created and taugh by [Stephen Ulibarri](https://www.udemy.com/user/stephen-ulibarri-3/).
 
@@ -12,8 +10,9 @@ Project delevoped using Unreal Engine version 5.2 during the Unreal Engine 5 C++
 - [Skills Learned](#skills-learned)
   - [Animation Montage and Animation Blueprint](#animation-montage-and-animation-blueprint)
   - [Motion Warping](#motion-warping)
-  - [Enemy Behavior](enemy-behavior)
-- []()
+  - [Enemy Behavior](#enemy-behavior)
+    - [Bugs](#bugs)
+  - [Lock On Target](#lock-on-target)
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
@@ -98,4 +97,8 @@ However, Agent Max Step Height was too high and I've encoutered another issue wh
 ![alt text](./Screenshots/nav-mesh.png)  
 
 
-![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
+![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)  
+
+### Lock On Target
+
+I've implemented the Lock on target mechanic as part of the course challenges along the sections. To accomplish this I used 
