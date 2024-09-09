@@ -70,10 +70,13 @@ For this project, motion warping is used when a character has a valid combat tar
 
 GIF/VIDEO
 
-The enemy class was the longest to develop, meaning there was a lot to learn and implement. The AI behavior was implemented with methods using states to check what was the current state in order to play a certain animation or to choose another one; we also make use of Navigation Mesh and Target Points that are used as patrol targets. I've added an extra animation to the Paladin enemy, so during the patrol time it would play an "idle patrol" animation instead of just staying in the idle animation until it moves to the next target:  
+The enemy class was the longest to develop, meaning there was a lot to learn and implement. The AI behavior was implemented with methods using states to check what was the current state in order to play a certain animation or to choose another one. We also make use of Navigation Mesh and Target Points that are used as patrol targets.  
+I've added an extra animation to the Paladin enemy, so during patrol time it would play an "idle patrol" animation instead of just staying in the idle animation until it moves to the next target:  
 
 📹
-![alt text](https://github.com/EveeGomes/slash-cpp-ue5/blob/main/enemy-idle-patrol.gif)
+![alt text](https://github.com/EveeGomes/slash-cpp-ue5/blob/main/enemy-idle-patrol.gif)  
+
+
 
 #### 🐞 Bugs
 
