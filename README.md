@@ -12,6 +12,7 @@ Project delevoped using Unreal Engine version 5.2 during the Unreal Engine 5 C++
   - [Motion Warping](#motion-warping)
   - [Enemy Behavior](#enemy-behavior)
   - [Lock On Target](#lock-on-target)
+  - [Speed up](#speed-up)
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
@@ -69,7 +70,9 @@ For this project, motion warping is used when a character has a valid combat tar
 
 GIF/VIDEO
 
-The enemy class was the longest to develop, meaning there was a lot to learn and implement. The AI behavior was implemented with methods using states to check what was the current state in order to play a certain animation or to choose another one; we also make use of the navigation .
+The enemy class was the longest to develop, meaning there was a lot to learn and implement. The AI behavior was implemented with methods using states to check what was the current state in order to play a certain animation or to choose another one; we also make use of Navigation Mesh and Target Points that are used as patrol targets. I've added an extra animation to the Paladin enemy, so during the patrol time it would play an "idle patrol" animation instead of just staying in the idle animation until it moves to the next target:  
+
+
 
 #### 🐞 Bugs
 
@@ -218,4 +221,28 @@ void ASlashCharacter::Tick(float DeltaTime)
 	}
 }
 
-```
+bool ASlashCharacter::IsOutOfRange()
+{
+	if (CombatTarget)
+	{
+		const FVector SlashLocation = GetActorLocation();
+		const FVector LockedTargetLocation = CombatTarget->GetActorLocation();
+
+		double Distance = FVector::Dist(LockedTargetLocation, SlashLocation);
+
+		return Distance > Range;
+	}
+
+	return false;
+}
+
+```  
+
+![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)  
+
+### Speed up
+This was also an extra feature added where I've bound the SHIFT key to a method that increases the character speed, but also consumes stamina. The method checks whether the stamina is greater than 10% of the total value, otherwise it won't let increase the speed.
+
+🎥
+
+[![Speed up](https://img.youtube.com/vi/NecmTkvi358/0.jpg)](https://www.youtube.com/watch?v=NecmTkvi358)

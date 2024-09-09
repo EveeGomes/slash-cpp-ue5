@@ -637,7 +637,7 @@ bool ASlashCharacter::IsOutOfRange()
 		const FVector SlashLocation = GetActorLocation();
 		const FVector LockedTargetLocation = CombatTarget->GetActorLocation();
 
-		float Distance = FVector::Dist(LockedTargetLocation, SlashLocation);
+		double Distance = FVector::Dist(LockedTargetLocation, SlashLocation);
 
 		return Distance > Range;
 	}

@@ -237,7 +237,7 @@ public:
 
 	/** Range between Slash and target */
 	UPROPERTY(EditAnywhere)
-	float Range = 1000.f;
+	double Range = 1000.;
 
 	bool IsOutOfRange();
 };
