@@ -73,11 +73,29 @@ GIF/VIDEO
 
 The enemy class was the longest to develop, meaning there was a lot to learn and implement. The AI behavior was implemented with methods using states to check what was the current state in order to play a certain animation or to choose another one; we also make use of the navigation .
 
+
+#### 🐞 Bugs  
+
 I've spent a good amount of time trying to debug an issue when we implemented a second enemy, a Raptor. The bug really annoyed me because even though this new enemy was a child of the Enemy C++ class, the first enemy created, BP_Paladin, would not have the bug.
 It happens that the Raptor stopped patrolling after some time doing it. So I've used debug spheres, placing in the Raptor's location and the next patrol target to figure out what was wrong. I checked it stopped choosing the next patrol target out of the patrol targets array.
 
 After long hours trying the issue, the solution was in finding the best Capsule Componenet shape. I've noticed that tweaking both Capsule Radius and Capsule Half Height, the enemy would finally choose the next patrol target to move to. That also happened when I later added another enemy, BP_Vampire which was even bigger than the Raptor, but that time I knew all I had to do was adjust the Capsule Componenet shape.
 
-[![Raptor patrolling bug](https://img.youtube.com/vi/bsPqVMfWcHY/0.jpg)](https://www.youtube.com/watch?v=bsPqVMfWcHY)
+🎥 Check the video below where I demonstrate the bug and use debug sphere to show the location of the raptor as the patrol targets:  
+
+[![Raptor patrolling bug](https://img.youtube.com/vi/bsPqVMfWcHY/0.jpg)](https://www.youtube.com/watch?v=bsPqVMfWcHY)  
+
+
+🐞  
+Another bug that costed me days to find a solution was the navigation mesh. It all started when I was trying to get rid of some gaps in the NavMesh Bounds Volume and tried to change some parameters in Project Settings and Editor Preferences 🥲.  
+After trying some solutions found in forums and YouTube videos, I got some help from a Discord channel and found out that all I had to do was adjust the Agent Max Slope and Agent Max Step Height values in the RecastNavMesh-Default actor.  
+However, Agent Max Step Height was too high and I've encoutered another issue while editing the open world level: the NavMesh showed some weird patterns which I found out later it was caused by a property, in the geometry blueprint I used to populate the world, under Collision > Advanced: Can Ever Affect Navigation. I could find that property when selecting one of the Instanced Static Mesh that composes the geometry blueprint. By setting it to false, the NavMesh would not be affected anymore by that geometry and I could also set a much lower value to the Agent Max Step Height. Also, edit the Landscape also helped (specially smoothing the surface).
+
+![alt text](./Screenshots/nav-mesh-gaps.png)  
+
+![alt text](./Screenshots/nav-mesh-weird-pattern.png)  
+
+![alt text](./Screenshots/nav-mesh.png)  
+
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
