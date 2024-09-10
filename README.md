@@ -1,6 +1,6 @@
 # UE5/C++ Slash Project
 
-Project delevoped using Unreal Engine version 5.2 during the Unreal Engine 5 C++ The Ultimate Game Developer Course created and taugh by [Stephen Ulibarri](https://www.udemy.com/user/stephen-ulibarri-3/).
+Project developed using Unreal Engine version 5.2 during the Unreal Engine 5 C++ The Ultimate Game Developer Course created and taugh by [Stephen Ulibarri](https://www.udemy.com/user/stephen-ulibarri-3/).
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
@@ -13,6 +13,7 @@ Project delevoped using Unreal Engine version 5.2 during the Unreal Engine 5 C++
   - [Enemy Behavior](#enemy-behavior)
   - [Lock On Target](#lock-on-target)
   - [Speed up](#speed-up)
+- [Conclusion and Future Plans](#conclusion-and-future-plans)
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
@@ -68,22 +69,18 @@ For this project, motion warping is used when a character has a valid combat tar
 
 ### Enemy Behavior
 
-GIF/VIDEO
-
 The enemy class was the longest to develop, meaning there was a lot to learn and implement. The AI behavior was implemented with methods using states to check what was the current state in order to play a certain animation or to choose another one. We also make use of Navigation Mesh and Target Points that are used as patrol targets.  
-I've added an extra animation to the Paladin enemy, so during patrol time it would play an "idle patrol" animation instead of just staying in the idle animation until it moves to the next target:  
+I've added an extra animation to the Paladin enemy, so during patrol time it would play an "idle patrol" animation instead of just staying in the idle animation until it moves to the next target:
 
 📹
-![alt text](https://github.com/EveeGomes/slash-cpp-ue5/blob/main/enemy-idle-patrol.gif)  
-
-
+![alt text](https://github.com/EveeGomes/slash-cpp-ue5/blob/main/enemy-idle-patrol.gif)
 
 #### 🐞 Bugs
 
 I've spent a good amount of time trying to debug an issue when we implemented a second enemy, a Raptor. The bug really annoyed me because even though this new enemy was a child of the Enemy C++ class, the first enemy created, BP_Paladin, would not have the bug.
 It happens that the Raptor stopped patrolling after some time doing it. So I've used debug spheres, placing in the Raptor's location and the next patrol target to figure out what was wrong. I checked it stopped choosing the next patrol target out of the patrol targets array.
 
-After long hours trying the issue, the solution was in finding the best Capsule Componenet shape. I've noticed that tweaking both Capsule Radius and Capsule Half Height, the enemy would finally choose the next patrol target to move to. That also happened when I later added another enemy, BP_Vampire which was even bigger than the Raptor, but that time I knew all I had to do was adjust the Capsule Componenet shape.
+After long hours trying the issue, the solution was in finding the best Capsule Component shape. I've noticed that tweaking both Capsule Radius and Capsule Half Height, the enemy would finally choose the next patrol target to move to. That also happened when I later added another enemy, BP_Vampire which was even bigger than the Raptor, but that time I knew all I had to do was adjust the Capsule Component shape.
 
 🎥 Check the video below where I demonstrate the bug and use debug sphere to show the location of the raptor as the patrol targets:
 
@@ -174,7 +171,7 @@ void ASlashCharacter::LockToTarget()
 		ActionState = EActionState::EAS_Locked;
 		bLocked = true;
 		bIsEnemy = true;
-		
+
 		Enemy = Cast<AEnemy>(CombatTarget);
 		if (Enemy) Enemy->ShowLockedEffect();
 
@@ -240,13 +237,24 @@ bool ASlashCharacter::IsOutOfRange()
 	return false;
 }
 
-```  
+```
 
-![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)  
+![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
 ### Speed up
+
 This was also an extra feature added where I've bound the SHIFT key to a method that increases the character speed, but also consumes stamina. The method checks whether the stamina is greater than 10% of the total value, otherwise it won't let increase the speed.
 
 🎥
 
 [![Speed up](https://img.youtube.com/vi/NecmTkvi358/0.jpg)](https://www.youtube.com/watch?v=NecmTkvi358)
+
+![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
+
+### Conclusion and Future Plans
+
+Taking this Unreal Engine 5 course in C++ was an incredibly rewarding experience, and has been a fantastic stepping stone in my journey as a game developer. I worked on a project featuring action RPG-style open-world game mechanics, dived deep into many UE5’s advanced features like Motion Warping, Meta Sounds, and the Chaos destruction system. I gained hands-on experience with complex gameplay mechanics, such as weapon equipping, enemy AI, combat systems, and visual effects in Niagara, while also learning to design engaging game environments and assets.
+
+Looking ahead, I plan to expand on these skills by applying them to my own game projects and exploring new areas like multiplayer gameplay and advanced AI behaviors. I’m excited to push the boundaries of what I can create in Unreal Engine 5, utilizing the latest features to develop more captivating and dynamic games.
+
+![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
